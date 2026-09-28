@@ -1,6 +1,6 @@
 <x-layouts::auth :title="__('Register')">
     <div class="flex flex-col gap-6">
-        <x-auth-header :title="__('Create an account')" :description="__('Enter your details below to create your account')" />
+        <x-auth-header title="Créer mon compte client" description="Retrouvez vos projets et partagez votre expérience après la livraison de votre site." />
 
         <!-- Session Status -->
         <x-auth-session-status class="text-center" :status="session('status')" />
@@ -60,6 +60,7 @@
                 </flux:button>
             </div>
         </form>
+        <p class="text-xs text-zinc-400">@if(\Laravel\Fortify\Features::enabled(\Laravel\Fortify\Features::emailVerification())) Un e-mail de vérification vous sera envoyé. @else Votre espace client est accessible dès l’inscription. @endif Le dépôt d’avis sera ouvert après confirmation de votre devis et de la livraison par Codenyr. Consultez notre <flux:link :href="route('privacy')">politique de confidentialité</flux:link>.</p>
 
         <div class="space-x-1 rtl:space-x-reverse text-center text-sm text-zinc-600 dark:text-zinc-400">
             <span>{{ __('Already have an account?') }}</span>

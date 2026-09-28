@@ -52,6 +52,9 @@ new #[Title('Profile settings')] class extends Component {
      */
     public function resendVerificationNotification(): void
     {
+        if (! \Laravel\Fortify\Features::enabled(\Laravel\Fortify\Features::emailVerification())) {
+            return;
+        }
         $user = Auth::user();
 
         if ($user->hasVerifiedEmail()) {
@@ -68,13 +71,13 @@ new #[Title('Profile settings')] class extends Component {
     #[Computed]
     public function hasUnverifiedEmail(): bool
     {
-        return Auth::user() instanceof MustVerifyEmail && ! Auth::user()->hasVerifiedEmail();
+        return \Laravel\Fortify\Features::enabled(\Laravel\Fortify\Features::emailVerification()) && Auth::user() instanceof MustVerifyEmail && ! Auth::user()->hasVerifiedEmail();
     }
 
     #[Computed]
     public function showDeleteUser(): bool
     {
-        return ! Auth::user() instanceof MustVerifyEmail
+        return ! \Laravel\Fortify\Features::enabled(\Laravel\Fortify\Features::emailVerification()) || ! Auth::user() instanceof MustVerifyEmail
             || (Auth::user() instanceof MustVerifyEmail && Auth::user()->hasVerifiedEmail());
     }
     /* @end-chisel-email-verification */

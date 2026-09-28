@@ -2,11 +2,15 @@
 
 namespace App\Providers;
 
+use App\Http\Middleware\EnsureEmailVerificationIfEnabled;
+use App\Models\User;
 use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
+use Livewire\Livewire;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -23,6 +27,8 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        Livewire::addPersistentMiddleware([EnsureEmailVerificationIfEnabled::class]);
+        Gate::define('admin', fn (User $user): bool => (bool) $user->is_admin);
         $this->configureDefaults();
     }
 

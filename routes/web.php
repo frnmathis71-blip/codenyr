@@ -1,11 +1,40 @@
 <?php
 
+use App\Http\Controllers\SiteController;
+use App\Livewire\Admin\Leads;
+use App\Livewire\Admin\Projects;
+use App\Livewire\Admin\Testimonials;
+use App\Livewire\CustomerReviews;
+use App\Livewire\InquiryForm;
+use App\Models\Lead;
+use App\Models\Project;
+use App\Models\Testimonial;
 use Illuminate\Support\Facades\Route;
 
-Route::view('/', 'welcome')->name('home');
+Route::get('/', [SiteController::class, 'home'])->name('home');
+Route::view('/services', 'site.services')->name('services');
+Route::view('/tarifs', 'site.pricing')->name('pricing');
+Route::get('/realisations', [SiteController::class, 'projects'])->name('projects');
+Route::get('/realisations/{slug}', [SiteController::class, 'project'])->name('project');
+Route::view('/a-propos', 'site.about')->name('about');
+Route::get('/devis', InquiryForm::class)->name('quote');
+Route::get('/contact', InquiryForm::class)->defaults('mode', 'contact')->name('contact');
+Route::view('/mentions-legales', 'site.legal')->name('legal');
+Route::view('/politique-confidentialite', 'site.privacy')->name('privacy');
+Route::get('/sitemap.xml', [SiteController::class, 'sitemap'])->name('sitemap');
+Route::get('/robots.txt', fn () => response("User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /settings\nSitemap: ".url('/sitemap.xml'))->header('Content-Type', 'text/plain'));
 
-Route::middleware(['auth', 'verified'])->group(function () {
-    Route::view('dashboard', 'dashboard')->name('dashboard');
+Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/', fn () => view('admin.dashboard', [
+        'counts' => collect(Lead::STATUSES)->map(fn ($label, $status) => Lead::where('status', $status)->count()),
+        'projectCount' => Project::count(),
+        'pendingReviewCount' => Testimonial::where('moderation_status', 'pending')->count(),
+        'leads' => Lead::latest()->limit(8)->get(),
+    ]))->name('dashboard');
+    Route::get('/prospects', Leads::class)->name('leads');
+    Route::get('/realisations', Projects::class)->name('projects');
+    Route::get('/temoignages', Testimonials::class)->name('testimonials');
 });
-
+Route::middleware(['auth', 'verified'])->get('/dashboard', fn () => redirect()->route(auth()->user()->is_admin ? 'admin.dashboard' : 'customer.dashboard'))->name('dashboard');
+Route::middleware(['auth', 'verified'])->get('/espace-client', CustomerReviews::class)->name('customer.dashboard');
 require __DIR__.'/settings.php';

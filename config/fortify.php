@@ -160,10 +160,10 @@ return [
     |
     */
 
-    'features' => [
+    'features' => array_values(array_filter([
         Features::registration(),
         Features::resetPasswords(),
-        Features::emailVerification(),
+        env('AUTH_EMAIL_VERIFICATION', false) ? Features::emailVerification() : null,
         Features::twoFactorAuthentication([
             'confirm' => true,
             'confirmPassword' => true,
@@ -172,6 +172,6 @@ return [
         Features::passkeys([
             'confirmPassword' => true,
         ]),
-    ],
+    ])),
 
 ];

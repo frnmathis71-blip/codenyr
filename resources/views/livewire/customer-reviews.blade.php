@@ -1,0 +1,46 @@
+<div>
+    <section class="container page-hero customer-hero">
+        <p class="eyebrow">Mon espace client</p>
+        <h1>Votre expérience <span class="muted-heading">compte.</span></h1>
+        <p>Bonjour {{ auth()->user()->name }}. Retrouvez vos projets et partagez votre expérience avec Codenyr.</p>
+        <div class="button-row customer-actions">
+            <a class="button button-secondary" href="{{ route('profile.edit') }}">Mon compte</a>
+            <form method="post" action="{{ route('logout') }}">@csrf<button class="button button-secondary" type="submit">Déconnexion</button></form>
+        </div>
+    </section>
+    <section class="container section customer-content">
+        @if(session('success'))<div class="flash" role="status">{{ session('success') }}</div>@endif
+        <div class="notice"><strong>Un avis authentique, publié après vérification.</strong><p>Vous pouvez déposer un avis lorsque Codenyr a accepté votre devis, confirmé la livraison de votre site et associé le projet à votre compte. Toute modification d’un avis déjà publié le remet en attente de validation.</p></div>
+        @if($selected)
+            <form wire:submit="submit" class="inquiry-form review-form">
+                <h2>Partagez votre expérience</h2>
+                <p>Votre nom et votre entreprise accompagneront l’avis s’il est publié.</p>
+                <div class="form-grid">
+                    <div class="field full"><label for="review-rating">Votre note *</label><select id="review-rating" wire:model="rating">@foreach(range(5,1) as $score)<option value="{{ $score }}">{{ $score }} / 5</option>@endforeach</select>@error('rating')<span class="error">{{ $message }}</span>@enderror</div>
+                    <div class="field full"><label for="review-content">Votre avis *</label><textarea id="review-content" wire:model="content" rows="6" required minlength="20" maxlength="5000" placeholder="Comment s’est déroulée notre collaboration ? Qu’appréciez-vous dans votre nouveau site ?"></textarea>@error('content')<span class="error" role="alert">{{ $message }}</span>@enderror</div>
+                </div>
+                <label class="consent"><input type="checkbox" wire:model="consent" required><span>J’autorise Codenyr à publier mon avis, ma note, mon nom et mon entreprise sur son site après validation. Je confirme que cet avis reflète mon expérience réelle.</span></label>
+                @error('consent')<p class="error">{{ $message }}</p>@enderror
+                <div class="button-row"><button type="submit" class="button button-primary" wire:loading.attr="disabled">Soumettre mon avis →</button><button type="button" class="button button-secondary" wire:click="cancel">Annuler</button></div>
+            </form>
+        @endif
+        <div class="customer-projects">
+            @forelse($leads as $lead)
+                <article class="customer-project" wire:key="customer-project-{{ $lead->id }}">
+                    <div><p class="eyebrow">Projet CNY-{{ $lead->id }}</p><h2>{{ $lead->project_type }}</h2><p>{{ $lead->company }}</p></div>
+                    <div class="tags"><span>Devis : {{ \App\Models\Lead::STATUSES[$lead->status] }}</span><span>{{ $lead->delivered_at ? 'Site livré' : 'Livraison non confirmée' }}</span></div>
+                    @if($lead->testimonial)
+                        <div class="customer-review"><span class="status-pill">Avis : {{ \App\Models\Testimonial::STATUSES[$lead->testimonial->moderation_status] }}</span><p class="review-score">{{ $lead->testimonial->rating }} / 5</p><blockquote>{{ $lead->testimonial->content }}</blockquote>@if($lead->testimonial->moderation_note)<div class="notice"><strong>Retour de Codenyr</strong><p>{{ $lead->testimonial->moderation_note }}</p></div>@endif</div>
+                    @endif
+                    @if($lead->status === 'accepted' && $lead->delivered_at)
+                        <button class="button button-secondary" wire:click="edit({{ $lead->id }})">{{ $lead->testimonial ? 'Modifier mon avis' : 'Donner mon avis' }} ↗</button>
+                    @else
+                        <p class="fine-print">Le dépôt d’avis sera disponible après acceptation du devis et confirmation de la livraison.</p>
+                    @endif
+                </article>
+            @empty
+                <div class="empty-state"><h2>Aucun projet associé pour le moment.</h2><p>Vous avez déjà travaillé avec Codenyr ? Contactez-moi avec l’adresse e-mail de ce compte pour que je puisse y rattacher votre projet.</p><a class="button button-secondary" href="{{ route('contact') }}">Contacter Codenyr →</a></div>
+            @endforelse
+        </div>
+    </section>
+</div>

@@ -1,0 +1,36 @@
+<x-site-layout>
+    <section class="container hero">
+        <div class="hero-copy">
+            <p class="eyebrow hero-location"><span class="location-mark" aria-hidden="true"></span> Développeur web · Chalon-sur-Saône</p>
+            <h1>Création de sites<br>internet à<br><span class="muted-heading">Chalon-sur-Saône<span class="blue-text">.</span></span></h1>
+            <p class="hero-description">Votre savoir-faire mérite un site à sa hauteur.<br>Je conçois des solutions web sur mesure pour les artisans, commerçants et entreprises qui veulent avancer.</p>
+            <div class="button-row"><a class="button button-primary" href="{{ route('quote') }}">Demander un devis <span aria-hidden="true">↗</span></a><a class="button button-secondary" href="{{ route('projects') }}">Voir mes réalisations <span aria-hidden="true">→</span></a></div>
+            <div class="hero-reassurance"><span>Un interlocuteur local</span><span>Du sur-mesure</span><span>Sans engagement</span></div>
+        </div>
+        <div class="hero-art" aria-label="Illustration d’un site web réalisé sur mesure">
+            <div class="art-grid" aria-hidden="true"></div>
+            <div class="preview-caption"><span class="tiny-square"></span> De votre idée à votre site.</div>
+            <div class="browser-preview">
+                <div class="browser-toolbar"><span class="browser-dots"><i></i><i></i><i></i></span><span>votre-entreprise.fr</span><span aria-hidden="true">↗</span></div>
+                <div class="mock-site">
+                    <div class="mock-nav"><strong>atelier<span>.</span></strong><div>Notre savoir-faire &nbsp; Nos projets <b>Parlons ensemble ↗</b></div></div>
+                    <div class="mock-body"><div><span class="mock-overline">LE SENS DU DÉTAIL</span><h2>Des idées.<br>De la matière.<br>Du caractère.</h2><p>Des espaces singuliers,<br>pensés pour vous.</p><span class="mock-button">Découvrir l’atelier ↗</span></div><div class="architecture-art" aria-hidden="true"><div class="arch-shadow"></div><div class="arch"></div><div class="pedestal"></div><div class="sphere"></div><div class="art-floor"></div></div></div>
+                    <div class="mock-footer"><span>DESIGN & ARTISANAT</span><span>Un savoir-faire qui fait la différence.</span><span>01 — 03</span></div>
+                </div>
+            </div>
+            <div class="art-note"><span class="code-symbol" aria-hidden="true">&lt;/&gt;</span><div><strong>Bien pensé. Bien développé.</strong><span>Un design unique, des bases solides.</span></div><span class="note-check" aria-hidden="true">✓</span></div>
+            <span class="art-footnote">Exemple d’interface · Concept Codenyr</span>
+        </div>
+    </section>
+    <div class="audience-strip"><div class="container"><span>LE WEB AU SERVICE DE VOTRE MÉTIER</span><div>Artisans <i>+</i> Commerçants <i>+</i> Restaurants <i>+</i> TPE & PME</div><span class="strip-arrow" aria-hidden="true">↘</span></div></div>
+    <section class="container section">
+        <x-section-heading number="01" label="Les services" title="Le bon site. Pour le bon besoin." text="Du premier site vitrine à l’application métier, une solution adaptée à votre activité. Rien de superflu." />
+        <div class="services-grid">@foreach(config('codenyr.offers') as $key => $offer)<a class="service-card" href="{{ route('services') }}#{{ $key }}"><div class="service-top"><span class="service-icon" aria-hidden="true">{{ ['landing'=>'▤','vitrine'=>'▦','pro'=>'⌘','custom'=>'〈/〉'][$key] }}</span><span class="card-number">0{{ $loop->iteration }}</span></div><h3>{{ $offer['name'] }}</h3><p>{{ $offer['intro'] }}</p><div class="service-bottom"><span>À partir de <strong>{{ $offer['price'] }} €</strong></span><span aria-hidden="true">↗</span></div></a>@endforeach</div>
+        <div class="section-bottom"><span>Des tarifs clairs. Un devis détaillé avant de commencer.</span><a class="text-link" href="{{ route('pricing') }}">Comparer les offres <span aria-hidden="true">→</span></a></div>
+    </section>
+    <section class="section secondary-section"><div class="container why-layout"><div><p class="eyebrow"><span>02 /</span> Pourquoi Codenyr</p><h2>Un partenaire web.<br>Pas seulement<br>un prestataire.</h2><p class="section-intro">De la première discussion à la mise en ligne,<br>vous savez avec qui vous travaillez.</p><a class="text-link" href="{{ route('about') }}">Découvrir Codenyr <span aria-hidden="true">→</span></a></div><div class="benefits-grid">@foreach([['Sur mesure, vraiment','Votre site s’adapte à votre métier et à vos objectifs. Pas l’inverse.'],['Proche de vous','Un interlocuteur à Chalon-sur-Saône, disponible pour échanger simplement.'],['À l’aise sur tous les écrans','Une expérience soignée sur mobile, tablette et ordinateur.'],['Pensé pour évoluer','Des bases solides pour accompagner les prochaines étapes de votre activité.'],['Aucune mauvaise surprise','Un périmètre défini ensemble et des tarifs annoncés dès le départ.'],['Vous gardez le choix','Un site clé en main. La maintenance reste entièrement facultative.']] as [$name,$text])<div class="benefit"><span class="benefit-icon" aria-hidden="true">{{ ['⌁','⌖','▣','↗','≡','✓'][$loop->index] }}</span><h3>{{ $name }}</h3><p>{{ $text }}</p></div>@endforeach</div></div></section>
+    <section class="container section"><x-section-heading number="03" label="Les réalisations" title="Des idées qui prennent forme." text="Le design, la technique et le sens du détail réunis dans chaque projet." /><div class="projects-grid">@forelse($projects as $project)<x-project-card :project="$project" />@empty<div class="empty-state"><h3>Les prochaines réalisations arrivent ici.</h3><p>Votre projet pourrait être le prochain. Discutons de ce que nous pouvons construire ensemble.</p><a class="text-link" href="{{ route('quote') }}">Parler de mon projet →</a></div>@endforelse</div><div class="section-bottom"><span>Chaque activité est différente. Chaque site aussi.</span><a class="text-link" href="{{ route('projects') }}">Toutes les réalisations →</a></div></section>
+    <section class="container section process-section"><x-section-heading number="04" label="La méthode" title="Simple, du début à la mise en ligne." /><div class="process-grid">@foreach([['On échange','Votre activité, vos envies, vos contraintes. Je commence par vous écouter.'],['On définit','Une proposition claire, un périmètre précis et un devis transparent.'],['Je développe','Design, développement et échanges réguliers pour avancer ensemble.'],['Vous prenez la main','Mise en ligne, prise en main et accompagnement selon vos besoins.']] as [$name,$text])<div><span class="process-number">0{{ $loop->iteration }}</span><h3>{{ $name }}</h3><p>{{ $text }}</p></div>@endforeach</div></section>
+    @if($testimonials->isNotEmpty())<section class="container section"><x-section-heading number="05" label="Témoignages" title="Ils en parlent mieux que moi." /><div class="services-grid">@foreach($testimonials as $testimonial)<blockquote class="service-card"><span aria-label="{{ $testimonial->rating }} sur 5">{{ str_repeat('★', $testimonial->rating) }}</span><p>{{ $testimonial->content }}</p><cite>{{ $testimonial->client_name }} · {{ $testimonial->company }}</cite></blockquote>@endforeach</div></section>@endif
+    <x-cta />
+</x-site-layout>
