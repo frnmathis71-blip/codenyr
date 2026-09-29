@@ -82,9 +82,9 @@ class InquiryForm extends Component
             'email' => 'required|email:rfc|max:254',
             'phone' => 'nullable|string|max:30',
             'project_type' => $this->mode === 'quote' ? ['required', Rule::in([...array_column(config('codenyr.offers'), 'name'), 'Je ne sais pas'])] : ['nullable'],
-            'budget' => ['nullable', Rule::in(config('codenyr.budgets'))],
-            'features' => 'array|max:9',
-            'features.*' => ['string', Rule::in(config('codenyr.features'))],
+            // Older open forms may still submit these fields; never persist them.
+            'budget' => 'exclude',
+            'features' => 'exclude',
             'description' => 'required|string|min:20|max:10000',
             'desired_date' => 'nullable|string|max:150',
             'website' => 'nullable|url:http,https|max:255',

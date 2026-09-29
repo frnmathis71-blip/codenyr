@@ -46,7 +46,7 @@ test('administration requires an authorized account', function (string $path) {
     $this->get($path)->assertRedirect('/login');
     $this->actingAs(User::factory()->create())->get($path)->assertForbidden();
     $this->actingAs(codenyrAdmin())->get($path)->assertOk();
-})->with(['/admin', '/admin/prospects', '/admin/realisations', '/admin/temoignages']);
+})->with(['/admin', '/admin/prospects', '/admin/archives', '/admin/realisations', '/admin/temoignages']);
 
 test('livewire administration independently enforces authorization', function (string $component) {
     $this->actingAs(User::factory()->create());
@@ -70,7 +70,8 @@ test('quote creates exactly one lead and queues both messages', function () {
         ->call('submit');
     expect(Lead::count())->toBe(1);
     expect(Lead::first()->status)->toBe('new');
-    expect(Lead::first()->features)->toBe(['Formulaire']);
+    expect(Lead::first()->features)->toBeNull();
+    expect(Lead::first()->budget)->toBeNull();
     Mail::assertQueued(InquiryReceived::class, fn ($mail) => $mail->confirmation && $mail->hasTo('camille@example.test'));
     Mail::assertQueued(InquiryReceived::class, fn ($mail) => ! $mail->confirmation && $mail->hasTo(config('codenyr.email')));
     Mail::assertQueuedCount(2);
@@ -94,8 +95,34 @@ test('spam and excessive submissions are rejected', function () {
     Mail::assertNothingQueued();
 });
 
-test('invalid feature and unsafe website are rejected', function () {
-    Livewire::test(InquiryForm::class)->set('features', ['Injected feature'])->set('website', 'javascript:alert(1)')->call('submit')->assertHasErrors(['features.0', 'website']);
+test('unsafe website is rejected', function () {
+    Livewire::test(InquiryForm::class)->set('website', 'javascript:alert(1)')->call('submit')->assertHasErrors(['website']);
+});
+
+test('inquiries explain offers without budget or additional feature inputs', function (string $path) {
+    $response = $this->get($path)->assertOk()->assertDontSee('Budget envisagé')->assertDontSee('Les fonctionnalités envisagées')->assertDontSee('wire:model="features"', false)->assertDontSee('wire:model="budget"', false);
+    if ($path === '/devis') {
+        $response->assertSee(config('codenyr.offers.vitrine.description'))->assertSee('Jusqu’à 5 pages personnalisées')->assertSee('Ce site comprend');
+    }
+})->with(['/devis', '/contact']);
+
+test('quote can preselect an offer and stores only that offer', function () {
+    Mail::fake();
+    Livewire::withQueryParams(['offer' => 'Site Vitrine'])->test(InquiryForm::class)
+        ->assertSet('project_type', 'Site Vitrine')
+        ->set('firstname', 'Camille')->set('lastname', 'Test')->set('email', 'camille@example.test')
+        ->set('budget', 'Injected budget')->set('features', ['Injected feature'])
+        ->set('description', 'Je souhaite présenter mon activité artisanale.')->set('consent', true)
+        ->call('submit')->assertHasNoErrors()->assertSet('submitted', true);
+    expect(Lead::first()->project_type)->toBe('Site Vitrine');
+    expect(Lead::first()->budget)->toBeNull();
+    expect(Lead::first()->features)->toBeNull();
+});
+
+test('password visibility controls render a single icon', function () {
+    $html = $this->get('/login')->assertOk()->getContent();
+    expect(substr_count($html, 'data-password-visibility-icon'))->toBe(1);
+    expect($html)->not->toContain('[[data-viewable-open]');
 });
 
 test('unpublished projects never appear publicly or in the sitemap', function () {

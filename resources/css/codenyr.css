@@ -2134,3 +2134,17 @@ select:focus-visible {
         transition: none !important;
     }
 }
+.offer-summary {
+    margin-top: 1.5rem;
+    padding: 1.25rem;
+    border: 1px solid var(--border, #303640);
+    border-radius: 12px;
+}
+
+.offer-summary h3 {
+    margin-bottom: .75rem;
+}
+
+.offer-summary p {
+    margin-bottom: .75rem;
+}

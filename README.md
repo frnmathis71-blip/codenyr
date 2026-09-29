@@ -27,10 +27,12 @@ Cette commande démarre le serveur, Vite et le worker de file d’attente. Avec 
 
 - `/admin` : indicateurs et derniers prospects.
 - `/admin/prospects` : recherche, filtre, détail, statut, notes, suppression confirmée.
+- `/admin/archives` : sites terminés archivés, avec recherche et restauration. Pour archiver depuis les prospects, enregistrer un devis accepté et cocher « Site livré », puis cliquer sur « Archiver ». Les archives conservent les notes et les avis clients et sont exclues du tableau de bord actif.
 - `/admin/realisations` : CRUD, image principale, galerie, publication, mise en avant, identification des concepts fictifs.
 - `/admin/temoignages` : CRUD, note et publication. Ne saisir que des avis authentiques avec autorisation.
 - `/login` : connexion. Créer le compte via la commande interactive `php artisan codenyr:admin` (mot de passe masqué, minimum 12 caractères, majuscules/minuscules, chiffre et symbole). Le booléen `is_admin` n’est pas assignable par les formulaires publics.
 - Les formulaires devis et contact enregistrent un `Lead`, puis mettent en file deux e-mails distincts. Le transport local `log` ne délivre aucun e-mail externe.
+- Les formulaires ne demandent aucun budget. Le choix d’une offre affiche sa description et son contenu, sans options supplémentaires à cocher. Les anciens budgets et demandes de fonctionnalités restent consultables sur les dossiers existants.
 
 ### Comptes clients et avis modérés
 

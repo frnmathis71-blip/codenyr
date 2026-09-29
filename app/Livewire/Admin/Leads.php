@@ -31,6 +31,14 @@ class Leads extends AdminComponent
 
     public bool $delivered = false;
 
+    #[Locked]
+    public bool $archived = false;
+
+    public function mount(bool $archived = false): void
+    {
+        $this->archived = $archived;
+    }
+
     public function updatedSearch(): void
     {
         $this->resetPage();
@@ -74,6 +82,9 @@ class Leads extends AdminComponent
         }
         DB::transaction(function () use ($client): void {
             $lead = Lead::lockForUpdate()->findOrFail($this->selected);
+            if ($lead->archived_at !== null) {
+                throw ValidationException::withMessages(['archive' => 'Restaurez ce projet avant de le modifier.']);
+            }
             if ($lead->testimonial()->exists() && $lead->user_id !== $client?->id) {
                 throw ValidationException::withMessages(['client_email' => 'Un avis est déjà lié à ce client. Supprimez cet avis avant de réattribuer le projet.']);
             }
@@ -92,13 +103,37 @@ class Leads extends AdminComponent
         session()->flash('success', 'Prospect supprimé.');
     }
 
+    public function archive(int $id): void
+    {
+        DB::transaction(function () use ($id): void {
+            $lead = Lead::lockForUpdate()->findOrFail($id);
+            if ($lead->status !== 'accepted' || $lead->delivered_at === null) {
+                throw ValidationException::withMessages(['archive' => 'Acceptez le devis et confirmez la livraison du site avant de l’archiver.']);
+            }
+            $lead->update(['archived_at' => $lead->archived_at ?? now()]);
+        });
+        $this->close();
+        $this->resetPage();
+        $this->resetValidation();
+        session()->flash('success', 'Projet archivé. Vous pouvez le retrouver dans les archives.');
+    }
+
+    public function restore(int $id): void
+    {
+        Lead::findOrFail($id)->update(['archived_at' => null]);
+        $this->close();
+        $this->resetPage();
+        $this->resetValidation();
+        session()->flash('success', 'Projet restauré dans les prospects actifs.');
+    }
+
     public function render(): View
     {
-        $leads = Lead::query()->when($this->search !== '', fn ($q) => $q->where(function ($q) {
+        $leads = Lead::query()->when($this->archived, fn ($q) => $q->whereNotNull('archived_at'), fn ($q) => $q->whereNull('archived_at'))->when($this->search !== '', fn ($q) => $q->where(function ($q) {
             $term = '%'.mb_substr($this->search, 0, 200).'%';
             $q->where('firstname', 'like', $term)->orWhere('lastname', 'like', $term)->orWhere('email', 'like', $term)->orWhere('company', 'like', $term);
-        }))->when($this->filter !== '', fn ($q) => $q->where('status', $this->filter))->latest()->paginate(15, ['id', 'firstname', 'lastname', 'company', 'email', 'project_type', 'status', 'created_at']);
+        }))->when($this->filter !== '', fn ($q) => $q->where('status', $this->filter))->latest()->paginate(15, ['id', 'firstname', 'lastname', 'company', 'email', 'project_type', 'status', 'created_at', 'delivered_at', 'archived_at']);
 
-        return view('livewire.admin.leads', ['leads' => $leads, 'lead' => $this->selected ? Lead::find($this->selected) : null])->layout('components.admin-layout', ['title' => 'Prospects']);
+        return view('livewire.admin.leads', ['leads' => $leads, 'lead' => $this->selected ? Lead::find($this->selected) : null])->layout('components.admin-layout', ['title' => $this->archived ? 'Archives' : 'Prospects']);
     }
 }

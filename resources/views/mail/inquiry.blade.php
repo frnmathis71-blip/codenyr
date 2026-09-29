@@ -17,10 +17,14 @@ Téléphone : {{ $lead->phone ?: 'Non renseigné' }}
 ## Votre demande
 
 Type : {{ $lead->project_type }}  
-Budget : {{ $lead->budget ?: 'À définir' }}  
+@if($lead->budget)
+Budget : {{ $lead->budget }}
+@endif
 Délai souhaité : {{ $lead->desired_date ?: 'À définir' }}  
 Site existant : {{ $lead->website ?: 'Non renseigné' }}  
-Fonctionnalités : {{ implode(', ', $lead->features ?? []) ?: 'À définir' }}
+@if($lead->features)
+Fonctionnalités : {{ implode(', ', $lead->features) }}
+@endif
 
 {{ $lead->description }}
 

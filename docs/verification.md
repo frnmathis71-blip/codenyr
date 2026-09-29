@@ -1,5 +1,19 @@
 # Vérification locale — 29 septembre 2026
 
+## Nouvelle page d’accueil
+
+- Accueil repensé : composition éditoriale, aperçu interactif vitrine/administration, réalisations, offres directement reliées au devis présélectionné, méthode, FAQ native et appel à l’action final.
+- Navigation de l’accueil par sections ; menu mobile refermé après activation d’un lien, libellé d’ouverture/fermeture et retour du focus avec Échap. Aucun carrousel automatique ; prise en compte de la réduction des animations.
+- Illustrations réalisées en HTML/CSS, sans nouvelle dépendance JS ni image externe. Les concepts et données de démonstration restent explicitement signalés.
+- Contrôle navigateur à 320, 390, 768 px et au format ordinateur : pas de débordement horizontal. Bascule de l’aperçu, navigation mobile et ouverture de la FAQ au clavier vérifiées. Build validé ; 42 tests des pages publiques et du tableau de bord réussis (180 assertions).
+
+## Archives et formulaire simplifié
+
+- Migration `archived_at` appliquée localement. Archivage réservé aux devis acceptés et sites livrés, archives consultables et restaurables, exclusion des listes et compteurs actifs. Les notes, rattachements clients et avis sont conservés.
+- Budget retiré des demandes, fonctionnalités supplémentaires remplacées par le descriptif et le contenu de l’offre sélectionnée. Les anciens champs envoyés depuis un formulaire déjà ouvert sont ignorés côté serveur.
+- Contrôle de visibilité du mot de passe avec un seul SVG et suppression du contrôle natif supplémentaire d’Edge. Cache des vues vidé pour activer la surcharge Flux.
+- Navigateur : changement d’offre et contenu associé, icône unique et bascule mot de passe visible/masqué, archivage et restauration d’un projet temporaire. Tests : 89 réussis, 372 assertions, 5 ignorés ; Pint, PHPStan et build validés.
+
 ## Chargement des interactions et administration
 
 - Livewire et Flux sont compilés ensemble par Vite et démarrés une seule fois ; les sept layouts partagent `@livewireScriptConfig`. Les scripts ne nécessitent plus deux routes PHP séparées pour leur téléchargement et leur URL change avec le contenu du build.

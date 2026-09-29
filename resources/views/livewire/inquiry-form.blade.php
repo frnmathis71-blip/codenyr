@@ -11,12 +11,26 @@
 @foreach(['firstname' => ['Prénom *','given-name'], 'lastname' => ['Nom *','family-name'], 'company' => ['Entreprise (facultatif)','organization'], 'email' => ['E-mail *','email'], 'phone' => ['Téléphone (facultatif)','tel']] as $field => [$label,$autocomplete])<div class="field"><label for="{{ $field }}">{{ $label }}</label><input id="{{ $field }}" wire:model="{{ $field }}" type="{{ $field === 'email' ? 'email' : ($field === 'phone' ? 'tel' : 'text') }}" autocomplete="{{ $autocomplete }}" @if(in_array($field,['firstname','lastname','email'])) required @endif maxlength="{{ $field === 'phone' ? 30 : 254 }}" @error($field) aria-invalid="true" aria-describedby="error-{{ $field }}" @enderror>@error($field)<span id="error-{{ $field }}" class="error">{{ $message }}</span>@enderror</div>@endforeach
 </div></fieldset>
 @if($mode === 'quote')
-<fieldset class="form-section"><legend><span>02 /</span> De quoi avez-vous besoin ?</legend><div class="choice-grid">@foreach([...array_column(config('codenyr.offers'),'name'),'Je ne sais pas'] as $option)<label class="choice"><input type="radio" wire:model="project_type" value="{{ $option }}" name="project_type" required><span>{{ $option }}</span></label>@endforeach</div>@error('project_type')<span class="error">{{ $message }}</span>@enderror</fieldset>
-<fieldset class="form-section"><legend><span>03 /</span> Les fonctionnalités envisagées</legend><div class="choice-grid">@foreach(config('codenyr.features') as $feature)<label class="choice"><input type="checkbox" wire:model="features" value="{{ $feature }}"><span>{{ $feature }}</span></label>@endforeach</div>@error('features')<span class="error">{{ $message }}</span>@enderror @error('features.*')<span class="error">{{ $message }}</span>@enderror</fieldset>
+<fieldset class="form-section" x-data="{ selected: $wire.entangle('project_type') }">
+    <legend><span>02 /</span> De quoi avez-vous besoin ?</legend>
+    <div class="choice-grid">@foreach([...array_column(config('codenyr.offers'),'name'),'Je ne sais pas'] as $option)<label class="choice"><input type="radio" x-model="selected" value="{{ $option }}" name="project_type" required><span>{{ $option }}</span></label>@endforeach</div>
+    @error('project_type')<span class="error">{{ $message }}</span>@enderror
+    <div aria-live="polite">
+        @foreach(config('codenyr.offers') as $offer)
+            <section class="offer-summary" x-show="selected === @js($offer['name'])" x-cloak>
+                <h3>{{ $offer['name'] }}</h3>
+                <p>{{ $offer['description'] }}</p>
+                <p><strong>{{ $offer['name'] === 'Sur mesure' ? 'Périmètre à définir ensemble :' : 'Ce site comprend :' }}</strong></p>
+                <ul class="feature-list">@foreach($offer['features'] as $feature)<li>{{ $feature }}</li>@endforeach</ul>
+            </section>
+        @endforeach
+        <p class="offer-summary" x-show="selected === 'Je ne sais pas'" x-cloak>Décrivez simplement votre activité et votre objectif. Nous choisirons ensemble le type de site adapté à votre projet.</p>
+    </div>
+</fieldset>
 @endif
-<fieldset class="form-section"><legend><span>{{ $mode === 'quote' ? '04' : '02' }} /</span> {{ $mode === 'quote' ? 'Quelques détails pour avancer' : 'Votre message' }}</legend><div class="form-grid">
+<fieldset class="form-section"><legend><span>{{ $mode === 'quote' ? '03' : '02' }} /</span> {{ $mode === 'quote' ? 'Quelques détails pour avancer' : 'Votre message' }}</legend><div class="form-grid">
 @if($mode === 'contact')<div class="field full"><label for="subject">Sujet *</label><input id="subject" wire:model="subject" required maxlength="200">@error('subject')<span class="error">{{ $message }}</span>@enderror</div>@else
-<div class="field"><label for="budget">Budget envisagé (facultatif)</label><select id="budget" wire:model="budget"><option value="">À définir</option>@foreach(config('codenyr.budgets') as $budgetOption)<option>{{ $budgetOption }}</option>@endforeach</select>@error('budget')<span class="error">{{ $message }}</span>@enderror</div><div class="field"><label for="desired_date">Délai souhaité (facultatif)</label><input id="desired_date" wire:model="desired_date" placeholder="Ex. : d’ici trois mois" maxlength="150">@error('desired_date')<span class="error">{{ $message }}</span>@enderror</div>
+<div class="field full"><label for="desired_date">Délai souhaité (facultatif)</label><input id="desired_date" wire:model="desired_date" placeholder="Ex. : d’ici trois mois" maxlength="150">@error('desired_date')<span class="error">{{ $message }}</span>@enderror</div>
 @endif
 <div class="field full"><label for="description">{{ $mode === 'quote' ? 'Parlez-moi de votre projet *' : 'Message *' }}</label><textarea id="description" wire:model="description" rows="6" required minlength="20" maxlength="10000" placeholder="Votre activité, vos objectifs, vos envies…" @error('description') aria-invalid="true" aria-describedby="error-description" @enderror></textarea>@error('description')<span id="error-description" class="error">{{ $message }}</span>@enderror</div>
 @if($mode === 'quote')<div class="field full"><label for="website">Votre site actuel (facultatif)</label><input id="website" type="url" wire:model="website" placeholder="https://" maxlength="255">@error('website')<span class="error">{{ $message }}</span>@enderror</div>@endif

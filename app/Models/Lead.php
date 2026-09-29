@@ -14,7 +14,7 @@ class Lead extends Model
 
     protected function casts(): array
     {
-        return ['features' => 'array', 'delivered_at' => 'datetime'];
+        return ['features' => 'array', 'delivered_at' => 'datetime', 'archived_at' => 'datetime'];
     }
 
     /** @return BelongsTo<User, $this> */

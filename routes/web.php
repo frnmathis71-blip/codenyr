@@ -27,13 +27,14 @@ Route::get('/robots.txt', fn () => response("User-agent: *\nAllow: /\nDisallow: 
 Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', fn () => view('admin.dashboard', [
         'counts' => collect(Lead::STATUSES)->map(fn () => 0)->merge(
-            Lead::query()->selectRaw('status, COUNT(*) as total')->groupBy('status')->pluck('total', 'status')
+            Lead::whereNull('archived_at')->selectRaw('status, COUNT(*) as total')->groupBy('status')->pluck('total', 'status')
         ),
         'projectCount' => Project::count(),
         'pendingReviewCount' => Testimonial::where('moderation_status', 'pending')->count(),
-        'leads' => Lead::latest()->limit(8)->get(['firstname', 'lastname', 'company', 'project_type', 'status', 'created_at']),
+        'leads' => Lead::whereNull('archived_at')->latest()->limit(8)->get(['firstname', 'lastname', 'company', 'project_type', 'status', 'created_at']),
     ]))->name('dashboard');
     Route::get('/prospects', Leads::class)->name('leads');
+    Route::get('/archives', Leads::class)->defaults('archived', true)->name('archives');
     Route::get('/realisations', Projects::class)->name('projects');
     Route::get('/temoignages', Testimonials::class)->name('testimonials');
 });
