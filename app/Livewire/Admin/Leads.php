@@ -97,7 +97,7 @@ class Leads extends AdminComponent
         $leads = Lead::query()->when($this->search !== '', fn ($q) => $q->where(function ($q) {
             $term = '%'.mb_substr($this->search, 0, 200).'%';
             $q->where('firstname', 'like', $term)->orWhere('lastname', 'like', $term)->orWhere('email', 'like', $term)->orWhere('company', 'like', $term);
-        }))->when($this->filter !== '', fn ($q) => $q->where('status', $this->filter))->latest()->paginate(15);
+        }))->when($this->filter !== '', fn ($q) => $q->where('status', $this->filter))->latest()->paginate(15, ['id', 'firstname', 'lastname', 'company', 'email', 'project_type', 'status', 'created_at']);
 
         return view('livewire.admin.leads', ['leads' => $leads, 'lead' => $this->selected ? Lead::find($this->selected) : null])->layout('components.admin-layout', ['title' => 'Prospects']);
     }

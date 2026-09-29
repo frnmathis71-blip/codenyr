@@ -60,6 +60,6 @@
         </div>
         <div class="container footer-bottom"><span>© {{ date('Y') }} Codenyr. Tous droits réservés.</span><div><a href="{{ route('legal') }}">Mentions légales</a><a href="{{ route('privacy') }}">Confidentialité</a></div><span>Conçu avec soin. Développé sur mesure.</span></div>
     </footer>
-    @livewireScripts
+    @livewireScriptConfig
 </body>
 </html>

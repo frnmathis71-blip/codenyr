@@ -35,5 +35,6 @@
     "Email verification": "Vérification de votre e-mail",
     "Please verify your email address by clicking on the link we just emailed to you.": "Confirmez votre adresse en cliquant sur le lien que nous venons de vous envoyer par e-mail.",
     "A new verification link has been sent to the email address you provided during registration.": "Un nouveau lien de vérification vient de vous être envoyé.",
-    "Resend verification email": "Renvoyer l’e-mail de vérification"
+    "Resend verification email": "Renvoyer l’e-mail de vérification",
+    "Toggle password visibility": "Afficher ou masquer le mot de passe"
 }

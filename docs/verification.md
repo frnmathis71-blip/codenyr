@@ -1,4 +1,12 @@
-# Vérification locale — 28 septembre 2026
+# Vérification locale — 29 septembre 2026
+
+## Chargement des interactions et administration
+
+- Livewire et Flux sont compilés ensemble par Vite et démarrés une seule fois ; les sept layouts partagent `@livewireScriptConfig`. Les scripts ne nécessitent plus deux routes PHP séparées pour leur téléchargement et leur URL change avec le contenu du build.
+- Les six comptages de prospects sont regroupés en une requête SQL. Le tableau de bord et la liste ne chargent que les colonnes affichées, sans les descriptions et notes complètes.
+- Vérification navigateur : affichage puis masquage du mot de passe au clavier, connexion administrateur, liste et détail d’un nouveau projet, sauvegarde des notes, paramètres puis retour à l’administration. Aucune erreur JS relevée sur ces parcours. Compte et projet temporaires supprimés.
+- Le clic automatisé à la souris n’a pas permis une vérification fiable du bouton ; l’activation au clavier a été contrôlée. La boucle de chargement signalée n’a pas été reproduite dans le parcours final, sa cause initiale n’est donc pas établie avec certitude.
+- `composer test` : Pint et PHPStan validés, 80 tests réussis, 316 assertions, 5 tests ignorés (vérification d’e-mail désactivée). Build et `git diff --check` validés. Pas de benchmark global de latence ni de déploiement distant.
 
 ## Vérification d’e-mail temporairement désactivée
 

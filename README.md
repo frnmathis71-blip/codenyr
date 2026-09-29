@@ -53,6 +53,8 @@ composer test
 npm run build
 ```
 
+Livewire et Flux sont intégrés au bundle Vite `resources/js/app.js`. Tous les layouts utilisent `@livewireScriptConfig` et partagent ce runtime ; ne pas ajouter `@livewireScripts`, `@fluxScripts` ou une deuxième instance Alpine. Recompiler avec `npm run build` après une mise à jour Composer de Livewire/Flux et déployer le manifeste avec ses fichiers JS/CSS.
+
 Pest couvre notamment les pages publiques, l’accès administrateur et les composants Livewire, l’inscription sans élévation de privilèges, la vérification d’e-mail, les droits de dépôt d’avis, la modération et ses versions, la validation et l’anti-spam des formulaires, les notifications, la visibilité des projets et des avis, les CRUD et les uploads. Les tests utilisent une base SQLite en mémoire et des e-mails simulés.
 
 ## Mise en production

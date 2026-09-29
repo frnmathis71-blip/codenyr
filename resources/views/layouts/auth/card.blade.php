@@ -28,6 +28,6 @@
             </flux:toast.group>
         @endpersist
 
-        @fluxScripts
+        @livewireScriptConfig
     </body>
 </html>
