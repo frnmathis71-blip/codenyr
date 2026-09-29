@@ -5,11 +5,11 @@
             <p class="home-kicker"><span aria-hidden="true"></span> Développement web indépendant · Chalon-sur-Saône</p>
             <h1 id="home-title">Votre savoir-faire.<br>Un site <span>à sa hauteur.</span></h1>
             <p class="home-lead">Des sites singuliers, des expériences simples. Je transforme vos idées en outils web qui présentent votre activité et vous aident à avancer.</p>
-            <div class="home-hero-actions"><a class="button button-primary" href="{{ route('quote') }}">Parlons de votre projet <span aria-hidden="true">↗</span></a><a class="home-quiet-link" href="#realisations">Explorer les réalisations <span aria-hidden="true">↓</span></a></div>
+            <div class="home-hero-actions"><a class="button button-primary" href="{{ route('quote') }}">Parlons de votre projet <span aria-hidden="true">↗</span></a><a class="home-quiet-link" href="{{ route('projects') }}">Explorer les réalisations <span aria-hidden="true">↓</span></a></div>
             <div class="home-signature"><span class="home-signature-mark" aria-hidden="true">C<span>↗</span></span><p><strong>Une relation directe, du début à la fin.</strong><br>Un développeur, un projet pensé avec vous.</p></div>
         </div>
         <x-home-preview />
-        <div class="home-hero-bottom"><span>DESIGN SOIGNÉ. DÉVELOPPEMENT SUR MESURE.</span><a href="#expertise">Découvrez l’approche <span aria-hidden="true">↘</span></a></div>
+        <div class="home-hero-bottom"><span>DESIGN SOIGNÉ. DÉVELOPPEMENT SUR MESURE.</span><a href="{{ route('services') }}">Découvrir les services <span aria-hidden="true">↘</span></a></div>
     </section>
 
     <section id="expertise" class="home-expertise" aria-labelledby="expertise-title">
@@ -42,8 +42,8 @@
         <div class="container">
             <div class="home-section-heading"><div><p class="home-kicker">03 / Un site pour chaque ambition</p><h2 id="offers-title">Votre besoin donne<br>le ton.</h2></div><p>Commencer simplement ou aller plus loin. Quatre points de départ, un périmètre défini ensemble et un devis avant de commencer.</p></div>
             <div class="home-offers">
-                @foreach(config('codenyr.offers') as $key => $offer)
-                    <a class="home-offer" href="{{ route('quote', ['offer' => $offer['name']]) }}">
+                @foreach(app(\App\Services\PricingCatalog::class)->offers() as $key => $offer)
+                    <a class="home-offer" href="{{ route('services').'#'.$key }}">
                         <span class="home-offer-number">0{{ $loop->iteration }}</span><div class="home-offer-name"><span>{{ ['landing'=>'POUR LANCER UNE IDÉE','vitrine'=>'POUR PRÉSENTER VOTRE ACTIVITÉ','pro'=>'POUR GARDER LA MAIN','custom'=>'POUR VOS BESOINS MÉTIER'][$key] }}</span><h3>{{ $offer['name'] }}</h3></div><p>{{ $offer['intro'] }}</p><div class="home-offer-price"><span>À partir de</span><strong>{{ $offer['price'] }} <small>€</small></strong></div><span class="home-offer-arrow" aria-hidden="true">↗</span>
                     </a>
                 @endforeach
@@ -63,7 +63,10 @@
     </section>
 
     @if($testimonials->isNotEmpty())
-        <section class="container home-section home-reviews" aria-labelledby="reviews-title"><div class="home-section-heading"><div><p class="home-kicker">Leur expérience</p><h2 id="reviews-title">La confiance se construit.</h2></div></div><div class="home-review-grid">@foreach($testimonials as $testimonial)<figure><div class="home-review-stars" aria-label="{{ $testimonial->rating }} sur 5">{{ str_repeat('★', $testimonial->rating) }}</div><blockquote>{{ $testimonial->content }}</blockquote><figcaption>{{ $testimonial->client_name }}@if($testimonial->company)<span>{{ $testimonial->company }}</span>@endif</figcaption></figure>@endforeach</div></section>
+        <section class="container home-section home-reviews" aria-labelledby="reviews-title">
+            <div class="home-section-heading"><div><p class="home-kicker">Leur expérience</p><h2 id="reviews-title">La confiance se construit.</h2></div><a class="home-quiet-link" href="{{ route('reviews') }}">Tous les avis clients →</a></div>
+            <div class="public-reviews-grid">@foreach($testimonials as $testimonial)<x-testimonial-card :testimonial="$testimonial" />@endforeach</div>
+        </section>
     @endif
 
     <section class="container home-faq" aria-labelledby="faq-title"><div><p class="home-kicker">Avant de se lancer</p><h2 id="faq-title">Les bonnes<br><span>questions.</span></h2><p>Un point à préciser ?<br><a class="home-quiet-link" href="{{ route('contact') }}">Écrivons la suite ensemble ↗</a></p></div><div class="home-faq-list">

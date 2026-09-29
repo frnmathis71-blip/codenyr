@@ -1,9 +1,21 @@
-# Vérification locale — 29 septembre 2026
+# Vérification locale — 30 septembre 2026
+
+## Tarifs administrables
+
+- `/admin/tarifs`, réservé aux administrateurs : quatre prix de création et trois prix mensuels de maintenance. Virgule, point et séparateurs d’espaces acceptés ; prix négatifs, trop grands ou comportant plus de deux décimales refusés.
+- Stockage en centimes dans `prices`, migration appliquée localement. Sauvegarde transactionnelle et affichage partagé sur Accueil, Services et Tarifs. Les prix actuels sont conservés par défaut ; aucune modification des prix publics pendant le contrôle navigateur.
+- Écran et libellés contrôlés avec un compte temporaire. Tests couvrant les permissions, la persistance, l’affichage public et le rejet des données invalides sans sauvegarde partielle.
+
+## Navigation multipage et avis clients
+
+- Navigation ordinateur/mobile identique sur les pages : Accueil, Services, Réalisations, Avis clients, Tarifs, À propos et Contact. Les liens de découverte de l’accueil ouvrent les pages dédiées ; les offres mènent à leur détail dans Services.
+- Page `/avis` et lien dans le pied de page, intégration au sitemap. Avis publiés uniquement, texte complet, pagination par 12, état vide explicite.
+- Cartes partagées entre l’accueil et la page Avis : auteur et entreprise identifiables, contour, séparation du nom et du texte, étoiles jaunes et note accessible sur cinq.
 
 ## Nouvelle page d’accueil
 
 - Accueil repensé : composition éditoriale, aperçu interactif vitrine/administration, réalisations, offres directement reliées au devis présélectionné, méthode, FAQ native et appel à l’action final.
-- Navigation de l’accueil par sections ; menu mobile refermé après activation d’un lien, libellé d’ouverture/fermeture et retour du focus avec Échap. Aucun carrousel automatique ; prise en compte de la réduction des animations.
+- Navigation initiale par sections remplacée ensuite par la navigation multipage ci-dessus ; menu mobile refermé après activation d’un lien, libellé d’ouverture/fermeture et retour du focus avec Échap. Aucun carrousel automatique ; prise en compte de la réduction des animations.
 - Illustrations réalisées en HTML/CSS, sans nouvelle dépendance JS ni image externe. Les concepts et données de démonstration restent explicitement signalés.
 - Contrôle navigateur à 320, 390, 768 px et au format ordinateur : pas de débordement horizontal. Bascule de l’aperçu, navigation mobile et ouverture de la FAQ au clavier vérifiées. Build validé ; 42 tests des pages publiques et du tableau de bord réussis (180 assertions).
 

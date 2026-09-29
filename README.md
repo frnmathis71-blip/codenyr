@@ -27,6 +27,7 @@ Cette commande démarre le serveur, Vite et le worker de file d’attente. Avec 
 
 - `/admin` : indicateurs et derniers prospects.
 - `/admin/prospects` : recherche, filtre, détail, statut, notes, suppression confirmée.
+- `/admin/tarifs` : modification des prix des quatre offres et des trois maintenances. Montants en euros (virgule ou point accepté), enregistrés en centimes en base ; mise à jour immédiate sur l’accueil, Services et Tarifs. Les valeurs de configuration servent de valeurs initiales tant qu’aucun prix n’a été enregistré.
 - `/admin/archives` : sites terminés archivés, avec recherche et restauration. Pour archiver depuis les prospects, enregistrer un devis accepté et cocher « Site livré », puis cliquer sur « Archiver ». Les archives conservent les notes et les avis clients et sont exclues du tableau de bord actif.
 - `/admin/realisations` : CRUD, image principale, galerie, publication, mise en avant, identification des concepts fictifs.
 - `/admin/temoignages` : CRUD, note et publication. Ne saisir que des avis authentiques avec autorisation.

@@ -19,6 +19,13 @@ class SiteController extends Controller
         return view('site.projects', ['projects' => Project::where('published', true)->orderByDesc('featured')->latest()->paginate(9)]);
     }
 
+    public function reviews(): View
+    {
+        return view('site.reviews', [
+            'testimonials' => Testimonial::where('published', true)->latest()->paginate(12),
+        ]);
+    }
+
     public function project(string $slug): View
     {
         return view('site.project', ['project' => Project::where('published', true)->where('slug', $slug)->firstOrFail()]);
@@ -26,7 +33,7 @@ class SiteController extends Controller
 
     public function sitemap(): Response
     {
-        $paths = ['/', '/services', '/tarifs', '/realisations', '/a-propos', '/devis', '/contact', '/mentions-legales', '/politique-confidentialite'];
+        $paths = ['/', '/services', '/tarifs', '/realisations', '/avis', '/a-propos', '/devis', '/contact', '/mentions-legales', '/politique-confidentialite'];
         $projects = Project::where('published', true)->get(['slug', 'updated_at']);
 
         return response()->view('site.sitemap', compact('paths', 'projects'))->header('Content-Type', 'application/xml');

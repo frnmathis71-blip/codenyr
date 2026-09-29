@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\SiteController;
 use App\Livewire\Admin\Leads;
+use App\Livewire\Admin\Pricing;
 use App\Livewire\Admin\Projects;
 use App\Livewire\Admin\Testimonials;
 use App\Livewire\CustomerReviews;
@@ -15,6 +16,7 @@ Route::get('/', [SiteController::class, 'home'])->name('home');
 Route::view('/services', 'site.services')->name('services');
 Route::view('/tarifs', 'site.pricing')->name('pricing');
 Route::get('/realisations', [SiteController::class, 'projects'])->name('projects');
+Route::get('/avis', [SiteController::class, 'reviews'])->name('reviews');
 Route::get('/realisations/{slug}', [SiteController::class, 'project'])->name('project');
 Route::view('/a-propos', 'site.about')->name('about');
 Route::get('/devis', InquiryForm::class)->name('quote');
@@ -37,6 +39,7 @@ Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('adm
     Route::get('/archives', Leads::class)->defaults('archived', true)->name('archives');
     Route::get('/realisations', Projects::class)->name('projects');
     Route::get('/temoignages', Testimonials::class)->name('testimonials');
+    Route::get('/tarifs', Pricing::class)->name('pricing');
 });
 Route::middleware(['auth', 'verified'])->get('/dashboard', fn () => redirect()->route(auth()->user()->is_admin ? 'admin.dashboard' : 'customer.dashboard'))->name('dashboard');
 Route::middleware(['auth', 'verified'])->get('/espace-client', CustomerReviews::class)->name('customer.dashboard');

@@ -1,0 +1,19 @@
+.public-reviews-grid { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 24px; align-items: start; }
+.public-review-card { margin: 0; padding: 28px; border: 1px solid #45536b; border-radius: 12px; background: #171f2d; min-width: 0; }
+.public-review-author { display: flex; align-items: center; gap: 13px; padding-bottom: 20px; border-bottom: 1px solid #354258; }
+.public-review-avatar { flex: 0 0 44px; height: 44px; display: grid; place-items: center; border-radius: 50%; background: #293b5c; color: #c4d6ff; font-size: 20px; }
+.public-review-author strong { display: block; font-size: 18px; font-weight: 600; line-height: 1.4; color: #f8fafc; overflow-wrap: anywhere; }
+.public-review-author div > span { display: block; color: #aab8cd; font-size: 13px; margin-top: 3px; overflow-wrap: anywhere; }
+.public-review-rating { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; margin: 20px 0 16px; }
+.public-review-rating > span:first-child { color: #facc15; font-size: 24px; letter-spacing: 2px; line-height: 1; }
+.public-review-rating > span:last-child { font-size: 13px; color: #e5eaf3; }
+.public-review-rating .review-star-empty { color: #8793a8; }
+.public-review-card blockquote { margin: 0; color: #dce3ef; font-size: 15px; line-height: 1.85; white-space: pre-wrap; overflow-wrap: anywhere; }
+.public-reviews-count { margin-bottom: 26px; }
+.public-reviews-invitation { display: flex; align-items: center; justify-content: space-between; gap: 25px; padding: 30px; border: 1px solid #303f55; border-radius: 12px; margin-top: 50px; }
+.site-body .public-reviews-invitation h2 { font-size: 24px; margin-bottom: 10px; }
+.public-reviews-invitation p { font-size: 14px; }
+.public-reviews-invitation .button { flex-shrink: 0; }
+@media (min-width: 1151px) and (max-width: 1400px) { .site-header .desktop-nav { gap: 14px; font-size: 12px; } .site-header .header-inner { gap: 16px; } .site-header .brand { width: 130px; } }
+@media (max-width: 1000px) { .public-reviews-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } .public-reviews-invitation { flex-direction: column; align-items: flex-start; } }
+@media (max-width: 600px) { .public-reviews-grid { grid-template-columns: 1fr; } .public-review-card { padding: 23px; } .public-reviews-invitation { padding: 24px; } }

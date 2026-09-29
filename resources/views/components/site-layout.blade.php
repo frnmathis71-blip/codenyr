@@ -27,13 +27,9 @@
         <div class="container header-inner">
             <a href="{{ route('home') }}" aria-label="Codenyr, accueil" class="brand"><img src="{{ asset('images/codenyr.png') }}" width="2172" height="724" alt="Codenyr"></a>
             <nav class="desktop-nav" aria-label="Navigation principale">
-                @if(request()->routeIs('home'))
-                    @foreach(['expertise' => 'L’approche', 'realisations' => 'Réalisations', 'offres' => 'Les offres', 'methode' => 'La méthode'] as $anchor => $label)<a href="#{{ $anchor }}">{{ $label }}</a>@endforeach
-                @else
-                @foreach(['home' => 'Accueil', 'services' => 'Services', 'projects' => 'Réalisations', 'pricing' => 'Tarifs', 'about' => 'À propos', 'contact' => 'Contact'] as $route => $label)
+                @foreach(['home' => 'Accueil', 'services' => 'Services', 'projects' => 'Réalisations', 'reviews' => 'Avis clients', 'pricing' => 'Tarifs', 'about' => 'À propos', 'contact' => 'Contact'] as $route => $label)
                     <a href="{{ route($route) }}" @class(['active' => request()->routeIs($route)]) @if(request()->routeIs($route)) aria-current="page" @endif>{{ $label }}</a>
                 @endforeach
-                @endif
             </nav>
             <div class="header-account-actions">
                 @auth
@@ -47,10 +43,7 @@
             <button type="button" x-ref="menuButton" class="menu-toggle" @click="open = !open" :aria-expanded="open" aria-controls="mobile-menu" :aria-label="open ? 'Fermer le menu' : 'Ouvrir le menu'" aria-label="Ouvrir le menu"><span x-text="open ? 'Fermer' : 'Menu'">Menu</span> <span aria-hidden="true">☰</span></button>
         </div>
         <nav id="mobile-menu" class="mobile-nav" x-show="open" x-cloak @click="if ($event.target.closest('a')) open = false" aria-label="Navigation mobile">
-            @if(request()->routeIs('home'))
-                @foreach(['expertise' => 'L’approche', 'realisations' => 'Réalisations', 'offres' => 'Les offres', 'methode' => 'La méthode'] as $anchor => $label)<a href="#{{ $anchor }}">{{ $label }}</a>@endforeach
-            @endif
-            @foreach((request()->routeIs('home') ? ['about' => 'À propos', 'contact' => 'Contact', 'quote' => 'Demander un devis'] : ['home' => 'Accueil', 'services' => 'Services', 'projects' => 'Réalisations', 'pricing' => 'Tarifs', 'about' => 'À propos', 'contact' => 'Contact', 'quote' => 'Demander un devis']) as $route => $label)<a href="{{ route($route) }}">{{ $label }}</a>@endforeach
+            @foreach(['home' => 'Accueil', 'services' => 'Services', 'projects' => 'Réalisations', 'reviews' => 'Avis clients', 'pricing' => 'Tarifs', 'about' => 'À propos', 'contact' => 'Contact', 'quote' => 'Demander un devis'] as $route => $label)<a href="{{ route($route) }}" @if(request()->routeIs($route)) aria-current="page" @endif>{{ $label }}</a>@endforeach
             @auth
                 <a href="{{ route('dashboard') }}">{{ auth()->user()->is_admin ? 'Administration' : 'Mon espace client' }}</a>
             @else
@@ -62,7 +55,7 @@
     <footer class="site-footer">
         <div class="container footer-top">
             <div><a class="brand footer-brand" href="{{ route('home') }}"><img src="{{ asset('images/codenyr.png') }}" alt="Codenyr" width="2172" height="724" loading="lazy"></a><p>Le web, pensé pour votre activité.<br>Chalon-sur-Saône & partout en France.</p></div>
-            <div><span class="eyebrow">Explorer</span><a href="{{ route('services') }}">Services</a><a href="{{ route('projects') }}">Réalisations</a><a href="{{ route('pricing') }}">Tarifs</a></div>
+            <div><span class="eyebrow">Explorer</span><a href="{{ route('services') }}">Services</a><a href="{{ route('projects') }}">Réalisations</a><a href="{{ route('pricing') }}">Tarifs</a><a href="{{ route('reviews') }}">Avis clients</a></div>
             <div><span class="eyebrow">Échangeons</span><a href="mailto:{{ config('codenyr.email') }}">{{ config('codenyr.email') }}</a><a href="{{ route('quote') }}">Parler de votre projet ↗</a>@foreach(config('codenyr.social') as $name => $url)<a href="{{ $url }}" rel="noopener noreferrer" target="_blank">{{ $name }} ↗</a>@endforeach</div>
         </div>
         <div class="container footer-bottom"><span>© {{ date('Y') }} Codenyr. Tous droits réservés.</span><div><a href="{{ route('legal') }}">Mentions légales</a><a href="{{ route('privacy') }}">Confidentialité</a></div><span>Conçu avec soin. Développé sur mesure.</span></div>
