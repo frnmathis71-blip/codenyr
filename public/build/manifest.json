@@ -28,7 +28,7 @@
     "src": "_instrument-sans-600-normal-B9e8oLYv.woff"
   },
   "resources/css/app.css": {
-    "file": "assets/app-Bgmchufj.css",
+    "file": "assets/app-CQ2wZOPa.css",
     "name": "app",
     "names": [
       "app.css"
@@ -41,6 +41,37 @@
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true
+  },
+  "resources/js/demo-landing.js": {
+    "file": "assets/demo-landing-C1TXEgk-.js",
+    "name": "demo-landing",
+    "src": "resources/js/demo-landing.js",
+    "isEntry": true,
+    "css": [
+      "assets/demo-landing-DOSkApDh.css"
+    ]
+  },
+  "resources/js/demo-pro.js": {
+    "file": "assets/demo-pro-rv94Sjw7.js",
+    "name": "demo-pro",
+    "src": "resources/js/demo-pro.js",
+    "isEntry": true,
+    "imports": [
+      "resources/js/demo-vitrine.js",
+      "resources/js/demo-vitrine.js"
+    ],
+    "css": [
+      "assets/demo-pro-nINwNx0f.css"
+    ]
+  },
+  "resources/js/demo-vitrine.js": {
+    "file": "assets/demo-vitrine-_Ttvy40d.js",
+    "name": "demo-vitrine",
+    "src": "resources/js/demo-vitrine.js",
+    "isEntry": true,
+    "css": [
+      "assets/demo-vitrine-xMjNdQ5R.css"
+    ]
   },
   "resources/js/passkeys.js": {
     "file": "assets/passkeys-ZWACIUjA.js",

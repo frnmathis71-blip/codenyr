@@ -21,7 +21,7 @@
                 </div>
                 <label class="consent"><input type="checkbox" wire:model="consent" required><span>J’autorise Codenyr à publier mon avis, ma note, mon nom et mon entreprise sur son site après validation. Je confirme que cet avis reflète mon expérience réelle.</span></label>
                 @error('consent')<p class="error">{{ $message }}</p>@enderror
-                <div class="button-row"><button type="submit" class="button button-primary" wire:loading.attr="disabled">Soumettre mon avis →</button><button type="button" class="button button-secondary" wire:click="cancel">Annuler</button></div>
+                <div class="button-row"><button type="submit" class="button button-primary" wire:loading.attr="disabled">Soumettre mon avis <span class="mobile-decoration" aria-hidden="true">→</span></button><button type="button" class="button button-secondary" wire:click="cancel">Annuler</button></div>
             </form>
         @endif
         <div class="customer-projects">
@@ -33,13 +33,13 @@
                         <div class="customer-review"><span class="status-pill">Avis : {{ \App\Models\Testimonial::STATUSES[$lead->testimonial->moderation_status] }}</span><p class="review-score">{{ $lead->testimonial->rating }} / 5</p><blockquote>{{ $lead->testimonial->content }}</blockquote>@if($lead->testimonial->moderation_note)<div class="notice"><strong>Retour de Codenyr</strong><p>{{ $lead->testimonial->moderation_note }}</p></div>@endif</div>
                     @endif
                     @if($lead->status === 'accepted' && $lead->delivered_at)
-                        <button class="button button-secondary" wire:click="edit({{ $lead->id }})">{{ $lead->testimonial ? 'Modifier mon avis' : 'Donner mon avis' }} ↗</button>
+                        <button class="button button-secondary" wire:click="edit({{ $lead->id }})">{{ $lead->testimonial ? 'Modifier mon avis' : 'Donner mon avis' }} <span class="mobile-decoration" aria-hidden="true">↗</span></button>
                     @else
                         <p class="fine-print">Le dépôt d’avis sera disponible après acceptation du devis et confirmation de la livraison.</p>
                     @endif
                 </article>
             @empty
-                <div class="empty-state"><h2>Aucun projet associé pour le moment.</h2><p>Vous avez déjà travaillé avec Codenyr ? Contactez-moi avec l’adresse e-mail de ce compte pour que je puisse y rattacher votre projet.</p><a class="button button-secondary" href="{{ route('contact') }}">Contacter Codenyr →</a></div>
+                <div class="empty-state"><h2>Aucun projet associé pour le moment.</h2><p>Vous avez déjà travaillé avec Codenyr ? Contactez-moi avec l’adresse e-mail de ce compte pour que je puisse y rattacher votre projet.</p><a class="button button-secondary" href="{{ route('contact') }}">Contacter Codenyr <span class="mobile-decoration" aria-hidden="true">→</span></a></div>
             @endforelse
         </div>
     </section>

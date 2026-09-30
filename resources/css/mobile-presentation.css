@@ -1,0 +1,15 @@
+/* Decorative glyphs are omitted on phone layouts; labels and rating controls remain. */
+@media (max-width: 767px) {
+    .mobile-decoration,
+    .home-note-icon,
+    .success-icon {
+        display: none !important;
+    }
+    .hero-reassurance span::before,
+    .feature-list li::before,
+    .cta-section::after {
+        content: none !important;
+        display: none !important;
+    }
+    .feature-list li { padding-left: 0; }
+}

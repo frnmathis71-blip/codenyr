@@ -38,7 +38,7 @@
                     <a class="account-link" href="{{ route('login') }}">Connexion</a>
                     @unless(request()->routeIs('home'))<a class="account-link account-register" href="{{ route('register') }}">Inscription</a>@endunless
                 @endauth
-                <a class="button button-primary header-cta" href="{{ route('quote') }}">Demander un devis <span aria-hidden="true">↗</span></a>
+                <a class="button button-primary header-cta" href="{{ route('quote') }}">Demander un devis <span aria-hidden="true"><span class="mobile-decoration" aria-hidden="true">↗</span></span></a>
             </div>
             <button type="button" x-ref="menuButton" class="menu-toggle" @click="open = !open" :aria-expanded="open" aria-controls="mobile-menu" :aria-label="open ? 'Fermer le menu' : 'Ouvrir le menu'" aria-label="Ouvrir le menu"><span x-text="open ? 'Fermer' : 'Menu'">Menu</span> <span aria-hidden="true">☰</span></button>
         </div>
@@ -56,7 +56,7 @@
         <div class="container footer-top">
             <div><a class="brand footer-brand" href="{{ route('home') }}"><img src="{{ asset('images/codenyr.png') }}" alt="Codenyr" width="2172" height="724" loading="lazy"></a><p>Le web, pensé pour votre activité.<br>Chalon-sur-Saône & partout en France.</p></div>
             <div><span class="eyebrow">Explorer</span><a href="{{ route('services') }}">Services</a><a href="{{ route('projects') }}">Réalisations</a><a href="{{ route('pricing') }}">Tarifs</a><a href="{{ route('reviews') }}">Avis clients</a></div>
-            <div><span class="eyebrow">Échangeons</span><a href="mailto:{{ config('codenyr.email') }}">{{ config('codenyr.email') }}</a><a href="{{ route('quote') }}">Parler de votre projet ↗</a>@foreach(config('codenyr.social') as $name => $url)<a href="{{ $url }}" rel="noopener noreferrer" target="_blank">{{ $name }} ↗</a>@endforeach</div>
+            <div><span class="eyebrow">Échangeons</span><a href="mailto:{{ config('codenyr.email') }}">{{ config('codenyr.email') }}</a><a href="{{ route('quote') }}">Parler de votre projet <span class="mobile-decoration" aria-hidden="true">↗</span></a>@foreach(config('codenyr.social') as $name => $url)<a href="{{ $url }}" rel="noopener noreferrer" target="_blank">{{ $name }} ↗</a>@endforeach</div>
         </div>
         <div class="container footer-bottom"><span>© {{ date('Y') }} Codenyr. Tous droits réservés.</span><div><a href="{{ route('legal') }}">Mentions légales</a><a href="{{ route('privacy') }}">Confidentialité</a></div><span>Conçu avec soin. Développé sur mesure.</span></div>
     </footer>

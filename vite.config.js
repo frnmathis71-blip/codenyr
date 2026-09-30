@@ -10,6 +10,9 @@ export default defineConfig({
                 'resources/css/app.css',
                 'resources/js/app.js',
                 'resources/js/passkeys.js',
+                'resources/js/demo-landing.js',
+                'resources/js/demo-vitrine.js',
+                'resources/js/demo-pro.js',
             ],
             refresh: true,
             fonts: [

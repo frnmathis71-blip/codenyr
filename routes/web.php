@@ -14,6 +14,17 @@ use Illuminate\Support\Facades\Route;
 
 Route::get('/', [SiteController::class, 'home'])->name('home');
 Route::view('/services', 'site.services')->name('services');
+Route::view('/demonstrations/sillage', 'demos.sillage')->name('demo.landing');
+Route::get('/demonstrations/atelier-rive/{page?}', function (string $page = 'accueil') {
+    abort_unless(in_array($page, ['accueil', 'atelier', 'expertises', 'realisations', 'contact']), 404);
+
+    return view('demos.atelier', ['page' => $page]);
+})->name('demo.vitrine');
+Route::get('/demonstrations/canopee/{page?}', function (string $page = 'accueil') {
+    abort_unless(in_array($page, ['accueil', 'studio', 'realisations', 'journal', 'gestion']), 404);
+
+    return view('demos.canopee', ['page' => $page]);
+})->name('demo.pro');
 Route::view('/tarifs', 'site.pricing')->name('pricing');
 Route::get('/realisations', [SiteController::class, 'projects'])->name('projects');
 Route::get('/avis', [SiteController::class, 'reviews'])->name('reviews');

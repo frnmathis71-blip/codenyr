@@ -3,6 +3,7 @@
 @import './codenyr.css';
 @import './home.css';
 @import './reviews.css';
+@import './mobile-presentation.css';
 
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';

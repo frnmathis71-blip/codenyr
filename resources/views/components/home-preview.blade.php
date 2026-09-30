@@ -16,6 +16,6 @@
             <p class="home-admin-disclaimer">Données fictives · Aperçu d’une interface sur mesure</p>
         </div>
     </div>
-    <div class="home-preview-note"><span class="home-note-icon" aria-hidden="true">✳</span><div><strong>Votre univers. Votre outil.</strong><span>Le design et la technique, pensés ensemble.</span></div><span aria-hidden="true">↗</span></div>
+    <div class="home-preview-note"><span class="home-note-icon" aria-hidden="true"><span class="mobile-decoration" aria-hidden="true">✳</span></span><div><strong>Votre univers. Votre outil.</strong><span>Le design et la technique, pensés ensemble.</span></div><span aria-hidden="true">↗</span></div>
     <p class="home-preview-caption">Explorez deux facettes d’un même projet. Illustrations de démonstration.</p>
 </div>

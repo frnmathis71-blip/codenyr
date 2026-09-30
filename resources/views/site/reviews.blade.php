@@ -12,7 +12,7 @@
         @else
             <div class="empty-state"><h2>Les premiers avis arrivent bientôt.</h2><p>Les retours de mes clients seront affichés ici après validation.</p><a class="button button-secondary" href="{{ route('projects') }}">Découvrir les réalisations →</a></div>
         @endif
-        <div class="public-reviews-invitation"><div><h2>Nous avons travaillé ensemble ?</h2><p>Retrouvez votre projet livré dans votre espace client pour partager votre expérience.</p></div><a class="button button-secondary" href="{{ route('customer.dashboard') }}">Accéder à mon espace →</a></div>
+        <div class="public-reviews-invitation"><div><h2>Nous avons travaillé ensemble ?</h2><p>Retrouvez votre projet livré dans votre espace client pour partager votre expérience.</p></div><a class="button button-secondary" href="{{ route('customer.dashboard') }}">Accéder à mon espace <span class="mobile-decoration" aria-hidden="true">→</span></a></div>
     </section>
     <x-cta />
 </x-site-layout>
