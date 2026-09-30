@@ -1,6 +1,8 @@
 <?php
 
 return [
+    'landing_demo_url' => env('CODENYR_LANDING_DEMO_URL', 'http://demo-vitrine.test/demo/landing-page'),
+    'vitrine_demo_url' => env('CODENYR_VITRINE_DEMO_URL', 'http://demo-vitrine.test/demo/site-vitrine'),
     'email' => env('CODENYR_EMAIL', 'contact@codenyr.fr'),
     'social' => array_filter(['LinkedIn' => env('CODENYR_LINKEDIN'), 'Instagram' => env('CODENYR_INSTAGRAM')]),
     'offers' => [
