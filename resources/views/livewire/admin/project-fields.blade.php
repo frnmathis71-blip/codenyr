@@ -1,0 +1,7 @@
+@foreach(['name'=>'Nom du projet','domain'=>'Nom de domaine','host'=>'Hébergeur','website_url'=>'URL du site'] as $key=>$label)
+<div class="field"><label for="project-{{ $key }}">{{ $label }}{{ $key === 'website_url' ? ' (facultatif)' : '' }}</label><input id="project-{{ $key }}" wire:model="form.{{ $key }}" @if($key === 'website_url') placeholder="www.exemple.fr" aria-describedby="project-website-help" @endif>@if($key === 'website_url')<small id="project-website-help">Vous pouvez laisser ce champ vide. Le préfixe https:// est ajouté automatiquement si nécessaire.</small>@endif</div>
+@endforeach
+<div class="field"><label for="project-type">Type</label><select id="project-type" wire:model="form.type">@foreach(\App\Models\ClientProject::TYPES as $type)<option>{{ $type }}</option>@endforeach</select></div>
+<div class="field"><label for="project-status">Statut</label><select id="project-status" wire:model="form.status">@foreach(\App\Models\ClientProject::STATUSES as $key=>$label)<option value="{{ $key }}">{{ $label }}</option>@endforeach</select></div>
+@foreach(['starts_on'=>'Début prévu','due_on'=>'Livraison prévue'] as $key=>$label)<div class="field"><label for="project-{{ $key }}">{{ $label }}</label><input id="project-{{ $key }}" type="date" wire:model="form.{{ $key }}"></div>@endforeach
+@foreach(['description'=>'Description','internal_notes'=>'Notes internes'] as $key=>$label)<div class="field full"><label for="project-{{ $key }}">{{ $label }}</label><textarea id="project-{{ $key }}" wire:model="form.{{ $key }}" rows="3"></textarea></div>@endforeach

@@ -10,7 +10,7 @@ test('services links to the pro demo and unknown demo pages are rejected', funct
     $this->get('/demonstrations/canopee/inconnue')->assertNotFound();
 });
 
- test('pro demonstration provides fictional credentials and business modules', function () {
+test('pro demonstration provides fictional credentials and business modules', function () {
     $this->get(route('demo.pro', ['page' => 'connexion']))->assertOk()->assertSee('admin@canopee.demo')->assertSee('Canopee2026!')->assertSee('data-admin-url', false);
     $this->get(route('demo.pro', ['page' => 'gestion']))->assertOk()->assertSee('Demandes &amp; devis', false)->assertSee('Rendez-vous')->assertSee('client-form')->assertSee('business-settings');
     $this->assertGuest();

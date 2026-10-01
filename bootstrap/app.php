@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Middleware\EnsureEmailVerificationIfEnabled;
+use App\Http\Middleware\ForceHttps;
 use App\Http\Middleware\SecurityHeaders;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -15,7 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias(['verified' => EnsureEmailVerificationIfEnabled::class]);
-        $middleware->prepend(\App\Http\Middleware\ForceHttps::class);
+        $middleware->prepend(ForceHttps::class);
         $middleware->append(SecurityHeaders::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

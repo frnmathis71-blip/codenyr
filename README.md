@@ -49,6 +49,29 @@ Les données de démonstration sont facultatives : `php artisan db:seed --class=
 
 Les offres statiques se configurent dans `config/codenyr.php`. L’e-mail et les liens sociaux sont pilotés par les variables `CODENYR_*`. Les liens sociaux absents ne sont pas affichés. Le fichier de logo fourni est conservé dans `public/images/codenyr.png`.
 
+## Gestion commerciale par projet
+
+Les nouveaux modules restent réservés aux administrateurs et utilisent le layout Codenyr :
+
+- `/admin/clients` : coordonnées commerciales sans création obligatoire d’un compte de connexion.
+- `/admin/projets` : liste et création de dossiers commerciaux ; `/admin/projets/{id}` centralise résumé, devis, factures, paiements, documents, contrats, maintenance, fichiers, notes et historique.
+- Depuis le détail d’un prospect, **Créer un projet commercial** préremplit les coordonnées et conserve un lien vers le `Lead` original. L’association n’accorde aucun nouveau droit dans l’espace client ; les avis et leur modération continuent de dépendre du prospect associé explicitement au compte client.
+- `/admin/catalogue` : prestations éditables et cases de l’éditeur de devis. Les quatre offres et trois maintenances sont initialisées depuis les tarifs existants ; leurs prix restent liés à `Price`/`PricingCatalog`. Les prestations supplémentaires ont leurs propres tarifs.
+- `/admin/devis` : lignes personnalisées, options, remises, TVA, acompte et récurrences distinctes. Enregistrer prépare le brouillon ; **Marquer envoyé** conserve le contenu et génère le PDF, sans envoyer automatiquement un e-mail. Les modifications suivantes passent par une duplication avec nouveau numéro.
+- `/admin/factures` : factures manuelles ou depuis un devis accepté, avec acompte, montant intermédiaire et solde. L’émission attribue le numéro et fige le contenu. Les factures issues d’un devis prennent en compte les montants déjà émis ; un brouillon existant est réouvert plutôt que dupliqué. Pour facturer un abonnement seul, créer une nouvelle facture, sélectionner la prestation mensuelle/trimestrielle/annuelle du catalogue et préciser les dates de la période. Le prix saisi couvre cette période, sans prorata automatique ; le montant rejoint le total à régler et les dates figurent sur le PDF. Répéter pour chaque période à facturer. Les paiements s’enregistrent depuis le dossier projet ; les trop-perçus sont refusés.
+- `/admin/documents` : imports privés, génération depuis un texte ou un modèle, aperçu PDF/image, téléchargements, archivage, versions PDF et imports signés liés aux originaux. Formats d’import : PDF, DOCX, XLSX, PNG et JPEG, 20 Mo maximum. L’extension PHP `zip` est nécessaire pour contrôler les fichiers Office. Les fichiers de travail utilisent le type dédié.
+- `/admin/modeles-documents` : textes CGV et contrats administrables, avec variables `{{client}}`, `{{project}}`, `{{seller}}`, `{{amount}}`, `{{delay}}`, `{{services}}`, `{{payment}}`. Choisir un devis associé pour ses prix, prestations et conditions. Les documents enregistrés conservent leur texte et les informations du modèle utilisé.
+- `/admin/parametres-commerciaux` : identité, logo des futurs documents, TVA et mentions, préfixes, validité, délais et acompte par défaut. Les informations légales et textes doivent être renseignés selon l’entreprise réelle ; aucune identité ni CGV définitive n’est inventée.
+- `/admin/recherche` : recherche dans les clients, projets, devis, factures et documents. Le dashboard existant conserve ses compteurs et ajoute les indicateurs commerciaux et actions requises.
+
+`ClientProject` et `client_projects` portent les dossiers commerciaux ; `Project` et `projects` restent le portfolio public. Les archives commerciales sont filtrées dans Projets, tandis que `/admin/archives` conserve les archives de prospects. Un projet archivé reste consultable et peut être restauré.
+
+Les calculs utilisent des centimes et des taux/quantités au centième ; les totaux sont recalculés côté serveur. La remise globale en montant s’applique au paiement initial, la remise globale en pourcentage à chaque fréquence. Les taux de TVA saisis sur les lignes sont appliqués, même si le réglage global est désactivé : celui-ci définit seulement le taux initial des nouvelles lignes. La TVA est arrondie par taux ; les factures partielles répartissent les montants du devis et le solde conserve exactement les centimes résiduels. Le sous-total de chaque fréquence est limité à 9 999 999,99 € pour garantir des opérations entières sans dépassement.
+
+Les documents et logos commerciaux sont stockés sur le disque privé `local` (`storage/app/private`) avec noms générés. Les téléchargements et aperçus passent par les routes admin autorisées. Les anciennes versions ne sont pas écrasées. Sauvegarder la base **et** ce stockage privé ; le lien `public/storage` n’est pas utilisé pour les documents commerciaux. La génération PDF utilise `barryvdh/laravel-dompdf`, avec ressources distantes désactivées. Les seuils des alertes sont configurables. Pour les imports de 20 Mo, prévoir `upload_max_filesize >= 20M`, `post_max_size > 20M` et une limite de requête adaptée dans le serveur web ; Livewire autorise également 20 Mo à l’étape temporaire.
+
+Déploiement de cette évolution : sauvegarder les données, installer les dépendances Composer, exécuter `php artisan migrate --force`, compiler avec `npm ci` puis `npm run build`, déployer le manifeste avec tous les assets, et vider/reconstruire les caches Laravel. La migration est additive et ne reprend pas automatiquement les anciens prospects. Les tests locaux utilisent SQLite ; la concurrence des séquences et paiements doit aussi être vérifiée sur MySQL en recette. Aucun déploiement OVH n’est effectué automatiquement.
+
 ## Vérifications
 
 ```sh
@@ -90,3 +113,19 @@ Le bandeau enregistre le choix des cookies facultatifs pendant 180 jours et perm
 Les formulaires ont une validation serveur, CSRF, un champ piège, une limitation de cinq tentatives par dix minutes et un rejet des messages contenant plus de cinq liens. Les requêtes utilisent Eloquent ou des paramètres liés ; les données soumises ne sont pas concaténées au SQL. Les contenus utilisateur sont échappés dans les vues. Ces contrôles sont couverts par les tests ; ils ne constituent pas une promesse d’absence de toute vulnérabilité.
 
 Les textes légaux restent à compléter avec l’identité légale, les prestataires réels et les durées et procédures de conservation avant publication en production. Les polices Instrument Sans sont auto-hébergées en WOFF2 (source initiale : Bunny Fonts) et le logo public est servi en WebP.
+
+
+### Espace client et documents partagés
+
+- Dans chaque dossier, « Client et accès à l’espace client » permet de changer la fiche client et de rattacher un compte existant par son e-mail. Le client peut s’inscrire avant ou après la création du projet. Un e-mail vide retire l’accès ; un compte administrateur ne peut pas être rattaché.
+- Le client connecté retrouve ses dossiers et leurs documents partagés dans `/espace-client`, avec les avis existants. Les notes et l’historique internes ne sont pas exposés. Les fichiers restent sur le disque privé, et chaque téléchargement vérifie l’association actuelle du projet au compte.
+- Dans Documents ou dans les documents du dossier, « Partager dans l’espace client » publie un fichier disponible. Les PDF de devis doivent être envoyés et les factures émises ; leurs brouillons restent internes. « Retirer de l’espace client » révoque le téléchargement. Les documents existants sont internes par défaut.
+- Changer le compte ou le client révoque l’ancien accès et retire tous les partages du dossier. L’administrateur choisit ensuite les pièces à partager à nouveau. Les coordonnées des documents historiques ne sont pas réécrites ; les nouveaux documents utilisent le nouveau client. Ce rattachement commercial est indépendant de l’association des prospects utilisée pour les avis.
+- Les nouveaux PDF de devis affichent une quantité sans le mot « forfait ». Lorsqu’un acompte positif est prévu, le bloc d’acceptation indique son montant exact et précise qu’il doit être reçu avant le démarrage. Un devis sans acompte n’affiche pas cette clause. Les PDF déjà finalisés et conservés ne sont pas réécrits automatiquement.
+
+
+### Droits sur les données et règlements
+
+Les factures émises disposent d’un panneau « État et règlements » : saisir le paiement ou renseigner le solde puis enregistrer. L’état est calculé à partir des paiements non annulés. Une erreur de saisie peut être corrigée avec un motif ; la trace reste visible et ne constitue ni un remboursement ni un avoir.
+
+L’espace client permet d’enregistrer une demande relative aux données et de retirer l’accord de publication d’un avis. Les administrateurs suivent les échéances et répondent dans `/admin/demandes-rgpd`. Le détail des vérifications et des informations manquantes pour la conformité se trouve dans [RGPD_AUDIT.md](RGPD_AUDIT.md). La clôture d’une demande n’exécute aucune suppression automatique.

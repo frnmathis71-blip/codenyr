@@ -19,7 +19,9 @@ new class extends Component {
             'password' => $this->currentPasswordRules(),
         ]);
 
-        tap(Auth::user(), $logout(...))->delete();
+        $user = Auth::user();
+        $logout();
+        \Illuminate\Support\Facades\DB::transaction(fn () => $user->delete());
 
         $this->redirect('/', navigate: true);
     }
@@ -31,7 +33,7 @@ new class extends Component {
             <flux:heading size="lg">{{ __('Are you sure you want to delete your account?') }}</flux:heading>
 
             <flux:subheading>
-                {{ __('Once your account is deleted, all of its resources and data will be permanently deleted. Please enter your password to confirm you would like to permanently delete your account.') }}
+                Votre compte et vos avis seront supprimés, et votre accès aux projets sera retiré. Les coordonnées commerciales, contrats, factures et justificatifs soumis à une obligation de conservation restent dans les archives de Codenyr. Pour demander l’examen des autres données, utilisez la rubrique « Mes données personnelles » ou contactez Codenyr. Saisissez votre mot de passe pour confirmer.
             </flux:subheading>
         </div>
 

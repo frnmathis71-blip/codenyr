@@ -19,7 +19,7 @@ class SecurityHeaders
         $response->headers->set('X-Frame-Options', 'SAMEORIGIN');
         $response->headers->set('Referrer-Policy', 'strict-origin-when-cross-origin');
         $response->headers->set('Permissions-Policy', 'camera=(), microphone=(), geolocation=()');
-        if ($request->is('admin', 'admin/*', 'settings', 'settings/*', 'login', 'register', 'espace-client', 'dashboard')) {
+        if ($request->is('admin', 'admin/*', 'settings', 'settings/*', 'login', 'register', 'espace-client', 'espace-client/*', 'dashboard')) {
             $response->headers->set('X-Robots-Tag', 'noindex, nofollow');
             $response->headers->set('Cache-Control', 'no-store, private');
         }

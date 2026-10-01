@@ -79,6 +79,9 @@ class Testimonials extends AdminComponent
             if ($review->revision !== $this->reviewedRevision) {
                 throw ValidationException::withMessages(['moderation_note' => 'Le client a modifié cet avis. Fermez puis rouvrez-le pour lire sa nouvelle version avant de le modérer.']);
             }
+            if ($decision === 'approved' && $review->withdrawn_at) {
+                throw ValidationException::withMessages(['moderation_note' => 'Le client a retiré son accord de publication. Une nouvelle soumission de sa part est nécessaire.']);
+            }
             if ($decision === 'approved' && (! $lead || $lead->status !== 'accepted' || ! $lead->delivered_at || $lead->user_id !== $review->user_id)) {
                 throw ValidationException::withMessages(['moderation_note' => 'La publication nécessite un devis accepté, un site livré et le bon compte client associé.']);
             }

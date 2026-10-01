@@ -2,11 +2,15 @@
 
 namespace App\Livewire;
 
+use App\Models\ClientProject;
+use App\Models\Document;
 use App\Models\Lead;
+use App\Models\PrivacyRequest;
 use App\Models\Testimonial;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\RateLimiter;
+use Illuminate\Validation\Rule;
 use Illuminate\View\View;
 use Laravel\Fortify\Features;
 use Livewire\Attributes\Locked;
@@ -22,6 +26,32 @@ class CustomerReviews extends Component
     public int $rating = 5;
 
     public bool $consent = false;
+
+    public string $privacyType = 'access';
+
+    public string $privacyMessage = '';
+
+    public function requestPrivacy(): void
+    {
+        $this->validate(['privacyType' => ['required', Rule::in(array_keys(PrivacyRequest::TYPES))], 'privacyMessage' => 'nullable|string|max:5000']);
+        if (PrivacyRequest::where('user_id', Auth::id())->where('type', $this->privacyType)->whereNull('resolved_at')->exists()) {
+            $this->addError('privacyType', 'Une demande de ce type est déjà en cours. Vous pouvez aussi contacter Codenyr par e-mail.');
+
+            return;
+        }
+        PrivacyRequest::create(['user_id' => Auth::id(), 'email' => Auth::user()->email, 'type' => $this->privacyType, 'message' => $this->privacyMessage, 'due_at' => now()->addMonthNoOverflow()]);
+        $this->privacyMessage = '';
+        session()->flash('success', 'Demande enregistrée. Vous retrouverez la réponse dans cette rubrique ; le délai initial est d’un mois.');
+    }
+
+    public function withdrawReview(int $id): void
+    {
+        DB::transaction(function () use ($id): void {
+            $review = Testimonial::where('user_id', Auth::id())->lockForUpdate()->findOrFail($id);
+            $review->update(['published' => false, 'moderation_status' => 'draft', 'withdrawn_at' => now(), 'revision' => $review->revision + 1]);
+        });
+        session()->flash('success', 'Votre avis a été retiré de la publication.');
+    }
 
     public function boot(): void
     {
@@ -87,6 +117,7 @@ class CustomerReviews extends Component
                 'content' => $data['content'], 'rating' => $data['rating'],
                 'published' => false, 'moderation_status' => 'pending',
                 'moderation_note' => null, 'revision' => $revision,
+                'consented_at' => now(), 'consent_version' => 'review-publication-2026-10-01', 'withdrawn_at' => null,
             ])->save();
         });
         RateLimiter::hit($key, 600);
@@ -97,6 +128,10 @@ class CustomerReviews extends Component
     public function render(): View
     {
         return view('livewire.customer-reviews', [
+            'privacyRequests' => PrivacyRequest::where('user_id', Auth::id())->latest()->get(),
+            'myReviews' => Testimonial::where('user_id', Auth::id())->latest()->get(),
+            'projects' => ClientProject::where('user_id', Auth::id())->latest()->get(['id', 'name', 'status', 'archived_at']),
+            'documents' => Document::forCustomer((int) Auth::id())->orderByDesc('document_date')->get(['id', 'client_project_id', 'name', 'type', 'document_date']),
             'leads' => Lead::where('user_id', Auth::id())->with('testimonial')->latest()->get(),
         ])->layout('components.site-layout', ['title' => 'Mon espace client', 'description' => 'Retrouvez vos projets Codenyr et partagez votre expérience.']);
     }

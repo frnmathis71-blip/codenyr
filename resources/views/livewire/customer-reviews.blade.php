@@ -1,8 +1,8 @@
 <div>
     <section class="container page-hero customer-hero">
         <p class="eyebrow">Mon espace client</p>
-        <h1>Votre expérience <span class="muted-heading">compte.</span></h1>
-        <p>Bonjour {{ auth()->user()->name }}. Retrouvez vos projets et partagez votre expérience avec Codenyr.</p>
+        <h1>Vos projets et <span class="muted-heading">documents.</span></h1>
+        <p>Bonjour {{ auth()->user()->name }}. Retrouvez les documents de vos projets et partagez votre expérience avec Codenyr.</p>
         <div class="button-row customer-actions">
             <a class="button button-secondary" href="{{ route('profile.edit') }}">Mon compte</a>
             <form method="post" action="{{ route('logout') }}">@csrf<button class="button button-secondary" type="submit">Déconnexion</button></form>
@@ -10,6 +10,50 @@
     </section>
     <section class="container section customer-content">
         @if(session('success'))<div class="flash" role="status">{{ session('success') }}</div>@endif
+
+        <h2>Mes projets et documents</h2>
+        <div class="customer-projects">
+            @forelse($projects as $project)
+                <article class="customer-project" wire:key="commercial-project-{{ $project->id }}">
+                    <div><p class="eyebrow">Projet #{{ $project->id }}</p><h3>{{ $project->name }}</h3><span class="status-pill">{{ $project->archived_at ? 'Archivé' : \App\Models\ClientProject::STATUSES[$project->status] }}</span></div>
+                    <div>
+                        @forelse($documents->where('client_project_id', $project->id) as $document)
+                            <div class="customer-review" wire:key="customer-document-{{ $document->id }}">
+                                <p><strong>{{ $document->name }}</strong><br>{{ \App\Models\Document::TYPES[$document->type] }} · {{ $document->document_date->format('d/m/Y') }}</p>
+                                <a class="button button-secondary" href="{{ route('customer.documents.download', $document->id) }}">Télécharger</a>
+                            </div>
+                        @empty
+                            <p>Aucun document partagé pour ce projet pour le moment.</p>
+                        @endforelse
+                    </div>
+                </article>
+            @empty
+                <div class="empty-state"><p>Aucun dossier commercial rattaché à votre compte pour le moment. Communiquez l’adresse e-mail de votre compte à Codenyr pour retrouver votre projet.</p></div>
+            @endforelse
+        </div>
+        <section class="customer-project">
+            <h2>Mes données personnelles</h2>
+            <p>Vous pouvez <a href="{{ route('profile.edit') }}">modifier ou supprimer votre compte</a>, demander une copie de vos données ou exercer vos autres droits. Les pièces devant être conservées pour une obligation légale ne sont pas supprimées avec le compte.</p>
+            <form wire:submit="requestPrivacy">
+                <div class="field"><label for="privacy-type">Votre demande</label><select id="privacy-type" wire:model="privacyType">
+                    @foreach(\App\Models\PrivacyRequest::TYPES as $value=>$label)
+                        <option value="{{ $value }}">{{ $label }}</option>
+                    @endforeach
+                </select>@error('privacyType')<p class="error">{{ $message }}</p>@enderror</div>
+                <div class="field"><label for="privacy-message">Précisions (facultatif)</label><textarea id="privacy-message" wire:model="privacyMessage" rows="3" maxlength="5000"></textarea>@error('privacyMessage')<p class="error">{{ $message }}</p>@enderror</div>
+                <button class="button button-secondary" wire:loading.attr="disabled">Enregistrer ma demande</button>
+            </form>
+            <p>Vous pouvez également écrire à <a href="mailto:{{ config('codenyr.email') }}">{{ config('codenyr.email') }}</a>, même sans compte.</p>
+            @foreach($privacyRequests as $request)
+                <div class="customer-review" wire:key="my-privacy-{{ $request->id }}"><strong>{{ \App\Models\PrivacyRequest::TYPES[$request->type] }} — {{ $request->resolved_at ? 'Réponse disponible' : 'En cours' }}</strong><p>Demande du {{ $request->created_at->format('d/m/Y') }} · Échéance initiale : {{ $request->due_at->format('d/m/Y') }}</p>@if($request->response)<p class="preserve-lines">{{ $request->response }}</p>@endif</div>
+            @endforeach
+            @foreach($myReviews as $review)
+                @unless($review->withdrawn_at)
+                    <p>Avis du {{ $review->created_at->format('d/m/Y') }} : {{ Str::limit($review->content, 100) }}</p><button class="button button-secondary" wire:click="withdrawReview({{ $review->id }})">Retirer mon accord de publication</button>
+                @endunless
+            @endforeach
+        </section>
+        <h2>Mes avis</h2>
         <div class="notice"><strong>Un avis authentique, publié après vérification.</strong><p>Vous pouvez déposer un avis lorsque Codenyr a accepté votre devis, confirmé la livraison de votre site et associé le projet à votre compte. Toute modification d’un avis déjà publié le remet en attente de validation.</p></div>
         @if($selected)
             <form wire:submit="submit" class="inquiry-form review-form">

@@ -11,6 +11,7 @@
     @if($lead)
         <section class="admin-panel">
             <div class="admin-toolbar"><h2>{{ $lead->firstname }} {{ $lead->lastname }}</h2><button type="button" class="button button-secondary" wire:click="close">Fermer</button></div>
+            <p><a class="button button-secondary" href="{{ route('admin.client-projects.index', ['lead' => $lead->id]) }}">+ Créer un projet commercial depuis ce prospect</a></p>
             <div class="admin-details">
                 <div><strong>Coordonnées</strong><p>{{ $lead->company }}<br><a href="mailto:{{ $lead->email }}">{{ $lead->email }}</a><br>{{ $lead->phone }}</p></div>
                 <div><strong>Projet</strong><p>{{ $lead->project_type }}@if($lead->budget)<br>Ancien budget renseigné : {{ $lead->budget }}@endif<br>Délai : {{ $lead->desired_date ?: 'À définir' }}<br>{{ $lead->website }}</p></div>

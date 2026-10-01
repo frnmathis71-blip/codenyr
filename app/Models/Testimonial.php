@@ -13,7 +13,7 @@ class Testimonial extends Model
 
     protected function casts(): array
     {
-        return ['published' => 'boolean', 'rating' => 'integer', 'revision' => 'integer'];
+        return ['published' => 'boolean', 'rating' => 'integer', 'revision' => 'integer', 'consented_at' => 'datetime', 'withdrawn_at' => 'datetime'];
     }
 
     /** @return BelongsTo<Lead, $this> */

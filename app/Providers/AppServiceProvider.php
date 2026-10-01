@@ -8,6 +8,7 @@ use Carbon\CarbonImmutable;
 use Illuminate\Support\Facades\Date;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Gate;
+use Illuminate\Support\Facades\URL;
 use Illuminate\Support\ServiceProvider;
 use Illuminate\Validation\Rules\Password;
 use Livewire\Livewire;
@@ -31,7 +32,7 @@ class AppServiceProvider extends ServiceProvider
         Gate::define('admin', fn (User $user): bool => (bool) $user->is_admin);
         $this->configureDefaults();
         if (config('security.force_https')) {
-            \Illuminate\Support\Facades\URL::forceScheme('https');
+            URL::forceScheme('https');
             config(['session.secure' => true]);
         }
     }
