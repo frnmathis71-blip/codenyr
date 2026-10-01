@@ -21,7 +21,7 @@ Route::get('/demonstrations/atelier-rive/{page?}', function (string $page = 'acc
     return view('demos.atelier', ['page' => $page]);
 })->name('demo.vitrine');
 Route::get('/demonstrations/canopee/{page?}', function (string $page = 'accueil') {
-    abort_unless(in_array($page, ['accueil', 'studio', 'realisations', 'journal', 'gestion']), 404);
+    abort_unless(in_array($page, ['accueil', 'studio', 'realisations', 'journal', 'gestion', 'connexion']), 404);
 
     return view('demos.canopee', ['page' => $page]);
 })->name('demo.pro');
@@ -34,6 +34,7 @@ Route::get('/devis', InquiryForm::class)->name('quote');
 Route::get('/contact', InquiryForm::class)->defaults('mode', 'contact')->name('contact');
 Route::view('/mentions-legales', 'site.legal')->name('legal');
 Route::view('/politique-confidentialite', 'site.privacy')->name('privacy');
+Route::view('/cgu', 'site.terms')->name('terms');
 Route::get('/sitemap.xml', [SiteController::class, 'sitemap'])->name('sitemap');
 Route::get('/robots.txt', fn () => response("User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /settings\nSitemap: ".url('/sitemap.xml'))->header('Content-Type', 'text/plain'));
 

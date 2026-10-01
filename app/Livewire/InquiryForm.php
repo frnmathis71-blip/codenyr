@@ -75,6 +75,14 @@ class InquiryForm extends Component
 
             return;
         }
+        foreach (['firstname', 'lastname', 'company', 'email', 'phone', 'description', 'desired_date', 'website', 'subject'] as $field) {
+            $this->{$field} = trim($this->{$field});
+        }
+        if (preg_match_all('~https?://~i', $this->description) > 5) {
+            $this->addError('description', 'Votre message contient trop de liens. Décrivez votre projet en quelques mots.');
+
+            return;
+        }
         $data = $this->validate([
             'firstname' => 'required|string|max:100',
             'lastname' => 'required|string|max:100',

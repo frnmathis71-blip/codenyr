@@ -74,3 +74,19 @@ Pest couvre notamment les pages publiques, l’accès administrateur et les comp
 10. Vérifier en environnement de recette les e-mails, MySQL, le stockage public, les formulaires et le compte admin. Aucun benchmark Lighthouse ni test SMTP/MySQL de production n’est présumé par les tests locaux.
 
 La maintenance proposée reste facultative et distincte des modifications et nouvelles fonctionnalités. Aucun tracker publicitaire ou analytique tiers n’est installé. Les cookies sont techniques. Le sitemap contient les pages publiques et uniquement les réalisations publiées.
+
+## Démonstration professionnelle Canopée
+
+La démonstration `/demonstrations/canopee/gestion` propose une administration interactive à six modules : tableau de bord, contenus, demandes et devis (statuts et notes), clients, rendez-vous et réglages publics du studio. La page `/demonstrations/canopee/connexion` préremplit `admin@canopee.demo` et `Canopee2026!`. Il s’agit exclusivement d’une simulation côté navigateur, sans authentification Laravel ni accès à l’administration Codenyr. La session est conservée dans l’onglet ; les contenus et données fictives sont sauvegardés localement. Aucun e-mail n’est envoyé et aucun devis réel n’est émis.
+
+## Sécurité, consentement et référencement
+
+HTTPS est obligatoire par défaut (`FORCE_HTTPS=true`), y compris en local avec `herd secure codenyr`. Renseigner `APP_URL` en HTTPS. Les requêtes HTTP sont redirigées en 308 par Laravel (Herd applique aussi sa redirection), les sessions utilisent des cookies sécurisés et les réponses HTTPS portent HSTS. Derrière un proxy terminant TLS, configurer dans Laravel uniquement les adresses des proxies de confiance pour reconnaître le protocole transmis et éviter une boucle de redirection. Le certificat de production reste à configurer sur l’hébergeur. Les tests désactivent la redirection sauf ceux dédiés à HTTPS.
+
+La confidentialité, les CGU (`/cgu`), la 404, les titres et descriptions, Open Graph et Twitter Card sont intégrés. L’image sociale locale fait 1200 × 630 pixels. Le bouton principal est « Demander un devis ». Aucun secret API n’a été trouvé dans les sources JS, Blade ou les bundles publics ; conserver les futurs secrets dans la configuration serveur, jamais dans une variable `VITE_*`.
+
+Le bandeau enregistre le choix des cookies facultatifs pendant 180 jours et permet sa modification depuis le pied de page. Aucun traceur facultatif n’est actuellement installé. L’ajout futur d’un outil nécessitant le consentement devra être conditionné à ce choix avant tout chargement. Les cookies nécessaires restent actifs. Les données de démonstration ne sont pas des données clients.
+
+Les formulaires ont une validation serveur, CSRF, un champ piège, une limitation de cinq tentatives par dix minutes et un rejet des messages contenant plus de cinq liens. Les requêtes utilisent Eloquent ou des paramètres liés ; les données soumises ne sont pas concaténées au SQL. Les contenus utilisateur sont échappés dans les vues. Ces contrôles sont couverts par les tests ; ils ne constituent pas une promesse d’absence de toute vulnérabilité.
+
+Les textes légaux restent à compléter avec l’identité légale, les prestataires réels et les durées et procédures de conservation avant publication en production. Les polices Instrument Sans sont auto-hébergées en WOFF2 (source initiale : Bunny Fonts) et le logo public est servi en WebP.

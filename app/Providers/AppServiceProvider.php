@@ -30,6 +30,10 @@ class AppServiceProvider extends ServiceProvider
         Livewire::addPersistentMiddleware([EnsureEmailVerificationIfEnabled::class]);
         Gate::define('admin', fn (User $user): bool => (bool) $user->is_admin);
         $this->configureDefaults();
+        if (config('security.force_https')) {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+            config(['session.secure' => true]);
+        }
     }
 
     /**

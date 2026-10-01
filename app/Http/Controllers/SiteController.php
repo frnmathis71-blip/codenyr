@@ -33,7 +33,7 @@ class SiteController extends Controller
 
     public function sitemap(): Response
     {
-        $paths = ['/', '/services', '/tarifs', '/realisations', '/avis', '/a-propos', '/devis', '/contact', '/mentions-legales', '/politique-confidentialite'];
+        $paths = ['/', '/services', '/tarifs', '/realisations', '/avis', '/a-propos', '/devis', '/contact', '/mentions-legales', '/politique-confidentialite', '/cgu'];
         $projects = Project::where('published', true)->get(['slug', 'updated_at']);
 
         return response()->view('site.sitemap', compact('paths', 'projects'))->header('Content-Type', 'application/xml');

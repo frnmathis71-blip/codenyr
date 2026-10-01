@@ -1,6 +1,6 @@
 import tailwindcss from '@tailwindcss/vite';
 import laravel from 'laravel-vite-plugin';
-import { bunny } from 'laravel-vite-plugin/fonts';
+import { local } from 'laravel-vite-plugin/fonts';
 import { defineConfig, lazyPlugins } from 'vite-plus';
 
 export default defineConfig({
@@ -16,8 +16,9 @@ export default defineConfig({
             ],
             refresh: true,
             fonts: [
-                bunny('Instrument Sans', {
-                    weights: [400, 500, 600],
+                local('Instrument Sans', {
+                    variants: [400, 500, 600].map(weight => ({ src: `resources/fonts/instrument-sans-${weight}.woff2`, weight })),
+                    optimizedFallbacks: false,
                 }),
             ],
         }),
