@@ -397,7 +397,13 @@ select:focus-visible {
     font-size: 10px;
 }
 .hero-reassurance span:before {
-    content: "✓";
+    content: "";
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    background-color: currentColor;
+    mask: url('../../public/images/icons/check.svg') center / contain no-repeat;
+    -webkit-mask: url('../../public/images/icons/check.svg') center / contain no-repeat;
     color: #8293ad;
     margin-right: 6px;
 }
@@ -1041,7 +1047,13 @@ select:focus-visible {
     border-bottom: 1px solid #30363d77;
 }
 .feature-list li:before {
-    content: "✓";
+    content: "";
+    display: inline-block;
+    width: 1em;
+    height: 1em;
+    background-color: currentColor;
+    mask: url('../../public/images/icons/check.svg') center / contain no-repeat;
+    -webkit-mask: url('../../public/images/icons/check.svg') center / contain no-repeat;
     color: #8ba7d6;
     position: absolute;
     left: 0;

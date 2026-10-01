@@ -44,9 +44,9 @@
                 @else
                     <a class="account-link" href="{{ route('login') }}">Connexion</a>
                 @endauth
-                <a @class(['header-cta', 'account-link' => request()->routeIs('home'), 'button button-primary' => !request()->routeIs('home')]) href="{{ route('quote') }}">Demander un devis <span aria-hidden="true"><span class="mobile-decoration" aria-hidden="true">↗</span></span></a>
+                <a @class(['header-cta', 'account-link' => request()->routeIs('home'), 'button button-primary' => !request()->routeIs('home')]) href="{{ route('quote') }}">Demander un devis <span aria-hidden="true"><span class="mobile-decoration" aria-hidden="true"><x-ui-icon name="arrow-up-right" /></span></span></a>
             </div>
-            <button type="button" x-ref="menuButton" class="menu-toggle" @click="open = !open" :aria-expanded="open" aria-controls="mobile-menu" :aria-label="open ? 'Fermer le menu' : 'Ouvrir le menu'" aria-label="Ouvrir le menu"><span x-text="open ? 'Fermer' : 'Menu'">Menu</span> <span aria-hidden="true">☰</span></button>
+            <button type="button" x-ref="menuButton" class="menu-toggle" @click="open = !open" :aria-expanded="open" aria-controls="mobile-menu" :aria-label="open ? 'Fermer le menu' : 'Ouvrir le menu'" aria-label="Ouvrir le menu"><span x-text="open ? 'Fermer' : 'Menu'">Menu</span> <span aria-hidden="true"><x-ui-icon name="menu" /></span></button>
         </div>
         <nav id="mobile-menu" class="mobile-nav" x-show="open" x-cloak @click="if ($event.target.closest('a')) open = false" aria-label="Navigation mobile">
             @foreach(['home' => 'Accueil', 'services' => 'Services', 'projects' => 'Réalisations', 'reviews' => 'Avis clients', 'pricing' => 'Tarifs', 'about' => 'À propos', 'contact' => 'Contact', 'quote' => 'Demander un devis'] as $route => $label)<a href="{{ route($route) }}" @if(request()->routeIs($route)) aria-current="page" @endif>{{ $label }}</a>@endforeach
@@ -62,7 +62,7 @@
         <div class="container footer-top">
             <div><a class="brand footer-brand" href="{{ route('home') }}"><img src="{{ asset('images/codenyr-logo.webp') }}" alt="Codenyr" width="660" height="220" loading="lazy"></a><p>Le web, pensé pour votre activité.<br>Chalon-sur-Saône & partout en France.</p></div>
             <div><span class="eyebrow">Explorer</span><a href="{{ route('services') }}">Services</a><a href="{{ route('projects') }}">Réalisations</a><a href="{{ route('pricing') }}">Tarifs</a><a href="{{ route('reviews') }}">Avis clients</a></div>
-            <div><span class="eyebrow">Échangeons</span><a href="mailto:{{ config('codenyr.email') }}">{{ config('codenyr.email') }}</a><a href="{{ route('quote') }}">Demander un devis <span class="mobile-decoration" aria-hidden="true">↗</span></a>@foreach(config('codenyr.social') as $name => $url)<a href="{{ $url }}" rel="noopener noreferrer" target="_blank">{{ $name }} ↗</a>@endforeach</div>
+            <div><span class="eyebrow">Échangeons</span><a href="mailto:{{ config('codenyr.email') }}">{{ config('codenyr.email') }}</a><a href="{{ route('quote') }}">Demander un devis <span class="mobile-decoration" aria-hidden="true"><x-ui-icon name="arrow-up-right" /></span></a>@foreach(config('codenyr.social') as $name => $url)<a href="{{ $url }}" rel="noopener noreferrer" target="_blank">{{ $name }} <x-ui-icon name="arrow-up-right" /></a>@endforeach</div>
         </div>
         <div class="container footer-bottom"><span>© {{ date('Y') }} Codenyr. Tous droits réservés.</span><div><a href="{{ route('legal') }}">Mentions légales</a><a href="{{ route('privacy') }}">Confidentialité</a><a href="{{ route('terms') }}">CGU</a><button type="button" class="cookie-settings" id="cookie-settings">Gérer les cookies</button></div><span>Conçu avec soin. Développé sur mesure.</span></div>
     </footer>

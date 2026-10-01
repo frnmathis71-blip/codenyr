@@ -15,14 +15,21 @@
     "file": "assets/instrument-sans-600-normal-B7fBEWYG.woff2",
     "src": "_instrument-sans-600-normal-B7fBEWYG.woff2"
   },
+  "public/images/icons/check.svg": {
+    "file": "assets/check-ijvdUcxr.svg",
+    "src": "public/images/icons/check.svg"
+  },
   "resources/css/app.css": {
-    "file": "assets/app-Be7wBhyq.css",
+    "file": "assets/app-CG_DLX-4.css",
     "name": "app",
     "names": [
       "app.css"
     ],
     "src": "resources/css/app.css",
-    "isEntry": true
+    "isEntry": true,
+    "assets": [
+      "assets/check-ijvdUcxr.svg"
+    ]
   },
   "resources/js/app.js": {
     "file": "assets/app-CUGz26GD.js",

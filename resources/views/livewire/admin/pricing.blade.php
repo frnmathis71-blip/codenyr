@@ -21,6 +21,6 @@
                 </div>
             </section>
         @endforeach
-        <div class="button-row"><button type="submit" class="button button-primary" wire:loading.attr="disabled"><span wire:loading.remove wire:target="save">Enregistrer les tarifs</span><span wire:loading wire:target="save">Enregistrement…</span></button><a class="button button-secondary" href="{{ route('pricing') }}" target="_blank" rel="noopener">Voir les tarifs publics <span class="mobile-decoration" aria-hidden="true">↗</span></a></div>
+        <div class="button-row"><button type="submit" class="button button-primary" wire:loading.attr="disabled"><span wire:loading.remove wire:target="save">Enregistrer les tarifs</span><span wire:loading wire:target="save">Enregistrement…</span></button><a class="button button-secondary" href="{{ route('pricing') }}" target="_blank" rel="noopener">Voir les tarifs publics <span class="mobile-decoration" aria-hidden="true"><x-ui-icon name="arrow-up-right" /></span></a></div>
     </form>
 </div>
