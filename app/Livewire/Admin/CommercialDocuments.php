@@ -16,6 +16,7 @@ use App\Services\CommercialBilling;
 use App\Services\CommercialCalculator;
 use App\Services\CommercialPdf;
 use App\Services\CustomerDocumentSharing;
+use App\Services\ProjectLegalDocuments;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
@@ -61,9 +62,44 @@ class CommercialDocuments extends AdminComponent
     #[Locked]
     public ?int $previewId = null;
 
+    #[Locked]
+    public ?int $revisionOf = null;
+
+    public string $audience = '';
+
+    public function prepareLegal(): void
+    {
+        $this->validate(['form.client_project_id' => 'required|exists:client_projects,id', 'form.type' => 'required|in:terms,contract', 'audience' => 'required|in:professional,consumer']);
+        $project = ClientProject::whereKey($this->form['client_project_id'])->firstOrFail();
+        $quote = empty($this->form['quote_id']) ? null : Quote::where('client_project_id', $project->id)->where('status', 'accepted')->whereKey($this->form['quote_id'])->firstOrFail();
+        $this->form['content'] = app(ProjectLegalDocuments::class)->content($project, $this->form['type'], $quote, $this->audience);
+        $this->form['name'] = Document::TYPES[$this->form['type']].' — '.$project->name;
+        $this->mode = 'generate';
+    }
+
+    public function revise(int $id): void
+    {
+        $document = Document::findOrFail($id);
+        abort_unless(in_array($document->type, ['terms', 'contract']) && $document->content && ! $document->original_id && ! $document->archived_at && ! $document->project?->archived_at, 422);
+        $this->create();
+        $this->revisionOf = $document->id;
+        foreach (['name', 'type', 'client_id', 'client_project_id', 'description', 'notes', 'content', 'quote_id', 'invoice_id'] as $key) {
+            $this->form[$key] = $document->$key ?? '';
+        }
+        $this->audience = $document->snapshot['audience'] ?? '';
+        $this->mode = 'generate';
+    }
+
     public function mount(): void
     {
         $this->projectFilter = (string) (request()->integer('project') ?: '');
+        if (request()->integer('edit')) {
+            $this->revise(request()->integer('edit'));
+        } elseif (request()->integer('sign')) {
+            $this->sign(request()->integer('sign'));
+        } elseif (request()->integer('preview')) {
+            $this->preview(request()->integer('preview'));
+        }
         if (request()->boolean('create')) {
             $this->create();
             $type = request()->query('type');
@@ -72,6 +108,13 @@ class CommercialDocuments extends AdminComponent
             }
             if (request()->query('mode') === 'generate') {
                 $this->mode = 'generate';
+                if (in_array($this->form['type'], ['terms', 'contract']) && $this->projectFilter) {
+                    $project = ClientProject::findOrFail($this->projectFilter);
+                    $quote = $project->quotes()->where('status', 'accepted')->latest()->first();
+                    $this->form['quote_id'] = $quote->id ?? '';
+                    $this->form['name'] = Document::TYPES[$this->form['type']].' — '.$project->name;
+                    $this->form['content'] = app(ProjectLegalDocuments::class)->content($project, $this->form['type'], $quote);
+                }
             }
             if (request()->filled('maintenance')) {
                 $maintenance = MaintenanceContract::where('client_project_id', $this->projectFilter)->findOrFail(request()->integer('maintenance'));
@@ -86,6 +129,8 @@ class CommercialDocuments extends AdminComponent
 
     public function create(): void
     {
+        $this->revisionOf = null;
+        $this->audience = '';
         $this->form = ['name' => '', 'type' => 'other', 'client_id' => '', 'client_project_id' => $this->projectFilter, 'document_date' => today()->format('Y-m-d'), 'description' => '', 'notes' => '', 'content' => '', 'template_id' => '', 'original_id' => '', 'quote_id' => '', 'invoice_id' => ''];
         $this->maintenanceId = null;
         $this->upload = null;
@@ -163,6 +208,13 @@ class CommercialDocuments extends AdminComponent
         $client = Client::whereKey($clientId)->firstOrFail();
         $clientId = $client->id;
         $snapshot = $project ? app(CommercialBilling::class)->snapshot($project) : ['seller' => CommercialSetting::current(), 'client' => $client->only(['name', 'contact', 'email', 'phone', 'address', 'registration'])];
+        $snapshot['audience'] = $this->audience;
+        if ($this->revisionOf) {
+            $previous = Document::findOrFail($this->revisionOf);
+            abort_unless($this->mode === 'generate' && ! $previous->original_id && ! $previous->archived_at && $previous->client_id === $clientId && $previous->client_project_id === $project?->id && $previous->type === $data['type'], 422);
+            $snapshot['previous_document_id'] = $previous->id;
+            $snapshot['revision'] = ($previous->snapshot['revision'] ?? 1) + 1;
+        }
         $original = ! empty($data['original_id']) ? Document::whereKey($data['original_id'])->firstOrFail() : null;
         if ($original && ($this->mode !== 'upload' || $original->client_id !== $clientId || $original->client_project_id !== $project?->id || $original->type !== $data['type'] || $original->original_id || $original->archived_at)) {
             throw ValidationException::withMessages(['form.original_id' => 'La version signée doit correspondre au document original et à son dossier.']);
@@ -194,7 +246,7 @@ class CommercialDocuments extends AdminComponent
         }
         try {
             $document = DB::transaction(function () use ($data, $clientId, $project, $snapshot, $content, $path, $mime, $original): Document {
-                $document = Document::create(['name' => $data['name'], 'type' => $data['type'], 'client_id' => $clientId, 'client_project_id' => $project?->id, 'document_date' => $data['document_date'], 'description' => $data['description'], 'notes' => $data['notes'], 'original_id' => $original?->id, 'quote_id' => $original ? $original->quote_id : ($data['quote_id'] ?: null), 'invoice_id' => $original ? $original->invoice_id : ($data['invoice_id'] ?: null), 'content' => $content, 'snapshot' => $snapshot, 'path' => $path, 'mime' => $mime, 'size' => $path ? $this->upload?->getSize() : null, 'original_name' => $path ? mb_substr(basename($this->upload?->getClientOriginalName() ?? ''), 0, 240) : null, 'status' => $original ? 'signed' : 'available']);
+                $document = Document::create(['name' => $data['name'], 'type' => $data['type'], 'client_id' => $clientId, 'client_project_id' => $project?->id, 'document_date' => $data['document_date'], 'description' => $data['description'], 'notes' => $data['notes'], 'original_id' => $original?->id, 'quote_id' => $original ? $original->quote_id : ($data['quote_id'] ?: null), 'invoice_id' => $original ? $original->invoice_id : ($data['invoice_id'] ?: null), 'content' => $content, 'snapshot' => $snapshot, 'path' => $path, 'mime' => $mime, 'size' => $path ? $this->upload?->getSize() : null, 'original_name' => $path ? mb_substr(basename($this->upload?->getClientOriginalName() ?? ''), 0, 240) : null, 'status' => $original ? 'signed' : ($content !== null ? 'draft' : 'available')]);
                 if ($path) {
                     $document->versions()->create(['version' => 1, 'path' => $path, 'mime' => $mime, 'size' => $document->size]);
                 }
@@ -223,7 +275,8 @@ class CommercialDocuments extends AdminComponent
     {
         $document = Document::findOrFail($id);
         app(CommercialPdf::class)->document($document);
-        $this->redirectRoute('admin.documents.download', ['document' => $document->id]);
+        $this->previewId = $document->id;
+        session()->flash('success', 'PDF généré. Vous pouvez le prévisualiser ou le télécharger.');
     }
 
     public function archive(int $id): void

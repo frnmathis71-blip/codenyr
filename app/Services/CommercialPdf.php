@@ -10,6 +10,7 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
+use Illuminate\Validation\ValidationException;
 use RuntimeException;
 
 class CommercialPdf
@@ -22,7 +23,7 @@ class CommercialPdf
                 $record = $record->newQuery()->lockForUpdate()->findOrFail($record->id);
                 $kind = $record instanceof Quote ? 'quote' : 'invoice';
                 $fingerprint = hash('sha256', ($record->finalized_at ? '' : 'quote-layout-v2:').json_encode($record->only(['number', 'items', 'totals', 'snapshot', 'conditions', 'estimated_delay', 'issued_on', 'due_on', 'finalized_at']), JSON_THROW_ON_ERROR));
-                $document = Document::where($kind.'_id', $record->id)->whereNull('original_id')->first();
+                $document = Document::where($kind.'_id', $record->id)->where('type', $kind)->whereNull('original_id')->first();
                 if ($document && ($document->snapshot['fingerprint'] ?? '') === $fingerprint && $document->path && Storage::disk('local')->exists($document->path)) {
                     return $document;
                 }
@@ -56,12 +57,15 @@ class CommercialPdf
                     return $document;
                 }
                 abort_unless($document->content !== null, 422);
+                if (in_array($document->type, ['terms', 'contract']) && str_contains($document->content, '[À compléter')) {
+                    throw ValidationException::withMessages(['document' => 'Complétez les mentions manquantes avant de générer le PDF définitif. L’aperçu reste disponible.']);
+                }
                 $bytes = Pdf::loadView('commercial.document-pdf', ['document' => $document])->setOptions(['isRemoteEnabled' => false, 'defaultFont' => 'DejaVu Sans'])->setPaper('a4')->output();
                 $path = 'client-projects/'.($document->client_project_id ?? 'client-'.$document->client_id).'/legal/'.Str::uuid().'.pdf';
                 if (! Storage::disk('local')->put($path, $bytes)) {
                     throw new RuntimeException('Le PDF n’a pas pu être enregistré.');
                 }
-                $document->update(['path' => $path, 'mime' => 'application/pdf', 'size' => strlen($bytes)]);
+                $document->update(['path' => $path, 'mime' => 'application/pdf', 'size' => strlen($bytes), 'status' => 'generated']);
                 $document->versions()->create(['version' => 1, 'path' => $path, 'mime' => 'application/pdf', 'size' => strlen($bytes)]);
                 if ($document->client_project_id) {
                     ProjectEvent::record($document->client_project_id, 'PDF généré : '.$document->name);

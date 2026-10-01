@@ -253,6 +253,36 @@ test('all project dossier tabs render and archived dossiers remain readable', fu
     $component->call('archive')->call('edit')->assertSet('editing', true);
 });
 
+test('legal drafts preview inline without generating a file and revisions preserve originals', function () {
+    Storage::fake('local');
+    $project = commercialProject();
+    $quote = commercialQuote($project);
+    $quote->update(['status' => 'accepted']);
+    $editor = Livewire::test(CommercialDocuments::class)->call('create')->set('form.client_project_id', $project->id)->set('form.type', 'contract')->set('form.quote_id', $quote->id)->set('audience', 'professional')->call('prepareLegal')->assertHasNoErrors()->call('save')->assertHasNoErrors();
+    $document = Document::where('type', 'contract')->firstOrFail();
+    expect($document->content)->toContain('ARTICLE 20', 'DEV-2026-0001', 'Restaurant Sithinem');
+    $this->get(route('admin.documents.show', $document))->assertOk()->assertHeader('Content-Type', 'application/pdf')->assertHeader('Content-Disposition', 'inline; filename="apercu.pdf"');
+    expect($document->refresh()->path)->toBeNull()->and($document->versions()->count())->toBe(0);
+    $editor->call('generate', $document->id)->assertHasErrors('document');
+    $editor->call('revise', $document->id)->set('form.content', 'Contrat complété et vérifié')->call('save')->assertHasNoErrors();
+    $revision = Document::latest('id')->first();
+    expect($revision->id)->not->toBe($document->id)->and($revision->snapshot['previous_document_id'])->toBe($document->id)->and($revision->snapshot['revision'])->toBe(2)->and($document->refresh()->content)->toContain('ARTICLE 20');
+    $editor->call('generate', $revision->id)->assertHasNoErrors()->assertNoRedirect();
+    expect($revision->refresh()->path)->not->toBeNull();
+    $this->get(route('admin.documents.show', $revision))->assertOk();
+    Livewire::test(ProjectDossier::class, ['clientProject' => $project])->call('previewDocument', $revision->id)->assertSee('Aperçu du PDF du projet');
+    Livewire::test(ProjectDossier::class, ['clientProject' => commercialProject()])->call('previewDocument', $revision->id)->assertNotFound();
+    $billingPdf = app(CommercialPdf::class)->billing($quote);
+    expect($billingPdf->type)->toBe('quote')->and($document->refresh()->type)->toBe('contract');
+    $this->actingAs(User::factory()->create())->get(route('admin.documents.show', $document))->assertForbidden();
+});
+
+test('project legal creation links preload content and PDF branding is embedded', function () {
+    $project = commercialProject();
+    $this->get(route('admin.documents', ['project' => $project->id, 'type' => 'terms', 'mode' => 'generate', 'create' => 1]))->assertOk()->assertSee('ARTICLE 20')->assertSee('Qualité du client');
+    expect(view('commercial.pdf-brand')->render())->toContain('data:image/png;base64,', 'Codenyr');
+});
+
 test('deposit interim and balance preserve exact VAT and cent totals', function () {
     $project = commercialProject();
     $calculator = app(CommercialCalculator::class);

@@ -33,6 +33,14 @@ class ProjectDossier extends AdminComponent
 
     public bool $editing = false;
 
+    #[Locked]
+    public ?int $previewDocumentId = null;
+
+    public function previewDocument(int $id): void
+    {
+        $this->previewDocumentId = Document::where('client_project_id', $this->projectId)->findOrFail($id)->id;
+    }
+
     public string $accessClientId = '';
 
     public string $accountEmail = '';

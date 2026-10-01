@@ -1,7 +1,7 @@
 <!DOCTYPE html><html lang="fr"><head><meta charset="utf-8"><style>
 @page { margin: 32px; } body { font-family: DejaVu Sans, sans-serif; font-size: 10px; color: #182430; } h1 { font-size: 25px; } h2 { font-size: 14px; margin-top: 22px; } .brand { width: 150px; } .muted { color: #546472; } table { width: 100%; border-collapse: collapse; margin-top: 15px; } th { background: #edf2f4; text-align: left; } td, th { padding: 8px; border-bottom: 1px solid #dce4e8; } .amount { text-align: right; white-space: nowrap; } .description { font-size: 9px; color: #546472; } .total { font-size: 14px; font-weight: bold; } .lines { white-space: pre-wrap; } .draft { padding: 10px; background: #fff1d6; } tr { page-break-inside: avoid; }
 </style></head><body>
-<img class="brand" src="{{ !empty($record->snapshot['seller']['logo_path']) ? \Illuminate\Support\Facades\Storage::disk('local')->path($record->snapshot['seller']['logo_path']) : public_path('images/codenyr.png') }}" alt="Codenyr">
+@include('commercial.pdf-brand')
 @unless($record->finalized_at)<p class="draft">BROUILLON — {{ $kind==='invoice' ? 'Facture non émise' : 'Devis non envoyé' }}</p>@endunless
 <h1>{{ $kind==='quote' ? 'Devis' : 'Facture' }} {{ $record->number ?? 'Brouillon #'.$record->id }}</h1>
 @php($seller=$record->snapshot['seller']) @php($client=$record->snapshot['client'])
