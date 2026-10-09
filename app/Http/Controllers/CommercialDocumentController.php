@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use App\Models\Document;
 use App\Models\DocumentVersion;
-use Barryvdh\DomPDF\Facade\Pdf;
+use App\Services\CommercialPdf;
+use App\Services\DocumentDownload;
+use App\Services\ProjectLegalDocuments;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Gate;
 use Illuminate\Support\Facades\Storage;
@@ -15,8 +17,13 @@ class CommercialDocumentController extends Controller
     public function show(Document $document): BinaryFileResponse|Response
     {
         Gate::authorize('admin');
-        if (! $document->path && $document->content !== null) {
-            $bytes = Pdf::loadView('commercial.document-pdf', ['document' => $document])->setOptions(['isRemoteEnabled' => false, 'defaultFont' => 'DejaVu Sans'])->setPaper('a4')->output();
+        if (! $document->finalized_at && ! $document->path && $document->content !== null && in_array($document->type, ['terms', 'contract'])) {
+            $prepared = app(ProjectLegalDocuments::class)->prepare($document);
+            $document->content = $prepared['content'];
+            $document->snapshot = $prepared['snapshot'];
+        }
+        if (! $document->path && $document->content !== null && ! $document->finalized_at) {
+            $bytes = app(CommercialPdf::class)->renderDocument($document);
 
             return response($bytes, 200, ['Content-Type' => 'application/pdf', 'Content-Disposition' => 'inline; filename="apercu.pdf"', 'Cache-Control' => 'private, no-store', 'X-Content-Type-Options' => 'nosniff']);
         }
@@ -29,13 +36,8 @@ class CommercialDocumentController extends Controller
     public function download(Document $document): BinaryFileResponse
     {
         Gate::authorize('admin');
-        abort_unless($document->path && Storage::disk('local')->exists($document->path), 404);
-        $filename = preg_replace('/[^\pL\pN ._-]/u', '-', $document->original_name ?: $document->name) ?: 'document';
-        if (! $document->original_name && $document->mime === 'application/pdf' && ! str_ends_with(strtolower($filename), '.pdf')) {
-            $filename .= '.pdf';
-        }
 
-        return response()->download(Storage::disk('local')->path($document->path), $filename, ['Content-Type' => $document->mime ?? 'application/octet-stream', 'Cache-Control' => 'private, no-store', 'X-Content-Type-Options' => 'nosniff']);
+        return app(DocumentDownload::class)->response($document);
     }
 
     public function version(DocumentVersion $version): BinaryFileResponse

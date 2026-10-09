@@ -3,6 +3,7 @@
 namespace App\Services;
 
 use App\Models\ClientProject;
+use App\Models\CommercialSetting;
 use App\Models\Invoice;
 use App\Models\MaintenanceContract;
 use App\Models\Quote;
@@ -15,8 +16,9 @@ class CommercialOverview
         $projects = ClientProject::whereNull('archived_at')->whereNotIn('status', ['completed', 'cancelled'])->with(['quotes', 'invoices.payments', 'documents', 'maintenance'])->get();
         $actions = [];
         $missing = 0;
+        $settings = CommercialSetting::current();
         foreach ($projects as $project) {
-            foreach ($project->alerts() as $alert) {
+            foreach ($project->alerts($settings) as $alert) {
                 $actions[] = ['project_id' => $project->id, 'name' => $project->name, 'alert' => $alert];
             }
             if ($project->quotes->contains('status', 'accepted')) {

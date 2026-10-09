@@ -1,0 +1,10 @@
+const fs=require('fs');function edit(p,a,b){let s=fs.readFileSync(p,'utf8');if(!s.includes(a))throw Error(p+' '+a);fs.writeFileSync(p,s.replace(a,b));}
+edit('app/Services/ProjectLegalDocuments.php',"            foreach ($scope['fields'] as $key => $field) {", "            foreach ($scope['fields'] as $key => $field) {\n                if ($key === 'privacy_processing' && $field === 'non' && $fields[$key] === 'oui') {\n                    continue;\n                }");
+edit('tests/Feature/ServiceOptionsTest.php',"->count())->toBe(19)","->count())->toBe(25)");
+edit('resources/views/livewire/admin/billing.blade.php',"@if($record instanceof \\App\\Models\\Invoice)",`@if($record instanceof \\App\\Models\\Quote && $record->status==='accepted' && !$record->archived_at && !$record->project->archived_at)
+<a class="button button-primary" href="{{ route('admin.documents', ['project'=>$record->client_project_id, 'quote'=>$record->id, 'create'=>1, 'type'=>'contract', 'mode'=>'generate']) }}">Créer le contrat</a>
+@endif
+@if($record instanceof \\App\\Models\\Invoice)`);
+edit('app/Livewire/Admin/CommercialDocuments.php',"$quote = $project->quotes()->where('status', 'accepted')->latest()->first();", "$quote = $project->quotes()->where('status', 'accepted')->when(request()->integer('quote'), fn ($query) => $query->whereKey(request()->integer('quote')))->latest()->first();");
+edit('resources/views/commercial/billing-pdf.blade.php',"@if(!empty($line['contract_rules']['exclusions']))<div class=\"description lines\">Non compris : {{ implode(\" ; \", $line['contract_rules']['exclusions']) }}</div>@endif", "@foreach($line['contract_rules']['clauses'] ?? [] as $clause)<div class=\"description lines\">{{ $clause }}</div>@endforeach");
+edit('resources/views/commercial/billing-pdf.blade.php',"@if(count($options))", "@if($record instanceof \\App\\Models\\Quote)\n@php($commercialScope = app(\\App\\Services\\ContractScopeBuilder::class)->build($record))\n@if($commercialScope['excluded'])<h2>Prestations non comprises</h2><p class=\"lines\">{{ implode(\"\\n\", $commercialScope['excluded']) }}</p>@endif\n@endif\n@if(count($options))");

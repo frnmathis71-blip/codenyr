@@ -68,6 +68,7 @@ Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('adm
     Route::get('/clients', CommercialDirectory::class)->defaults('module', 'clients')->name('clients');
     Route::get('/demandes-rgpd', PrivacyRequests::class)->name('privacy-requests');
     Route::get('/catalogue', CommercialDirectory::class)->defaults('module', 'catalog')->name('catalog');
+    Route::get('/settings/commercial', CommercialDirectory::class)->defaults('module', 'settings')->name('settings.commercial');
     Route::get('/parametres-commerciaux', CommercialDirectory::class)->defaults('module', 'settings')->name('commercial-settings');
     Route::get('/modeles-documents', CommercialDirectory::class)->defaults('module', 'templates')->name('document-templates');
     Route::get('/documents', CommercialDocuments::class)->name('documents');

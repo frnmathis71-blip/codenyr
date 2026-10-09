@@ -3,6 +3,7 @@
 namespace App\Livewire\Admin;
 
 use App\Models\Price;
+use App\Services\CommercialCalculator;
 use App\Services\PricingCatalog;
 use Illuminate\Support\Facades\DB;
 use Illuminate\View\View;
@@ -27,19 +28,20 @@ class Pricing extends AdminComponent
             if (isset($this->prices[$key]) && is_string($this->prices[$key])) {
                 $this->prices[$key] = str_replace([' ', "\u{00A0}", "\u{202F}", ','], ['', '', '', '.'], trim($this->prices[$key]));
             }
-            $rules['prices.'.$key] = ['required', 'numeric', 'decimal:0,2', 'min:0', 'max:999999.99'];
+            $rules['prices.'.$key] = ['required', 'numeric', 'decimal:0,2', 'regex:/^\d{1,7}(?:\.\d{1,2})?$/', 'min:0', 'max:999999.99'];
         }
         $this->validate($rules, [
             'required' => 'Renseignez un prix.',
             'numeric' => 'Saisissez un montant en euros.',
             'decimal' => 'Utilisez au maximum deux décimales.',
+            'regex' => 'Saisissez un montant en euros avec au maximum deux décimales.',
             'min' => 'Le prix ne peut pas être négatif.',
             'max' => 'Le prix doit rester inférieur à 1 000 000 €.',
         ]);
 
         DB::transaction(function () use ($plans): void {
             foreach (array_keys($plans) as $key) {
-                Price::updateOrCreate(['key' => $key], ['amount_cents' => (int) round((float) $this->prices[$key] * 100)]);
+                Price::updateOrCreate(['key' => $key], ['amount_cents' => CommercialCalculator::decimal($this->prices[$key])]);
             }
         });
         $this->mount($catalog);

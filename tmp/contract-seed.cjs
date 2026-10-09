@@ -1,0 +1,1 @@
+const fs=require('fs');let p='app/Services/CommercialCatalog.php',s=fs.readFileSync(p,'utf8');s=s.replace("    }\n\n    /** @return", "        app(ContractCatalogDefaults::class)->initialize();\n    }\n\n    /** @return");fs.writeFileSync(p,s);

@@ -129,3 +129,24 @@ Les textes légaux restent à compléter avec l’identité légale, les prestat
 Les factures émises disposent d’un panneau « État et règlements » : saisir le paiement ou renseigner le solde puis enregistrer. L’état est calculé à partir des paiements non annulés. Une erreur de saisie peut être corrigée avec un motif ; la trace reste visible et ne constitue ni un remboursement ni un avoir.
 
 L’espace client permet d’enregistrer une demande relative aux données et de retirer l’accord de publication d’un avis. Les administrateurs suivent les échéances et répondent dans `/admin/demandes-rgpd`. Le détail des vérifications et des informations manquantes pour la conformité se trouve dans [RGPD_AUDIT.md](RGPD_AUDIT.md). La clôture d’une demande n’exécute aucune suppression automatique.
+
+
+### Prestations et options
+
+Après `php artisan migrate`, ouvrir **Admin → Tarifs → Prestations et options** (`/admin/catalogue`). L’initialisation idempotente complète le modèle `Service` existant avec 18 options et une ligne générique « Frais tiers », sans écraser les prix, descriptions, statuts ou archives déjà modifiés. Les quatre offres et trois maintenances restent liées aux tarifs publics ; les options restent internes.
+
+Le catalogue propose recherche, catégories libres, compatibilités, ordre, activation et archivage réversible, ainsi que sept modes de tarification. Aucune compatibilité cochée signifie toutes les offres. Les modes mensuel et annuel définissent la fréquence correspondante ; « Sur devis » impose de renseigner le prix dans le document.
+
+Dans un devis, choisir l’offre principale puis cocher les options pertinentes. « Afficher aussi les prestations hors compatibilité » et les lignes personnalisées permettent une exception manuelle. Les quantités des suppléments sont uniquement les dépassements : pour 3 CRUD au total avec Site Pro, saisir 1 module supplémentaire. Les prix et descriptions restent personnalisables par document. Les lignes sauvegardent leurs nom, description, prix, unité, fréquence, TVA, catégorie, tarification et destinataire du règlement ; les modifications du catalogue ne réécrivent pas les devis existants.
+
+Les calculs serveur utilisent des centimes et séparent ponctuel, mensuel, trimestriel et annuel. Les frais payés directement au prestataire sont présentés hors des totaux Codenyr et ne sont pas convertis en lignes de facture Codenyr. Les frais refacturés sont inclus. La mention des frais externes se règle dans les paramètres commerciaux et est copiée dans les futurs documents.
+
+### Contrats dynamiques depuis les devis
+
+Dans **Paramètres commerciaux → Offres / Options**, chaque prestation dispose de livrables, exclusions, conditions et effets contractuels modifiables. Le catalogue existant reste la source des tarifs. Les nouveaux devis copient ces règles dans leurs lignes ; les modifications du catalogue ne réécrivent pas les lignes déjà enregistrées.
+
+Dans le devis, ouvrir **Contenu contractuel et effets des prestations** pour adapter les fonctionnalités effectivement vendues, les pages, les responsabilités domaine/hébergement et la référence du cahier des charges. Les lignes personnalisées peuvent être incluses au contrat. Les options non retenues ne créent aucun engagement. Les livrables et les conditions sont également imprimés dans le devis PDF.
+
+Le snapshot commercial est figé dès l’envoi du devis (donc conservé lors de son acceptation). **Créer le contrat** reprend exactement le devis accepté choisi, construit son périmètre et son résumé, active les conditions des options et retire leurs exclusions correspondantes. Les contrôles juridiques, annexes RGPD, versions, PDF et historique existants restent applicables. Les anciens devis sans règles structurées ne récupèrent jamais rétroactivement les fonctionnalités du catalogue actuel.
+
+Migration : `2026_10_03_000002_add_contract_catalog`. Tests dédiés : `tests/Feature/DynamicContractScopeTest.php`.

@@ -13,6 +13,7 @@ use App\Services\CommercialBilling;
 use App\Services\CommercialCalculator;
 use App\Services\CommercialCatalog;
 use App\Services\CommercialPdf;
+use App\Services\ContractCatalogRules;
 use App\Services\InvoicePayments;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Validator;
@@ -40,11 +41,18 @@ class Billing extends AdminComponent
 
     public string $filter = '';
 
+    public string $offerChoice = '';
+
+    public bool $showAllServices = false;
+
     /** @var array<string, mixed> */
     public array $form = [];
 
     /** @var array<int, array<string, mixed>> */
     public array $items = [];
+
+    /** @var array<int, array<string, mixed>> */
+    public array $ruleEditors = [];
 
     /** @var array<int, int> */
     public array $selectedServices = [];
@@ -105,6 +113,7 @@ class Billing extends AdminComponent
     {
         abort_unless($this->kind === 'invoices' && $this->recordId, 404);
         app(InvoicePayments::class)->void($this->recordId, $id, $this->correctionReason);
+        $this->resetValidation('correctionReason');
         $this->correctionReason = '';
         session()->flash('success', 'Saisie du règlement annulée ; historique conservé et état recalculé.');
     }
@@ -119,7 +128,8 @@ class Billing extends AdminComponent
         $this->form['deposit'] = CommercialCalculator::input($record->deposit_value);
         $this->form['invoice_type'] = $record instanceof Invoice ? $record->invoice_type : 'standard';
         $this->statusChoice = $record->finalized_at ? 'accepted' : 'ready';
-        $this->items = array_map(fn (array $item): array => ['service_id' => $item['service_id'] ?? null, 'name' => $item['name'], 'description' => $item['description'], 'unit' => $item['unit'], 'quantity' => CommercialCalculator::input($item['quantity_units']), 'price' => CommercialCalculator::input($item['price_cents']), 'discount_type' => $item['discount_type'], 'discount' => CommercialCalculator::input($item['discount_value']), 'vat' => CommercialCalculator::input($item['vat_basis']), 'frequency' => $item['source_frequency'] ?? $item['frequency'], 'period_start' => $item['period_start'] ?? '', 'period_end' => $item['period_end'] ?? '', 'optional' => $item['optional'], 'selected' => $item['selected']], $record->items);
+        $this->items = array_map(fn (array $item): array => ['contract_rules' => $item['contract_rules'] ?? [], 'contract_key' => $item['contract_key'] ?? null, 'contract_included' => $item['contract_included'] ?? true, 'category' => $item['category'] ?? '', 'pricing_mode' => $item['pricing_mode'] ?? 'fixed', 'payee' => $item['payee'] ?? 'codenyr', 'service_id' => $item['service_id'] ?? null, 'name' => $item['name'], 'description' => $item['description'], 'unit' => $item['unit'], 'quantity' => CommercialCalculator::input($item['quantity_units']), 'price' => CommercialCalculator::input($item['price_cents']), 'discount_type' => $item['discount_type'], 'discount' => CommercialCalculator::input($item['discount_value']), 'vat' => CommercialCalculator::input($item['vat_basis']), 'frequency' => $item['source_frequency'] ?? $item['frequency'], 'period_start' => $item['period_start'] ?? '', 'period_end' => $item['period_end'] ?? '', 'optional' => $item['optional'], 'selected' => $item['selected']], $record->items);
+        $this->ruleEditors = array_map(fn ($item) => ContractCatalogRules::editor($item['contract_rules']), $this->items);
         $this->selectedServices = array_values(array_unique(array_filter(array_column($this->items, 'service_id'))));
     }
 
@@ -141,25 +151,36 @@ class Billing extends AdminComponent
     {
         $this->ensureEditable();
         $settings = CommercialSetting::current();
-        $this->items[] = ['name' => '', 'description' => '', 'unit' => 'forfait', 'quantity' => '1', 'price' => '0', 'discount_type' => 'percent', 'discount' => '0', 'vat' => (string) ($settings['vat_enabled'] ? $settings['vat_rate'] : '0'), 'frequency' => 'once', 'period_start' => '', 'period_end' => '', 'optional' => false, 'selected' => true];
+        $this->ruleEditors[] = ContractCatalogRules::editor([]);
+        $this->items[] = ['contract_rules' => [], 'contract_included' => true, 'category' => '', 'pricing_mode' => 'fixed', 'payee' => 'codenyr', 'name' => '', 'description' => '', 'unit' => 'forfait', 'quantity' => '1', 'price' => '0', 'discount_type' => 'percent', 'discount' => '0', 'vat' => (string) ($settings['vat_enabled'] ? $settings['vat_rate'] : '0'), 'frequency' => 'once', 'period_start' => '', 'period_end' => '', 'optional' => false, 'selected' => true];
     }
 
     public function removeItem(int $index): void
     {
         $this->ensureEditable();
-        unset($this->items[$index]);
+        unset($this->items[$index], $this->ruleEditors[$index]);
+        $this->ruleEditors = array_values($this->ruleEditors);
+        $this->selectedServices = array_values(array_unique(array_filter(array_column($this->items, 'service_id'))));
         $this->items = array_values($this->items);
     }
 
     public function toggleService(int $id): void
     {
         $this->ensureEditable();
-        $service = Service::where('active', true)->findOrFail($id);
+        $this->syncRuleEditors();
+        $service = Service::where('active', true)->whereNull('archived_at')->findOrFail($id);
         if (in_array($id, $this->selectedServices, true)) {
             $this->selectedServices = array_values(array_diff($this->selectedServices, [$id]));
             $this->items = array_values(array_filter($this->items, fn (array $item): bool => ($item['service_id'] ?? null) !== $id));
 
+            $this->ruleEditors = array_map(fn ($item) => ContractCatalogRules::editor($item['contract_rules'] ?? []), $this->items);
+
             return;
+        }
+        if ($this->kind === 'quotes' && str_starts_with($service->price_key ?? '', 'offer_')) {
+            $offerIds = Service::where('price_key', 'like', 'offer_%')->pluck('id')->all();
+            $this->items = array_values(array_filter($this->items, fn (array $item): bool => ! in_array($item['service_id'] ?? null, $offerIds, true)));
+            $this->selectedServices = array_values(array_diff($this->selectedServices, $offerIds));
         }
         if (count($this->items) === 1 && $this->items[0]['name'] === '') {
             $this->items = [];
@@ -169,7 +190,7 @@ class Billing extends AdminComponent
         if ($index === null) {
             return;
         }
-        $this->items[$index] = [...$this->items[$index], 'service_id' => $id, 'name' => $service->name, 'description' => $service->description ?? '', 'unit' => $service->unit, 'price' => CommercialCalculator::input($service->currentPrice()), 'frequency' => $service->frequency];
+        $this->items[$index] = [...$this->items[$index], 'contract_rules' => ContractCatalogRules::forService($service), 'contract_key' => $service->price_key ?: ($service->catalog_key ?: 'service_'.$service->id), 'category' => $service->category, 'pricing_mode' => $service->pricing_mode, 'service_id' => $id, 'name' => $service->name, 'description' => $service->description ?? '', 'unit' => $service->unit, 'price' => $service->pricing_mode === 'quote' ? '' : CommercialCalculator::input($service->currentPrice()), 'frequency' => $service->frequency];
         if ($this->kind === 'invoices' && $service->frequency !== 'once') {
             $start = today()->startOfMonth();
             $months = match ($service->frequency) {
@@ -179,12 +200,38 @@ class Billing extends AdminComponent
             $this->items[$index]['period_end'] = $start->copy()->addMonths($months)->subDay()->format('Y-m-d');
         }
         $this->selectedServices[] = $id;
+        $this->ruleEditors = array_map(fn ($item) => ContractCatalogRules::editor($item['contract_rules'] ?? []), $this->items);
+        if (! filled($this->form['estimated_delay'] ?? '') && filled($service->contract_rules['delivery_days'] ?? null)) {
+            $this->form['estimated_delay'] = $service->contract_rules['delivery_days'].' jours';
+        }
+    }
+
+    private function syncRuleEditors(): void
+    {
+        foreach ($this->items as $index => &$item) {
+            if (isset($this->ruleEditors[$index])) {
+                $item['contract_rules'] = ContractCatalogRules::fromEditor($this->ruleEditors[$index], $item['contract_rules'] ?? []);
+            }
+        }
+        unset($item);
+    }
+
+    public function updatedOfferChoice(): void
+    {
+        $this->ensureEditable();
+        if ($this->offerChoice !== '') {
+            $service = Service::where('price_key', $this->offerChoice)->where('price_key', 'like', 'offer_%')->firstOrFail();
+            if (! in_array($service->id, $this->selectedServices, true)) {
+                $this->toggleService($service->id);
+            }
+        }
     }
 
     /** @return array{items: array<int, array<string, mixed>>, totals: array<string, mixed>, discount: int, deposit: int} */
     private function calculated(): array
     {
         Validator::make($this->form, ['discount_type' => 'required|in:percent,fixed', 'discount' => 'required|string', 'deposit_type' => 'required|in:none,percent,fixed', 'deposit' => 'required|string'])->validate();
+        $this->syncRuleEditors();
         $calculator = app(CommercialCalculator::class);
         // Settings supply default rates; an explicit rate entered on a draft must apply.
         $items = $calculator->normalize($this->items, true);
@@ -350,6 +397,8 @@ class Billing extends AdminComponent
                 $previewError = 'Complétez les lignes et montants pour calculer l’aperçu.';
             }
         }
+        $selectedOffer = Service::whereIn('id', array_filter(array_column($this->items, 'service_id')))->where('price_key', 'like', 'offer_%')->value('price_key');
+        $this->offerChoice = $selectedOffer ?? '';
         $query = $this->kind === 'quotes' ? Quote::query() : Invoice::query();
         $records = $query->with('project.client')->when($this->search !== '', fn ($q) => $q->where(function ($q): void {
             $term = '%'.mb_substr($this->search, 0, 200).'%';
@@ -357,6 +406,6 @@ class Billing extends AdminComponent
         }))->when($this->filter === 'archived', fn ($q) => $q->whereNotNull('archived_at'), fn ($q) => $q->whereNull('archived_at'))
             ->when($this->filter !== '' && $this->filter !== 'archived', fn ($q) => $q->where('status', $this->filter))->latest()->paginate(15);
 
-        return view('livewire.admin.billing', ['record' => $record, 'records' => $records, 'totals' => $totals, 'previewError' => $previewError, 'previewProject' => ! empty($this->form['client_project_id']) ? ClientProject::with('client')->whereKey($this->form['client_project_id'])->first() : null, 'previewSeller' => $record ? $record->snapshot['seller'] : CommercialSetting::current(), 'projects' => ClientProject::with('client')->whereNull('archived_at')->orderBy('name')->get(), 'services' => Service::where('active', true)->orderBy('category')->orderBy('position')->get(), 'readOnly' => $record && ($record->finalized_at || $record->archived_at || $record->project->archived_at), 'derived' => $record instanceof Invoice && $record->quote_id])->layout('components.admin-layout', ['title' => $this->kind === 'quotes' ? 'Devis' : 'Factures']);
+        return view('livewire.admin.billing', ['record' => $record, 'records' => $records, 'totals' => $totals, 'previewError' => $previewError, 'previewProject' => ! empty($this->form['client_project_id']) ? ClientProject::with('client')->whereKey($this->form['client_project_id'])->first() : null, 'previewSeller' => $record ? $record->snapshot['seller'] : CommercialSetting::current(), 'projects' => ClientProject::with('client')->whereNull('archived_at')->orderBy('name')->get(), 'offers' => Service::where('active', true)->whereNull('archived_at')->where('price_key', 'like', 'offer_%')->orderBy('id')->get(), 'services' => Service::where('active', true)->whereNull('archived_at')->orderBy('category')->orderBy('position')->get()->filter(fn (Service $service): bool => $this->kind !== 'quotes' || ((! str_starts_with($service->price_key ?? '', 'offer_')) && ($this->showAllServices || ! $selectedOffer || ! $service->compatible_offers || in_array($selectedOffer, $service->compatible_offers, true) || in_array($service->id, $this->selectedServices, true)))), 'readOnly' => $record && ($record->finalized_at || $record->archived_at || $record->project->archived_at), 'derived' => $record instanceof Invoice && $record->quote_id])->layout('components.admin-layout', ['title' => $this->kind === 'quotes' ? 'Devis' : 'Factures']);
     }
 }

@@ -42,16 +42,19 @@ class CommercialCalculator
             'items.*.discount_type' => 'required|in:percent,fixed', 'items.*.vat' => 'required|string',
             'items.*.service_id' => 'nullable|integer|exists:services,id',
             'items.*.frequency' => 'required|in:once,monthly,quarterly,yearly',
+            'items.*.category' => 'nullable|string|max:100', 'items.*.pricing_mode' => 'sometimes|in:fixed,starting,hourly,unit,monthly,yearly,quote', 'items.*.payee' => 'sometimes|in:codenyr,client,rebilled',
+            'items.*.contract_included' => 'sometimes|boolean', 'items.*.contract_rules' => 'sometimes|array', 'items.*.contract_key' => 'sometimes|nullable|string|max:200',
             'items.*.optional' => 'required|boolean', 'items.*.selected' => 'required|boolean',
         ])->validate();
         $normalized = [];
         foreach ($items as $item) {
+            $rules = ContractCatalogRules::validate($item['contract_rules'] ?? []);
             $price = self::decimal($item['price']);
             $quantity = self::decimal($item['quantity']);
             $discount = self::decimal($item['discount']);
             $vat = self::decimal($item['vat']);
             Validator::make(compact('price', 'quantity', 'discount', 'vat'), ['price' => 'integer|between:0,99999999', 'quantity' => 'integer|between:1,1000000', 'discount' => 'integer|min:0|max:'.($item['discount_type'] === 'percent' ? '10000' : '99999999'), 'vat' => 'integer|between:0,10000'])->validate();
-            $normalized[] = ['name' => $item['name'], 'description' => $item['description'] ?? '', 'unit' => $item['unit'], 'price_cents' => $price, 'quantity_units' => $quantity, 'discount_type' => $item['discount_type'], 'discount_value' => $discount, 'vat_basis' => $vatEnabled ? $vat : 0, 'frequency' => $item['frequency'], 'optional' => (bool) $item['optional'], 'selected' => (bool) $item['selected']];
+            $normalized[] = ['contract_rules' => $rules, 'contract_key' => $item['contract_key'] ?? null, 'contract_included' => (bool) ($item['contract_included'] ?? true), 'category' => $item['category'] ?? '', 'pricing_mode' => $item['pricing_mode'] ?? 'fixed', 'payee' => $item['payee'] ?? 'codenyr', 'name' => $item['name'], 'description' => $item['description'] ?? '', 'unit' => $item['unit'], 'price_cents' => $price, 'quantity_units' => $quantity, 'discount_type' => $item['discount_type'], 'discount_value' => $discount, 'vat_basis' => $vatEnabled ? $vat : 0, 'frequency' => $item['frequency'], 'optional' => (bool) $item['optional'], 'selected' => (bool) $item['selected']];
             if (isset($item['service_id'])) {
                 $normalized[array_key_last($normalized)]['service_id'] = (int) $item['service_id'];
             }
@@ -72,7 +75,7 @@ class CommercialCalculator
             $subtotal = 0;
             $lineDiscounts = 0;
             foreach ($items as $index => $item) {
-                if ($item['frequency'] !== $frequency || ($item['optional'] && ! $item['selected'])) {
+                if (($item['payee'] ?? 'codenyr') === 'client' || $item['frequency'] !== $frequency || ($item['optional'] && ! $item['selected'])) {
                     continue;
                 }
                 $gross = self::rounded((int) $item['price_cents'] * (int) $item['quantity_units'], 100);

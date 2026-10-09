@@ -2,12 +2,22 @@
 
 namespace App\Models;
 
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
-/** @property array<string, mixed>|null $snapshot */
+/**
+ * @property ClientProject|null $project
+ * @property Client|null $client
+ * @property Quote|null $quote
+ * @property Invoice|null $invoice
+ * @property array<string, mixed>|null $snapshot
+ * @property array<string, mixed>|null $contract_data
+ * @property CarbonInterface $document_date
+ * @property CarbonInterface|null $finalized_at
+ */
 class Document extends Model
 {
     public const TYPES = ['quote' => 'Devis', 'invoice' => 'Facture', 'terms' => 'CGV', 'contract' => 'Contrat de prestation', 'maintenance' => 'Contrat de maintenance', 'specification' => 'Cahier des charges', 'order' => 'Bon de commande', 'certificate' => 'Attestation', 'client' => 'Document client', 'legal' => 'Document juridique', 'commercial' => 'Document commercial', 'other' => 'Autre', 'work' => 'Fichier de travail'];
@@ -16,7 +26,25 @@ class Document extends Model
 
     protected function casts(): array
     {
-        return ['snapshot' => 'array', 'document_date' => 'date', 'archived_at' => 'datetime', 'client_visible' => 'boolean'];
+        return ['contract_data' => 'array', 'finalized_at' => 'datetime', 'signed_imported_at' => 'datetime', 'snapshot' => 'array', 'document_date' => 'date', 'archived_at' => 'datetime', 'client_visible' => 'boolean'];
+    }
+
+    protected static function booted(): void
+    {
+        static::updating(function (Document $document): void {
+            if ($document->getRawOriginal('finalized_at')) {
+                foreach (array_keys($document->getDirty()) as $key) {
+                    if (! in_array($key, ['status', 'archived_at', 'client_visible', 'updated_at'], true)) {
+                        throw new \LogicException('Document définitif immuable : créez une nouvelle version.');
+                    }
+                }
+            }
+        });
+        static::deleting(function (Document $document): void {
+            if ($document->finalized_at) {
+                throw new \LogicException('Archivez ce document définitif.');
+            }
+        });
     }
 
     /** @return BelongsTo<Quote, $this> */
@@ -37,6 +65,7 @@ class Document extends Model
     public function scopeCustomerReady(Builder $query): Builder
     {
         return $query->whereNull('archived_at')->whereNotNull('path')
+            ->where(fn (Builder $q) => $q->whereNull('contract_data')->orWhereNotNull('finalized_at')->orWhereNotNull('original_id'))
             ->where(fn (Builder $q) => $q->whereNull('quote_id')->orWhereHas('quote', fn (Builder $q) => $q->whereNotNull('finalized_at')))
             ->where(fn (Builder $q) => $q->whereNull('invoice_id')->orWhereHas('invoice', fn (Builder $q) => $q->whereNotNull('finalized_at')));
     }

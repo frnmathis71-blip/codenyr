@@ -126,7 +126,7 @@ class ProjectDossier extends AdminComponent
     public function edit(): void
     {
         $project = $this->writable();
-        $this->form = $project->only(['name', 'type', 'status', 'description', 'domain', 'host', 'website_url', 'internal_notes']);
+        $this->form = $project->only(['name', 'type', 'status', 'description', 'domain', 'host', 'website_url', 'internal_notes', 'contract_data']);
         $this->form['starts_on'] = $project->starts_on?->format('Y-m-d') ?? '';
         $this->form['due_on'] = $project->due_on?->format('Y-m-d') ?? '';
         $this->editing = true;
@@ -140,7 +140,7 @@ class ProjectDossier extends AdminComponent
         foreach (['starts_on', 'due_on'] as $field) {
             $this->form[$field] = $this->form[$field] ?: null;
         }
-        $data = $this->validate(['form.name' => 'required|string|max:200', 'form.type' => ['required', Rule::in(ClientProject::TYPES)], 'form.status' => ['required', Rule::in(array_keys(ClientProject::STATUSES))], 'form.description' => 'nullable|string|max:20000', 'form.internal_notes' => 'nullable|string|max:20000', 'form.starts_on' => 'nullable|date', 'form.due_on' => 'nullable|date|after_or_equal:form.starts_on', 'form.domain' => 'nullable|string|max:255', 'form.host' => 'nullable|string|max:255', 'form.website_url' => 'nullable|string|url:http,https|max:255'], [
+        $data = $this->validate(['form.contract_data' => 'nullable|array', 'form.contract_data.*' => 'nullable|string|max:20000', 'form.name' => 'required|string|max:200', 'form.type' => ['required', Rule::in(ClientProject::TYPES)], 'form.status' => ['required', Rule::in(array_keys(ClientProject::STATUSES))], 'form.description' => 'nullable|string|max:20000', 'form.internal_notes' => 'nullable|string|max:20000', 'form.starts_on' => 'nullable|date', 'form.due_on' => 'nullable|date|after_or_equal:form.starts_on', 'form.domain' => 'nullable|string|max:255', 'form.host' => 'nullable|string|max:255', 'form.website_url' => 'nullable|string|url:http,https|max:255'], [
             'form.website_url.url' => 'Saisissez une adresse de site valide (exemple : www.exemple.fr) ou laissez ce champ vide.',
             'form.website_url.string' => 'L’adresse du site doit être du texte.',
             'form.website_url.max' => 'L’adresse du site ne doit pas dépasser 255 caractères.',

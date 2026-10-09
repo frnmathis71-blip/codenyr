@@ -52,6 +52,13 @@ class CommercialBilling
                     throw ValidationException::withMessages(['billing' => 'Cette facture dépasserait le montant initial du devis. Recréez le solde après les autres émissions.']);
                 }
             }
+            if ($locked instanceof Quote) {
+                $locked->snapshot = [...$locked->snapshot, 'offer_snapshot' => ContractCatalogRules::freeze($locked->items)];
+                $scope = app(ContractScopeBuilder::class)->build($locked);
+                if ($scope['errors']) {
+                    throw ValidationException::withMessages($scope['errors']);
+                }
+            }
             $locked->update(['number' => $locked->number ?? $this->number($locked instanceof Quote ? 'quote' : 'invoice'), 'status' => $locked instanceof Quote ? 'sent' : 'issued', 'finalized_at' => now(), 'sent_at' => $locked instanceof Quote ? now() : null]);
             ProjectEvent::record($locked->client_project_id, ($locked instanceof Quote ? 'Devis envoyé : ' : 'Facture émise : ').$locked->number);
         });
@@ -134,7 +141,7 @@ class CommercialBilling
             if ($type === 'standard') {
                 $items = [];
                 foreach ($quote->items as $index => $source) {
-                    if ($source['frequency'] === 'once' && (! $source['optional'] || $source['selected'])) {
+                    if (($source['payee'] ?? 'codenyr') !== 'client' && $source['frequency'] === 'once' && (! $source['optional'] || $source['selected'])) {
                         $items[] = [...$source, 'source_index' => $index];
                     }
                 }

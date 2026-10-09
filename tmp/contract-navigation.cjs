@@ -1,0 +1,10 @@
+const fs=require('fs');function edit(p,a,b){let s=fs.readFileSync(p,'utf8');if(!s.includes(a))throw Error(p);fs.writeFileSync(p,s.replace(a,b));}
+edit('app/Livewire/Admin/CommercialDirectory.php',"public string $pricingFilter = '';","public string $pricingFilter = '';\n\n    public string $catalogGroup = '';");
+edit('app/Livewire/Admin/CommercialDirectory.php',"$this->module = $module;","$this->module = $module;\n        $this->catalogGroup = in_array(request()->query('group'), ['offers', 'options'], true) ? request()->query('group') : '';");
+edit('app/Livewire/Admin/CommercialDirectory.php',"->when($this->categoryFilter !== ''", "->when($this->catalogGroup === 'offers', fn ($q) => $q->where('price_key', 'like', 'offer_%'))\n                ->when($this->catalogGroup === 'options', fn ($q) => $q->where(fn ($q) => $q->whereNull('price_key')->orWhere('price_key', 'not like', 'offer_%')))\n                ->when($this->categoryFilter !== ''");
+edit('resources/views/livewire/admin/commercial-directory.blade.php',"@include('livewire.admin.commercial-errors')",`@if(in_array($module,['settings','catalog']))<nav class="button-row" aria-label="Paramètres commerciaux"><a class="button button-secondary" href="{{ route('admin.catalog',['group'=>'offers']) }}">Offres</a><a class="button button-secondary" href="{{ route('admin.catalog',['group'=>'options']) }}">Options</a></nav>@endif
+@include('livewire.admin.commercial-errors')`);
+edit('resources/views/commercial/billing-pdf.blade.php',"@foreach($line['contract_rules']['clauses'] ?? [] as $clause)",`@if(!empty($line['contract_rules']['page_count']))<div class="description">Jusqu’à {{ $line['contract_rules']['page_count'] }} pages.</div>@endif
+@if(!empty($line['contract_rules']['annex']))<div class="description">Annexe fonctionnelle / Cahier des charges : {{ $line['contract_rules']['annex'] }}</div>@endif
+@foreach($line['contract_rules']['fields'] ?? [] as $field=>$value)<div class="description">{{ collect(\\App\\Services\\LegalDocumentRules::sections())->collapse()[$field] ?? $field }} : {{ $value }}</div>@endforeach
+@foreach($line['contract_rules']['clauses'] ?? [] as $clause)`);

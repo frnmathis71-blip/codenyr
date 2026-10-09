@@ -16,6 +16,7 @@ use App\Services\CommercialBilling;
 use App\Services\CommercialCalculator;
 use App\Services\CommercialPdf;
 use App\Services\CustomerDocumentSharing;
+use App\Services\LegalDocumentRules;
 use App\Services\ProjectLegalDocuments;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
@@ -67,13 +68,134 @@ class CommercialDocuments extends AdminComponent
 
     public string $audience = '';
 
+    /** @var array<string, mixed> */
+    public array $contract = [];
+
+    #[Locked]
+    public string $generatedContent = '';
+
+    #[Locked]
+    public ?int $reviewId = null;
+
+    #[Locked]
+    public string $reviewHash = '';
+
+    public function legalCandidate(): Document
+    {
+        $project = ClientProject::whereKey($this->form['client_project_id'] ?? null)->first();
+
+        return new Document(['client_id' => $this->form['client_id'] ?: $project?->client_id, 'client_project_id' => $project?->id, 'quote_id' => ($this->form['quote_id'] ?? null) ?: null, 'invoice_id' => ($this->form['invoice_id'] ?? null) ?: null, 'type' => $this->form['type'] ?? 'terms', 'document_date' => ($this->form['document_date'] ?? '') ?: today(), 'contract_data' => $this->contract]);
+    }
+
+    public function updatedFormClientProjectId(): void
+    {
+        $this->contract = [];
+        $this->form['quote_id'] = '';
+        $this->form['invoice_id'] = '';
+        $this->form['client_id'] = '';
+        $this->refreshLegal();
+    }
+
+    public function updatedFormType(): void
+    {
+        $this->resetValidation();
+        $this->contract = [];
+        if ($this->generatedContent !== '' || in_array($this->form['type'], ['terms', 'contract'])) {
+            $this->form['name'] = '';
+        }
+        $this->generatedContent = '';
+        $this->form['content'] = '';
+        $this->form['template_id'] = '';
+        $this->revisionOf = null;
+        $this->maintenanceId = null;
+        if (empty($this->form['original_id']) && in_array($this->form['type'], ['terms', 'contract'])) {
+            $this->mode = 'generate';
+        }
+        $this->refreshLegal();
+    }
+
+    public function updatedMode(): void
+    {
+        $this->resetValidation();
+        $this->refreshLegal();
+    }
+
+    public function updatedContractTermsTemplateId(): void
+    {
+        foreach (array_keys($this->contract) as $key) {
+            if (str_starts_with($key, 'clause_') || (str_starts_with($key, 'terms_') && $key !== 'terms_template_id')) {
+                unset($this->contract[$key]);
+            }
+        }
+        $this->refreshLegal();
+    }
+
+    public function updatedFormClientId(): void
+    {
+        foreach (array_keys($this->contract) as $key) {
+            if (str_starts_with($key, 'client_')) {
+                unset($this->contract[$key]);
+            }
+        }
+        $this->refreshLegal();
+    }
+
+    public function updatedFormQuoteId(): void
+    {
+        foreach (array_keys($this->contract) as $key) {
+            if (! str_starts_with($key, 'seller_') && ! str_starts_with($key, 'client_')) {
+                unset($this->contract[$key]);
+            }
+        }
+        $this->form['invoice_id'] = '';
+        $this->refreshLegal();
+    }
+
+    private function refreshLegal(): void
+    {
+        if ($this->mode === 'generate' && in_array($this->form['type'] ?? '', ['terms', 'contract'])) {
+            $this->prepareLegal();
+        }
+    }
+
+    public function review(int $id): void
+    {
+        $document = Document::findOrFail($id);
+        abort_unless(in_array($document->type, ['terms', 'contract']) && ! $document->original_id, 422);
+        $this->reviewId = $id;
+        $this->previewId = $id;
+        $result = app(ProjectLegalDocuments::class)->prepare($document);
+        $this->reviewHash = hash('sha256', json_encode($result['snapshot'], JSON_THROW_ON_ERROR));
+    }
+
+    public function draft(int $id): void
+    {
+        app(CommercialPdf::class)->document(Document::findOrFail($id), false);
+        $this->previewId = $id;
+        session()->flash('success', 'PDF brouillon généré.');
+    }
+
     public function prepareLegal(): void
     {
-        $this->validate(['form.client_project_id' => 'required|exists:client_projects,id', 'form.type' => 'required|in:terms,contract', 'audience' => 'required|in:professional,consumer']);
-        $project = ClientProject::whereKey($this->form['client_project_id'])->firstOrFail();
-        $quote = empty($this->form['quote_id']) ? null : Quote::where('client_project_id', $project->id)->where('status', 'accepted')->whereKey($this->form['quote_id'])->firstOrFail();
-        $this->form['content'] = app(ProjectLegalDocuments::class)->content($project, $this->form['type'], $quote, $this->audience);
-        $this->form['name'] = Document::TYPES[$this->form['type']].' — '.$project->name;
+        $this->validate(['form.type' => 'required|in:terms,contract', 'contract' => 'array', 'contract.*' => 'nullable|string|max:20000']);
+        $result = app(ProjectLegalDocuments::class)->prepare($this->legalCandidate());
+        foreach (LegalDocumentRules::formSources($this->form['type']) as $group => $definitions) {
+            foreach ($definitions as $key => $label) {
+                $value = $key === 'technologies' ? ($result['snapshot']['project']['contract_data']['technologies'] ?? '') : ($result['snapshot'][$group][$key] ?? '');
+                if (in_array($key, ['starts_on', 'due_on']) && $value) {
+                    $value = substr($value, 0, 10);
+                }
+                $this->contract[$group.'_'.$key] ??= (string) $value;
+            }
+        }
+        foreach (LegalDocumentRules::CLAUSES as $key => $label) {
+            $this->contract['clause_'.$key] ??= (string) ($result['snapshot']['seller']['clause_'.$key] ?? '');
+        }
+        foreach ($result['fields'] as $key => $value) {
+            $this->contract[$key] ??= (string) $value;
+        }
+        $this->form['content'] = $this->generatedContent = $result['content'];
+        $this->form['name'] = Document::TYPES[$this->form['type']].' — '.($result['snapshot']['project']['name'] ?? $result['snapshot']['client']['name'] ?? 'Codenyr');
         $this->mode = 'generate';
     }
 
@@ -87,7 +209,13 @@ class CommercialDocuments extends AdminComponent
             $this->form[$key] = $document->$key ?? '';
         }
         $this->audience = $document->snapshot['audience'] ?? '';
+        $this->contract = $document->contract_data ?? [];
+        $this->generatedContent = $document->content;
+        if (! $document->contract_data) {
+            $this->contract['additional'] = $document->content;
+        }
         $this->mode = 'generate';
+        $this->prepareLegal();
     }
 
     public function mount(): void
@@ -110,10 +238,10 @@ class CommercialDocuments extends AdminComponent
                 $this->mode = 'generate';
                 if (in_array($this->form['type'], ['terms', 'contract']) && $this->projectFilter) {
                     $project = ClientProject::findOrFail($this->projectFilter);
-                    $quote = $project->quotes()->where('status', 'accepted')->latest()->first();
+                    $quote = $project->quotes()->where('status', 'accepted')->when(request()->integer('quote'), fn ($query) => $query->whereKey(request()->integer('quote')))->latest()->first();
                     $this->form['quote_id'] = $quote->id ?? '';
                     $this->form['name'] = Document::TYPES[$this->form['type']].' — '.$project->name;
-                    $this->form['content'] = app(ProjectLegalDocuments::class)->content($project, $this->form['type'], $quote);
+                    $this->prepareLegal();
                 }
             }
             if (request()->filled('maintenance')) {
@@ -130,6 +258,10 @@ class CommercialDocuments extends AdminComponent
     public function create(): void
     {
         $this->revisionOf = null;
+        $this->contract = [];
+        $this->generatedContent = '';
+        $this->reviewId = null;
+        $this->reviewHash = '';
         $this->audience = '';
         $this->form = ['name' => '', 'type' => 'other', 'client_id' => '', 'client_project_id' => $this->projectFilter, 'document_date' => today()->format('Y-m-d'), 'description' => '', 'notes' => '', 'content' => '', 'template_id' => '', 'original_id' => '', 'quote_id' => '', 'invoice_id' => ''];
         $this->maintenanceId = null;
@@ -158,9 +290,17 @@ class CommercialDocuments extends AdminComponent
         $this->validate(['form.template_id' => 'required|integer|exists:document_templates,id']);
         $template = DocumentTemplate::whereKey($this->form['template_id'])->firstOrFail();
         $this->form['type'] = $template->type;
+        if ($template->type === 'terms') {
+            $this->contract['terms_template_id'] = (string) $template->id;
+        }
         $this->form['content'] = $template->content;
         if ($this->form['name'] === '') {
             $this->form['name'] = $template->name;
+        }
+        if ($template->type === 'terms') {
+            $this->updatedContractTermsTemplateId();
+        } else {
+            $this->refreshLegal();
         }
     }
 
@@ -194,8 +334,78 @@ class CommercialDocuments extends AdminComponent
         return $extension;
     }
 
-    public function save(): void
+    public function fillDocument(): void
     {
+        abort_unless($this->mode === 'generate' && in_array($this->form['type'] ?? '', ['terms', 'contract']), 422);
+        try {
+            $this->save(true);
+        } catch (ValidationException $exception) {
+            $fields = [];
+            foreach ($exception->errors() as $key => $messages) {
+                $fields[] = ['id' => LegalDocumentRules::errorTarget($key), 'message' => implode(' ', $messages)];
+            }
+            $this->dispatch('document-validation-failed', fields: $fields);
+            throw $exception;
+        }
+    }
+
+    /** @return array<string, string> */
+    protected function messages(): array
+    {
+        return [
+            'required' => 'Le champ « :attribute » est obligatoire.',
+            'integer' => 'Le champ « :attribute » doit contenir un nombre entier (exemple : 1).',
+            'string' => 'Le champ « :attribute » doit contenir du texte.',
+            'array' => 'Les informations du formulaire sont invalides.',
+            'date' => 'Le champ « :attribute » doit contenir une date valide.',
+            'date_format' => 'Le champ « :attribute » doit contenir une date au format année-mois-jour.',
+            'after_or_equal' => 'La date de livraison doit être postérieure ou égale à la date de début.',
+            'min' => 'Le champ « :attribute » doit être supérieur ou égal à :min.',
+            'max' => 'Le champ « :attribute » dépasse la limite autorisée (:max).',
+            'in' => 'Choisissez une valeur proposée pour « :attribute ».',
+            'exists' => 'La sélection « :attribute » est introuvable. Veuillez la sélectionner à nouveau.',
+            'file' => 'Choisissez un fichier valide.',
+        ];
+    }
+
+    /** @return array<string, string> */
+    protected function validationAttributes(): array
+    {
+        $attributes = ['mode' => 'Source', 'upload' => 'Fichier'];
+        foreach (['name' => 'Nom du document', 'type' => 'Type de document', 'client_id' => 'Client', 'client_project_id' => 'Projet', 'document_date' => 'Date du document', 'description' => 'Description', 'notes' => 'Notes internes', 'original_id' => 'Document original', 'template_id' => 'Modèle', 'quote_id' => 'Devis associé', 'invoice_id' => 'Facture associée', 'content' => 'Texte du document'] as $key => $label) {
+            $attributes['form.'.$key] = $label;
+        }
+        foreach (LegalDocumentRules::formSources('contract') as $group => $definitions) {
+            foreach ($definitions as $key => $label) {
+                $attributes['contract.'.$group.'_'.$key] = $label;
+            }
+        }
+        foreach (LegalDocumentRules::sections() as $definitions) {
+            foreach ($definitions as $key => $label) {
+                $attributes['contract.'.$key] = $label;
+            }
+        }
+        foreach (LegalDocumentRules::CLAUSES as $key => $label) {
+            $attributes['contract.clause_'.$key] = $label;
+        }
+
+        return $attributes;
+    }
+
+    public function save(bool $finalize = false): void
+    {
+        if ($this->mode === 'generate' && in_array($this->form['type'] ?? '', ['terms', 'contract'])) {
+            $this->validate(['form.document_date' => 'required|date', 'contract.project_starts_on' => 'nullable|date_format:Y-m-d', 'contract.project_due_on' => 'nullable|date_format:Y-m-d'.(filled($this->contract['project_starts_on'] ?? null) ? '|after_or_equal:contract.project_starts_on' : ''), 'contract.terms_effective_on' => 'nullable|date_format:Y-m-d', 'contract.terms_revision' => 'nullable|integer|min:1']);
+            $this->prepareLegal();
+            $legal = app(ProjectLegalDocuments::class)->prepare($this->legalCandidate());
+            if ($finalize && $legal['errors']) {
+                $messages = [];
+                foreach ($legal['errors'] as $key => $message) {
+                    $messages['contract.'.$key] = $message;
+                }
+                throw ValidationException::withMessages($messages);
+            }
+        }
         $data = $this->validate(['mode' => 'required|in:upload,generate', 'form.name' => 'required|string|max:200', 'form.type' => ['required', Rule::in(array_keys(Document::TYPES))], 'form.client_id' => 'nullable|integer|exists:clients,id', 'form.client_project_id' => 'nullable|integer|exists:client_projects,id', 'form.document_date' => 'required|date', 'form.description' => 'nullable|string|max:10000', 'form.notes' => 'nullable|string|max:20000', 'form.original_id' => 'nullable|integer|exists:documents,id', 'form.template_id' => 'nullable|integer|exists:document_templates,id', 'form.quote_id' => 'nullable|integer|exists:quotes,id', 'form.invoice_id' => 'nullable|integer|exists:invoices,id', 'form.content' => $this->mode === 'generate' ? 'required|string|max:100000' : 'nullable|string|max:100000'])['form'];
         $project = ! empty($data['client_project_id']) ? ClientProject::whereKey($data['client_project_id'])->firstOrFail() : null;
         if ($project?->archived_at) {
@@ -232,6 +442,11 @@ class CommercialDocuments extends AdminComponent
             $services = $quote ? implode("\n", array_map(fn (array $item): string => $item['name'].' — '.$item['description'], array_filter($quote->items, fn (array $item): bool => ! $item['optional'] || $item['selected']))) : 'À préciser';
             $content = strtr($content, ['{{client}}' => $client->name, '{{project}}' => $project ? $project->name : '', '{{seller}}' => $snapshot['seller']['legal_name'] ?: $snapshot['seller']['name'], '{{amount}}' => $quote ? CommercialCalculator::euros($quote->totals['initial']['ttc']) : 'À préciser', '{{delay}}' => $quote ? ($quote->estimated_delay ?? 'À préciser') : 'À préciser', '{{services}}' => $services, '{{payment}}' => $quote ? ($quote->conditions ?? 'À préciser') : 'À préciser']);
         }
+        if ($content !== null && in_array($data['type'], ['terms', 'contract'])) {
+            $legal = app(ProjectLegalDocuments::class)->prepare($this->legalCandidate());
+            $snapshot = array_replace($snapshot, $legal['snapshot']);
+            $content = $legal['content'];
+        }
         $path = null;
         $mime = null;
         if ($this->mode === 'upload') {
@@ -245,8 +460,8 @@ class CommercialDocuments extends AdminComponent
             $mime = (new \finfo(FILEINFO_MIME_TYPE))->file($this->upload->getRealPath());
         }
         try {
-            $document = DB::transaction(function () use ($data, $clientId, $project, $snapshot, $content, $path, $mime, $original): Document {
-                $document = Document::create(['name' => $data['name'], 'type' => $data['type'], 'client_id' => $clientId, 'client_project_id' => $project?->id, 'document_date' => $data['document_date'], 'description' => $data['description'], 'notes' => $data['notes'], 'original_id' => $original?->id, 'quote_id' => $original ? $original->quote_id : ($data['quote_id'] ?: null), 'invoice_id' => $original ? $original->invoice_id : ($data['invoice_id'] ?: null), 'content' => $content, 'snapshot' => $snapshot, 'path' => $path, 'mime' => $mime, 'size' => $path ? $this->upload?->getSize() : null, 'original_name' => $path ? mb_substr(basename($this->upload?->getClientOriginalName() ?? ''), 0, 240) : null, 'status' => $original ? 'signed' : ($content !== null ? 'draft' : 'available')]);
+            $document = DB::transaction(function () use ($data, $clientId, $project, $snapshot, $content, $path, $mime, $original, $finalize): Document {
+                $document = Document::create(['contract_data' => $content !== null && in_array($data['type'], ['terms', 'contract']) ? $this->contract : null, 'signed_imported_at' => $original ? now() : null, 'signed_imported_by' => $original ? auth()->id() : null, 'name' => $data['name'], 'type' => $data['type'], 'client_id' => $clientId, 'client_project_id' => $project?->id, 'document_date' => $data['document_date'], 'description' => $data['description'], 'notes' => $data['notes'], 'original_id' => $original?->id, 'quote_id' => $original ? $original->quote_id : ($data['quote_id'] ?: null), 'invoice_id' => $original ? $original->invoice_id : ($data['invoice_id'] ?: null), 'content' => $content, 'snapshot' => $snapshot, 'path' => $path, 'mime' => $mime, 'size' => $path ? $this->upload?->getSize() : null, 'original_name' => $path ? mb_substr(basename($this->upload?->getClientOriginalName() ?? ''), 0, 240) : null, 'status' => $original ? 'signed' : ($content !== null ? 'draft' : 'available')]);
                 if ($path) {
                     $document->versions()->create(['version' => 1, 'path' => $path, 'mime' => $mime, 'size' => $document->size]);
                 }
@@ -256,6 +471,9 @@ class CommercialDocuments extends AdminComponent
                 }
                 if ($project) {
                     ProjectEvent::record($project->id, ($original ? 'Version signée importée : ' : 'Document ajouté : ').$document->name);
+                }
+                if ($finalize && $content !== null && in_array($document->type, ['terms', 'contract'])) {
+                    app(CommercialPdf::class)->document($document);
                 }
 
                 return $document;
@@ -268,13 +486,26 @@ class CommercialDocuments extends AdminComponent
         }
         $this->showForm = false;
         $this->previewId = $document->id;
-        session()->flash('success', 'Document enregistré.');
+        if ($this->mode === 'generate' && in_array($document->type, ['terms', 'contract'])) {
+            $this->reviewId = null;
+            $this->reviewHash = '';
+            if (! $finalize) {
+                $this->review($document->id);
+            }
+        }
+        session()->flash('success', $document->fresh()->finalized_at ? 'PDF généré. Vous pouvez le prévisualiser ou le télécharger.' : 'Document enregistré.');
     }
 
     public function generate(int $id): void
     {
         $document = Document::findOrFail($id);
-        app(CommercialPdf::class)->document($document);
+        if (in_array($document->type, ['terms', 'contract']) && ! $document->finalized_at) {
+            if ($this->reviewId !== $id) {
+                $this->review($id);
+                throw ValidationException::withMessages(['document' => 'Vérifiez le document et sa checklist avant de finaliser.']);
+            }
+        }
+        app(CommercialPdf::class)->document($document, true, $this->reviewHash ?: null);
         $this->previewId = $document->id;
         session()->flash('success', 'PDF généré. Vous pouvez le prévisualiser ou le télécharger.');
     }
@@ -345,6 +576,6 @@ class CommercialDocuments extends AdminComponent
             ->when(preg_match('/^\d{4}$/', $this->yearFilter), fn ($q) => $q->whereYear('document_date', $this->yearFilter))->when($this->dateFilter, fn ($q) => $q->whereDate('document_date', $this->dateFilter))
             ->when($this->statusFilter === 'archived', fn ($q) => $q->whereNotNull('archived_at'), fn ($q) => $q->whereNull('archived_at'))->when($this->statusFilter === 'signed', fn ($q) => $q->whereNotNull('original_id'))->latest()->paginate(20);
 
-        return view('livewire.admin.commercial-documents', ['documents' => $documents, 'projects' => ClientProject::with('client')->orderBy('name')->get(), 'clients' => Client::orderBy('name')->get(), 'templates' => DocumentTemplate::orderBy('name')->get(), 'quotes' => Quote::where('status', 'accepted')->get(), 'invoices' => Invoice::whereNotNull('finalized_at')->get(), 'preview' => $this->previewId ? Document::with('versions')->findOrFail($this->previewId) : null])->layout('components.admin-layout', ['title' => 'Documents']);
+        return view('livewire.admin.commercial-documents', ['documents' => $documents, 'projects' => ClientProject::with('client')->orderBy('name')->get(), 'clients' => Client::orderBy('name')->get(), 'templates' => DocumentTemplate::orderBy('name')->get(), 'quotes' => Quote::where('status', 'accepted')->get(), 'invoices' => Invoice::whereNotNull('finalized_at')->get(), 'legalForm' => $this->showForm && $this->mode === 'generate' && in_array($this->form['type'] ?? '', ['terms', 'contract']) ? app(ProjectLegalDocuments::class)->prepare($this->legalCandidate()) : null, 'legalReview' => $this->reviewId ? app(ProjectLegalDocuments::class)->prepare(Document::findOrFail($this->reviewId)) : null, 'preview' => $this->previewId ? Document::with('versions')->findOrFail($this->previewId) : null])->layout('components.admin-layout', ['title' => 'Documents']);
     }
 }

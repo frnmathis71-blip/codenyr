@@ -1,6 +1,6 @@
 <div>
     <p class="eyebrow">Codenyr / Administration</p>
-    <h1>Tarifs</h1>
+    <h1>Tarifs</h1><a class="button button-secondary" href="{{ route('admin.catalog') }}">Prestations et options →</a>
     <p>Modifiez vos prix en euros. Ils seront mis à jour sur l’accueil, les services et la page Tarifs dès l’enregistrement.</p>
     @if(session('success'))<div class="flash" role="status">{{ session('success') }}</div>@endif
     <form wire:submit="save">

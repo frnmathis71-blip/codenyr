@@ -3,6 +3,8 @@
 use App\Livewire\Admin\Pricing;
 use App\Models\Price;
 use App\Models\User;
+use App\Services\PricingCatalog;
+use Illuminate\Support\Facades\DB;
 use Livewire\Livewire;
 
 test('only administrators can manage prices', function () {
@@ -38,4 +40,30 @@ test('malformed price inputs are rejected', function () {
     Livewire::test(Pricing::class)->set('prices.offer_vitrine', ['unexpected'])
         ->call('save')->assertHasErrors('prices.offer_vitrine');
     expect(Price::count())->toBe(0);
+});
+
+test('the complete price catalog reads prices once and reflects subsequent updates', function () {
+    Price::create(['key' => 'offer_vitrine', 'amount_cents' => 123456]);
+    $catalog = app(PricingCatalog::class);
+    DB::enableQueryLog();
+    DB::flushQueryLog();
+    try {
+        $plans = $catalog->all();
+        expect(DB::getQueryLog())->toHaveCount(1);
+    } finally {
+        DB::disableQueryLog();
+        DB::flushQueryLog();
+    }
+    expect($plans['offer_vitrine']['amount_cents'])->toBe(123456)
+        ->and($plans)->toHaveKey('maintenance_essential');
+    Price::findOrFail('offer_vitrine')->update(['amount_cents' => 98765]);
+    expect($catalog->all()['offer_vitrine']['amount_cents'])->toBe(98765);
+});
+
+test('public price editing stores cent amounts exactly through the commercial calculator', function () {
+    $this->actingAs(User::factory()->create(['is_admin' => true]));
+    Livewire::test(Pricing::class)->set('prices.offer_vitrine', '999 999,99')
+        ->set('prices.maintenance_essential', '0,01')->call('save')->assertHasNoErrors();
+    expect(Price::findOrFail('offer_vitrine')->amount_cents)->toBe(99999999)
+        ->and(Price::findOrFail('maintenance_essential')->amount_cents)->toBe(1);
 });

@@ -48,7 +48,7 @@ class ClientProjects extends AdminComponent
 
     public function create(): void
     {
-        $this->form = ['client_id' => '', 'name' => '', 'type' => 'Site vitrine', 'description' => '', 'status' => 'quote_to_prepare', 'starts_on' => '', 'due_on' => '', 'website_url' => '', 'domain' => '', 'host' => '', 'internal_notes' => ''];
+        $this->form = ['client_id' => '', 'name' => '', 'type' => 'Site vitrine', 'description' => '', 'status' => 'quote_to_prepare', 'starts_on' => '', 'due_on' => '', 'website_url' => '', 'domain' => '', 'host' => '', 'internal_notes' => '', 'contract_data' => []];
         $this->clientForm = ['name' => '', 'contact' => '', 'email' => '', 'phone' => '', 'address' => ''];
         $this->sourceLead = null;
         $this->showForm = true;
@@ -74,6 +74,7 @@ class ClientProjects extends AdminComponent
             $this->form[$field] = $this->form[$field] ?: null;
         }
         $data = $this->validate([
+            'form.contract_data' => 'nullable|array', 'form.contract_data.*' => 'nullable|string|max:20000',
             'form.client_id' => 'nullable|integer|exists:clients,id', 'form.name' => 'required|string|max:200',
             'form.type' => ['required', Rule::in(ClientProject::TYPES)], 'form.status' => ['required', Rule::in(array_keys(ClientProject::STATUSES))],
             'form.description' => 'nullable|string|max:20000', 'form.starts_on' => 'nullable|date', 'form.due_on' => 'nullable|date|after_or_equal:form.starts_on',

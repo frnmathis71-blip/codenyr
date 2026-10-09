@@ -8,6 +8,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 
 /**
+ * @property array<string, mixed>|null $contract_data
  * @property CarbonInterface|null $starts_on
  * @property CarbonInterface|null $due_on
  * @property CarbonInterface|null $archived_at
@@ -22,7 +23,7 @@ class ClientProject extends Model
 
     protected function casts(): array
     {
-        return ['starts_on' => 'date', 'due_on' => 'date', 'archived_at' => 'datetime'];
+        return ['contract_data' => 'array', 'starts_on' => 'date', 'due_on' => 'date', 'archived_at' => 'datetime'];
     }
 
     /** @return BelongsTo<Client, $this> */
@@ -76,20 +77,21 @@ class ClientProject extends Model
     /** @return array<string, bool> */
     public function checklist(): array
     {
-        $documents = $this->documents()->whereNull('archived_at')->get();
+        $documents = $this->relationLoaded('documents') ? $this->documents->whereNull('archived_at') : $this->documents()->whereNull('archived_at')->get();
         $has = fn (string $type): bool => $documents->contains(fn (Document $document): bool => $document->type === $type);
         $signed = fn (string $type): bool => $documents->contains(fn (Document $document): bool => $document->type === $type && $document->original_id !== null);
-        $invoices = $this->invoices()->whereNotNull('finalized_at')->with('payments')->get();
+        $invoices = $this->relationLoaded('invoices') ? $this->invoices->whereNotNull('finalized_at')->loadMissing('payments') : $this->invoices()->whereNotNull('finalized_at')->with('payments')->get();
+        $quotes = $this->relationLoaded('quotes') ? $this->quotes : $this->quotes()->get();
         $paid = fn (string $type): bool => $invoices->contains(fn (Invoice $invoice): bool => $invoice->invoice_type === $type && $invoice->remainingCents() === 0);
-        $checks = ['Devis créé' => $this->quotes()->exists(), 'Devis accepté' => $this->quotes()->where('status', 'accepted')->exists(), 'CGV' => $has('terms'), 'CGV signées' => $signed('terms'), 'Contrat de prestation' => $has('contract'), 'Contrat signé' => $signed('contract')];
-        $needsDeposit = $this->quotes()->where('status', 'accepted')->get()->contains(fn (Quote $quote): bool => ($quote->totals['deposit'] ?? 0) > 0);
+        $checks = ['Devis créé' => $quotes->isNotEmpty(), 'Devis accepté' => $quotes->contains('status', 'accepted'), 'CGV' => $has('terms'), 'CGV signées' => $signed('terms'), 'Contrat de prestation' => $has('contract'), 'Contrat signé' => $signed('contract')];
+        $needsDeposit = $quotes->where('status', 'accepted')->contains(fn (Quote $quote): bool => ($quote->totals['deposit'] ?? 0) > 0);
         if ($needsDeposit) {
             $checks['Facture d’acompte'] = $invoices->contains('invoice_type', 'deposit');
             $checks['Acompte reçu'] = $paid('deposit');
         }
         $checks['Facture finale'] = $invoices->contains(fn (Invoice $invoice): bool => in_array($invoice->invoice_type, ['standard', 'balance'], true));
         $checks['Solde reçu'] = $paid('standard') || $paid('balance');
-        if ($this->maintenance()->where('status', '!=', 'archived')->exists()) {
+        if ($this->relationLoaded('maintenance') ? $this->maintenance->where('status', '!=', 'archived')->isNotEmpty() : $this->maintenance()->where('status', '!=', 'archived')->exists()) {
             $checks['Contrat de maintenance'] = $has('maintenance');
             $checks['Maintenance signée'] = $signed('maintenance');
         }
@@ -97,25 +99,29 @@ class ClientProject extends Model
         return $checks;
     }
 
-    /** @return list<string> */
-    public function alerts(): array
+    /** @param array<string, mixed>|null $settings
+     * @return list<string>
+     */
+    public function alerts(?array $settings = null): array
     {
-        $settings = CommercialSetting::current();
+        $settings ??= CommercialSetting::current();
+        $quotes = $this->relationLoaded('quotes') ? $this->quotes : $this->quotes()->get();
         $alerts = [];
-        if (! $this->quotes()->exists()) {
+        if ($quotes->isEmpty()) {
             $alerts[] = 'Devis pas encore créé';
         }
-        if ($this->quotes()->where('status', 'sent')->where('sent_at', '<=', now()->subDays((int) $settings['quote_followup_days']))->exists()) {
+        if ($quotes->where('status', 'sent')->contains(fn (Quote $quote): bool => $quote->sent_at !== null && $quote->sent_at <= now()->subDays((int) $settings['quote_followup_days']))) {
             $alerts[] = 'Devis envoyé depuis au moins '.$settings['quote_followup_days'].' jours sans réponse';
         }
-        if ($this->quotes()->where('status', 'accepted')->exists()) {
+        if ($quotes->contains('status', 'accepted')) {
             foreach ($this->checklist() as $name => $present) {
                 if (! $present && in_array($name, ['CGV signées', 'Contrat signé', 'Acompte reçu', 'Maintenance signée'], true)) {
                     $alerts[] = $name.' : à récupérer';
                 }
             }
         }
-        if ($this->invoices()->whereNotNull('finalized_at')->whereDate('due_on', '<', today())->get()->contains(fn (Invoice $invoice): bool => $invoice->remainingCents() > 0)) {
+        $invoices = $this->relationLoaded('invoices') ? $this->invoices->whereNotNull('finalized_at')->loadMissing('payments') : $this->invoices()->whereNotNull('finalized_at')->with('payments')->get();
+        if ($invoices->contains(fn (Invoice $invoice): bool => $invoice->due_on < today() && $invoice->remainingCents() > 0)) {
             $alerts[] = 'Facture échue non soldée';
         }
         if ($this->due_on && $this->due_on->between(today(), today()->addDays((int) $settings['delivery_alert_days'])) && ! in_array($this->status, ['completed', 'cancelled', 'maintenance'], true)) {

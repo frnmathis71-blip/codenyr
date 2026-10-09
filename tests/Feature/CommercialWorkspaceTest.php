@@ -22,6 +22,7 @@ use App\Services\CommercialPdf;
 use App\Services\InvoicePayments;
 use Carbon\Carbon;
 use Illuminate\Http\UploadedFile;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -44,6 +45,32 @@ function commercialQuote(ClientProject $project): Quote
 
     return Quote::create(['client_project_id' => $project->id, 'number' => 'DEV-2026-0001', 'issued_on' => today(), 'due_on' => today()->addDays(30), 'items' => $items, 'totals' => $calculator->calculate($items, 'percent', 0, 'percent', 4000), 'snapshot' => app(CommercialBilling::class)->snapshot($project), 'deposit_type' => 'percent', 'deposit_value' => 4000]);
 }
+
+test('project checks reuse eager loaded relations without additional database queries', function () {
+    $project = commercialProject();
+    $quote = commercialQuote($project);
+    $billing = app(CommercialBilling::class);
+    $billing->finalize($quote);
+    $quote->update(['status' => 'accepted']);
+    $invoice = $billing->fromQuote($quote->fresh(), 'deposit');
+    $invoice->update(['due_on' => today()->subDay()]);
+    $billing->finalize($invoice);
+    $settings = CommercialSetting::current();
+    $expectedChecks = $project->checklist();
+    $expectedAlerts = $project->alerts($settings);
+    expect($expectedAlerts)->toContain('Facture échue non soldée', 'Acompte reçu : à récupérer');
+    $project->load(['quotes', 'invoices.payments', 'documents', 'maintenance']);
+    DB::enableQueryLog();
+    DB::flushQueryLog();
+    try {
+        expect($project->checklist())->toBe($expectedChecks)
+            ->and($project->alerts($settings))->toBe($expectedAlerts)
+            ->and(DB::getQueryLog())->toBe([]);
+    } finally {
+        DB::disableQueryLog();
+        DB::flushQueryLog();
+    }
+});
 
 beforeEach(function () {
     $this->actingAs(User::factory()->create(['is_admin' => true]));
@@ -231,9 +258,9 @@ test('document templates snapshots PDFs and versions remain historical', functio
     $template = DocumentTemplate::create(['name' => 'CGV', 'type' => 'terms', 'content' => 'Conditions de {{seller}} pour {{client}}.']);
     Livewire::test(CommercialDocuments::class)->call('create')->set('mode', 'generate')->set('form.client_project_id', $project->id)->set('form.template_id', $template->id)->call('save')->assertHasNoErrors();
     $document = Document::first();
-    $template->update(['content' => 'Nouvelles conditions', 'revision' => 2]);
-    expect($document->refresh()->content)->toBe('Conditions de Codenyr pour Restaurant Sithinem.');
-    app(CommercialPdf::class)->document($document);
+    DocumentTemplate::create(['name' => $template->name, 'type' => 'terms', 'content' => 'Nouvelles conditions', 'revision' => 2, 'previous_id' => $template->id]);
+    expect($document->refresh()->content)->toContain('Conditions de Codenyr pour Restaurant Sithinem.');
+    app(CommercialPdf::class)->document($document, false);
     expect(substr(Storage::disk('local')->get($document->refresh()->path), 0, 5))->toBe('%PDF-');
     $quote = commercialQuote($project);
     $pdf = app(CommercialPdf::class)->billing($quote);
@@ -260,14 +287,15 @@ test('legal drafts preview inline without generating a file and revisions preser
     $quote->update(['status' => 'accepted']);
     $editor = Livewire::test(CommercialDocuments::class)->call('create')->set('form.client_project_id', $project->id)->set('form.type', 'contract')->set('form.quote_id', $quote->id)->set('audience', 'professional')->call('prepareLegal')->assertHasNoErrors()->call('save')->assertHasNoErrors();
     $document = Document::where('type', 'contract')->firstOrFail();
-    expect($document->content)->toContain('ARTICLE 20', 'DEV-2026-0001', 'Restaurant Sithinem');
+    expect($document->content)->toContain('Signatures', 'DEV-2026-0001', 'Restaurant Sithinem');
     $this->get(route('admin.documents.show', $document))->assertOk()->assertHeader('Content-Type', 'application/pdf')->assertHeader('Content-Disposition', 'inline; filename="apercu.pdf"');
     expect($document->refresh()->path)->toBeNull()->and($document->versions()->count())->toBe(0);
     $editor->call('generate', $document->id)->assertHasErrors('document');
     $editor->call('revise', $document->id)->set('form.content', 'Contrat complété et vérifié')->call('save')->assertHasNoErrors();
     $revision = Document::latest('id')->first();
-    expect($revision->id)->not->toBe($document->id)->and($revision->snapshot['previous_document_id'])->toBe($document->id)->and($revision->snapshot['revision'])->toBe(2)->and($document->refresh()->content)->toContain('ARTICLE 20');
-    $editor->call('generate', $revision->id)->assertHasNoErrors()->assertNoRedirect();
+    expect($revision->id)->not->toBe($document->id)->and($revision->snapshot['previous_document_id'])->toBe($document->id)->and($revision->snapshot['revision'])->toBe(2)->and($document->refresh()->content)->toContain('Signatures');
+    $editor->call('generate', $revision->id)->assertHasErrors('document');
+    $editor->call('draft', $revision->id)->assertHasNoErrors()->assertNoRedirect();
     expect($revision->refresh()->path)->not->toBeNull();
     $this->get(route('admin.documents.show', $revision))->assertOk();
     Livewire::test(ProjectDossier::class, ['clientProject' => $project])->call('previewDocument', $revision->id)->assertSee('Aperçu du PDF du projet');

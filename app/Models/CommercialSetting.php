@@ -2,6 +2,8 @@
 
 namespace App\Models;
 
+use App\Services\CommercialConfiguration;
+use App\Services\LegalDocumentRules;
 use Illuminate\Database\Eloquent\Model;
 
 /** @property array<string, mixed> $values */
@@ -22,7 +24,7 @@ class CommercialSetting extends Model
         return array_replace([
             'name' => 'Codenyr', 'legal_name' => '', 'address' => '', 'phone' => '', 'email' => config('codenyr.email'), 'registration' => '', 'logo_path' => '',
             'vat_enabled' => false, 'vat_rate' => '20', 'tax_mention' => '', 'quote_prefix' => 'DEV', 'invoice_prefix' => 'FAC',
-            'validity_days' => 30, 'payment_days' => 30, 'deposit_percent' => '40', 'quote_followup_days' => 7, 'delivery_alert_days' => 3, 'quote_mention' => '', 'invoice_mention' => '', 'footer' => '',
-        ], $stored ? $stored->values : []);
+            'validity_days' => 30, 'payment_days' => 30, 'deposit_percent' => '40', 'quote_followup_days' => 7, 'delivery_alert_days' => 3, 'external_fees_mention' => 'Les frais liés aux services tiers, licences, noms de domaine, API ou plateformes externes ne sont inclus que lorsqu’ils sont explicitement indiqués dans le devis.', 'quote_mention' => '', 'invoice_mention' => '', 'footer' => '',
+        ], CommercialConfiguration::defaults(), LegalDocumentRules::defaults(), $stored ? $stored->values : []);
     }
 }
