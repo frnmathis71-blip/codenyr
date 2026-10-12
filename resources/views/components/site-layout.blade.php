@@ -23,6 +23,8 @@
     <meta name="twitter:image" content="{{ $image ?? asset('images/social-preview.png') }}">
     <meta name="theme-color" content="#0D1117">
     <link rel="icon" type="image/png" href="{{ asset('images/codenyr.png') }}">
+    <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}?v=codenyr">
+    <meta name="apple-mobile-web-app-title" content="Codenyr">
     @fonts
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     @livewireStyles

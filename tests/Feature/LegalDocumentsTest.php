@@ -175,7 +175,7 @@ test('completed legal form generates its PDF in one submission', function (strin
     $clientName = $original->client->name;
     $component = Livewire::test(CommercialDocuments::class)
         ->call('revise', $original->id)
-        ->assertSee('Remplir le document')
+        ->assertSee('Générer le PDF définitif')
         ->assertSeeHtml('wire:submit="fillDocument"')
         ->set('contract.client_name', 'Client renseigné dans le formulaire')
         ->set('contract.seller_legal_name', 'Prestataire renseigné')
@@ -194,6 +194,7 @@ test('completed legal form generates its PDF in one submission', function (strin
 test('document type switches replace the form and discard stale content', function () {
     $original = completeLegalDocument();
     Livewire::test(CommercialDocuments::class)->call('revise', $original->id)
+        ->set('showAllFields', true)
         ->set('contract.additional', 'Texte réservé au contrat')
         ->assertSeeHtml('id="legal-ip_mode"')
         ->set('form.type', 'terms')->assertSet('revisionOf', null)
@@ -247,6 +248,7 @@ test('choosing another terms version refreshes its text and clauses', function (
 test('inactive contract fields neither display nor leak into the PDF', function () {
     $original = completeLegalDocument();
     $component = Livewire::test(CommercialDocuments::class)->call('revise', $original->id)
+        ->set('showAllFields', true)
         ->set('contract.ip_territory', 'Ancien territoire réservé')
         ->set('contract.ip_mode', 'licence')
         ->set('contract.ip_license', 'Licence non exclusive')
@@ -319,4 +321,60 @@ test('controlled variables resolve known values and reject unknown ones', functi
     $resolver = app(DocumentVariables::class);
     expect($resolver->resolve('{{ company.name }} / {{ unknown.value }}', ['company' => ['name' => 'Codenyr']], $errors))->toContain('Codenyr');
     expect($errors)->toHaveKey('variable_unknown_value');
+});
+
+test('project document creation selects a unique accepted quote active terms and existing project information', function () {
+    $original = completeLegalDocument();
+    $original->project->update(['contract_data' => $original->contract_data]);
+    $template = DocumentTemplate::findOrFail($original->contract_data['terms_template_id']);
+    app(TermsVersions::class)->transition($template, 'active');
+    $component = Livewire::withQueryParams(['project' => $original->client_project_id, 'create' => 1, 'type' => 'contract', 'mode' => 'generate'])->test(CommercialDocuments::class)
+        ->assertSet('form.client_id', $original->client_id)->assertSet('form.quote_id', $original->quote_id)
+        ->assertSet('contract.terms_template_id', (string) $template->id)
+        ->assertSet('contract.client_name', 'Client test')->assertSet('contract.project_starts_on', today()->format('Y-m-d'))
+        ->assertSet('showAllFields', false)->assertSee('Informations reprises automatiquement')
+        ->assertDontSeeHtml('id="legal-client_name"')->assertDontSeeHtml('id="legal-clause_payment"')
+        ->assertSee('Document prêt à générer')
+        ->call('fillDocument')->assertHasNoErrors();
+    $created = Document::findOrFail($component->get('previewId'));
+    expect($created->finalized_at)->not->toBeNull()->and($created->quote_id)->toBe($original->quote_id);
+});
+
+test('multiple accepted quotes require a choice instead of choosing an arbitrary quote', function () {
+    $original = completeLegalDocument();
+    $copy = $original->quote->replicate(['number']);
+    $copy->number = 'DEV-SECOND';
+    $copy->save();
+    Livewire::withQueryParams(['project' => $original->client_project_id])->test(CommercialDocuments::class)
+        ->call('startDocument', 'contract')->assertSet('form.quote_id', '')->assertSeeHtml('id="document-quote"')
+        ->set('form.quote_id', $copy->id)->assertSet('form.quote_id', $copy->id)->assertSet('contract.quote_conditions', $copy->conditions);
+});
+
+test('simplified forms expose missing fields and keep manual customization available', function () {
+    $original = completeLegalDocument();
+    Livewire::test(CommercialDocuments::class)->call('revise', $original->id)
+        ->assertDontSeeHtml('id="legal-client_address"')
+        ->set('showAllFields', true)->assertSeeHtml('id="legal-client_address"')
+        ->set('contract.client_address', '')->set('showAllFields', false)->assertSeeHtml('id="legal-client_address"')
+        ->set('contract.client_address', 'Adresse personnalisée')->call('prepareLegal')
+        ->assertSet('contract.client_address', 'Adresse personnalisée')
+        ->call('save')->assertHasNoErrors();
+    expect($original->client->fresh()->address)->toBe('1 rue du Test');
+});
+
+test('automatic quote selection excludes quotes belonging to the previous project client', function () {
+    $original = completeLegalDocument();
+    $newClient = Client::create(['name' => 'Nouveau client', 'email' => 'nouveau@example.test']);
+    $original->project->update(['client_id' => $newClient->id]);
+    Livewire::withQueryParams(['project' => $original->client_project_id])->test(CommercialDocuments::class)
+        ->call('startDocument', 'contract')->assertSet('form.client_id', $newClient->id)->assertSet('form.quote_id', '');
+});
+
+test('file names prefill imported document names without replacing a custom name', function () {
+    Livewire::test(CommercialDocuments::class)->call('create')
+        ->set('upload', UploadedFile::fake()->create('Cahier des charges.pdf', 10, 'application/pdf'))
+        ->assertSet('form.name', 'Cahier des charges')
+        ->set('form.name', 'Nom personnalisé')
+        ->set('upload', UploadedFile::fake()->create('Annexe.pdf', 10, 'application/pdf'))
+        ->assertSet('form.name', 'Nom personnalisé');
 });

@@ -150,3 +150,19 @@ Dans le devis, ouvrir **Contenu contractuel et effets des prestations** pour ada
 Le snapshot commercial est figé dès l’envoi du devis (donc conservé lors de son acceptation). **Créer le contrat** reprend exactement le devis accepté choisi, construit son périmètre et son résumé, active les conditions des options et retire leurs exclusions correspondantes. Les contrôles juridiques, annexes RGPD, versions, PDF et historique existants restent applicables. Les anciens devis sans règles structurées ne récupèrent jamais rétroactivement les fonctionnalités du catalogue actuel.
 
 Migration : `2026_10_03_000002_add_contract_catalog`. Tests dédiés : `tests/Feature/DynamicContractScopeTest.php`.
+
+### Documents de projet simplifiés
+
+L’onglet **Documents et contrats** rassemble les documents, contrats et fichiers de travail du dossier. Depuis **Gérer les documents**, trois actions sont proposées : créer un contrat, préparer les CGV ou importer un fichier.
+
+Le dossier préremplit le client et choisit le devis accepté, finalisé et non archivé lorsqu’il est unique et concerne encore le client du projet. Plusieurs devis nécessitent un choix explicite. Les CGV actives applicables à la date du document sont sélectionnées automatiquement. Le formulaire reprend les informations commerciales, les coordonnées, le planning et le périmètre déjà enregistrés, puis affiche les informations manquantes. **Afficher et personnaliser tous les champs** permet les adaptations particulières sans modifier les fiches sources. Les clauses et conditions encore inconnues restent à renseigner ; elles ne sont pas inventées.
+
+Le nom d’un import est repris du fichier. Les associations facultatives, notes et métadonnées sont regroupées dans un panneau replié. Le PDF définitif peut être généré en une action après validation ; un brouillon peut être conservé si des informations manquent. Les contrôles serveur, les versions signées et l’immutabilité des documents finalisés sont conservés. La migration `2026_10_04_000001_centralize_document_workflow` est nécessaire pour les statuts des versions de CGV.
+
+### Comptabilité mensuelle et estimation URSSAF
+
+**Administration → Comptabilité / URSSAF** (`/admin/comptabilite`) reprend les paiements des factures, à leur date d’encaissement. Le module sépare HT et TVA, traite les acomptes et paiements partiels, exclut les saisies annulées et conserve les paiements des dossiers archivés. Les anomalies bloquent l’export CSV et l’estimation des encaissements réels.
+
+Choisir une catégorie d’activité, cocher l’ACRE applicable au mois et/ou le versement libératoire, puis enregistrer les options mensuelles. L’ACRE doit être reconfirmée chaque nouveau mois. Les taux proposés concernent 2026 ; les autres années et les cas particuliers nécessitent les taux personnalisés. Le taux social personnalisé est déjà le taux effectif après ACRE éventuelle. Les contributions sont des estimations sur le CA HT exact : les arrondis et le décompte du portail URSSAF font foi.
+
+Le simulateur de CA fictif n’ajoute aucune recette. Le module est destiné à une micro-entreprise à activité unique ; il n’effectue ni déclaration ni paiement et ne remplace pas une comptabilité générale. Les remboursements, régularisations, activités mixtes, CFE et impôt hors versement libératoire ne sont pas automatisés. Migration : `2026_10_09_000001_create_accounting_periods_table`. Tests : `tests/Feature/AccountingTest.php`.

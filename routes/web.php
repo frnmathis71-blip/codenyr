@@ -3,6 +3,7 @@
 use App\Http\Controllers\CommercialDocumentController;
 use App\Http\Controllers\CustomerDocumentController;
 use App\Http\Controllers\SiteController;
+use App\Livewire\Admin\Accounting;
 use App\Livewire\Admin\Billing;
 use App\Livewire\Admin\ClientProjects;
 use App\Livewire\Admin\CommercialDirectory;
@@ -63,6 +64,7 @@ Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('adm
     Route::get('/realisations', Projects::class)->name('projects');
     Route::get('/temoignages', Testimonials::class)->name('testimonials');
     Route::get('/tarifs', Pricing::class)->name('pricing');
+    Route::get('/comptabilite', Accounting::class)->name('accounting');
     Route::get('/projets', ClientProjects::class)->name('client-projects.index');
     Route::get('/projets/{clientProject}', ProjectDossier::class)->name('client-projects.show');
     Route::get('/clients', CommercialDirectory::class)->defaults('module', 'clients')->name('clients');

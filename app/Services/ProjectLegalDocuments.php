@@ -27,6 +27,9 @@ class ProjectLegalDocuments
             return app(CommercialDocumentResolver::class)->prepare($document);
         }
         $seller = CommercialSetting::current();
+        if (! filled($seller['signatory'])) {
+            $seller['signatory'] = trim(($seller['signatory_firstname'] ?? '').' '.($seller['signatory_lastname'] ?? ''));
+        }
         $project = $document->project()->with(['client', 'maintenance'])->first();
         $client = $project->client ?? $document->client;
         $quote = $document->quote;
@@ -93,6 +96,10 @@ class ProjectLegalDocuments
         if (! $present($fields['object'])) {
             $fields['object'] = $project->description ?? '';
             $provenance['object'] = 'Projet';
+        }
+        if (! $supplied($fields['show_technologies'])) {
+            $fields['show_technologies'] = 'non';
+            $provenance['show_technologies'] = 'Valeur par défaut';
         }
         $scope = $quote ? app(ContractScopeBuilder::class)->build($quote) : null;
         if ($scope && $scope['frozen']) {

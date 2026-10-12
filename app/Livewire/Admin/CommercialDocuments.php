@@ -16,6 +16,7 @@ use App\Services\CommercialBilling;
 use App\Services\CommercialCalculator;
 use App\Services\CommercialPdf;
 use App\Services\CustomerDocumentSharing;
+use App\Services\DocumentAutofill;
 use App\Services\LegalDocumentRules;
 use App\Services\ProjectLegalDocuments;
 use Illuminate\Support\Facades\DB;
@@ -80,6 +81,42 @@ class CommercialDocuments extends AdminComponent
     #[Locked]
     public string $reviewHash = '';
 
+    public bool $showAllFields = false;
+
+    /** @var list<string> */
+    #[Locked]
+    public array $visibleLegalFields = [];
+
+    private function autofillContext(): void
+    {
+        $project = ClientProject::whereKey($this->form['client_project_id'] ?: null)->first();
+        $context = app(DocumentAutofill::class)->context($project, $this->form['document_date']);
+        if ($project) {
+            $this->form['client_id'] = $context['client_id'];
+        }
+        if (empty($this->form['quote_id'])) {
+            $this->form['quote_id'] = $context['quote_id'];
+        }
+        if (! array_key_exists('terms_template_id', $this->contract)) {
+            $this->contract['terms_template_id'] = $context['terms_template_id'];
+        }
+    }
+
+    public function startDocument(string $type): void
+    {
+        abort_unless(in_array($type, ['contract', 'terms', 'other'], true), 422);
+        $this->create();
+        $this->form['type'] = $type;
+        $this->updatedFormType();
+    }
+
+    public function updatedUpload(): void
+    {
+        if ($this->upload && ! filled($this->form['name'])) {
+            $this->form['name'] = mb_substr(pathinfo($this->upload->getClientOriginalName(), PATHINFO_FILENAME), 0, 200);
+        }
+    }
+
     public function legalCandidate(): Document
     {
         $project = ClientProject::whereKey($this->form['client_project_id'] ?? null)->first();
@@ -93,6 +130,7 @@ class CommercialDocuments extends AdminComponent
         $this->form['quote_id'] = '';
         $this->form['invoice_id'] = '';
         $this->form['client_id'] = '';
+        $this->autofillContext();
         $this->refreshLegal();
     }
 
@@ -111,6 +149,7 @@ class CommercialDocuments extends AdminComponent
         if (empty($this->form['original_id']) && in_array($this->form['type'], ['terms', 'contract'])) {
             $this->mode = 'generate';
         }
+        $this->autofillContext();
         $this->refreshLegal();
     }
 
@@ -179,6 +218,7 @@ class CommercialDocuments extends AdminComponent
     {
         $this->validate(['form.type' => 'required|in:terms,contract', 'contract' => 'array', 'contract.*' => 'nullable|string|max:20000']);
         $result = app(ProjectLegalDocuments::class)->prepare($this->legalCandidate());
+        $this->visibleLegalFields = array_values(array_unique(array_map(fn ($key): string => LegalDocumentRules::errorTarget((string) $key), array_keys($result['errors']))));
         foreach (LegalDocumentRules::formSources($this->form['type']) as $group => $definitions) {
             foreach ($definitions as $key => $label) {
                 $value = $key === 'technologies' ? ($result['snapshot']['project']['contract_data']['technologies'] ?? '') : ($result['snapshot'][$group][$key] ?? '');
@@ -238,8 +278,11 @@ class CommercialDocuments extends AdminComponent
                 $this->mode = 'generate';
                 if (in_array($this->form['type'], ['terms', 'contract']) && $this->projectFilter) {
                     $project = ClientProject::findOrFail($this->projectFilter);
-                    $quote = $project->quotes()->where('status', 'accepted')->when(request()->integer('quote'), fn ($query) => $query->whereKey(request()->integer('quote')))->latest()->first();
-                    $this->form['quote_id'] = $quote->id ?? '';
+                    $this->autofillContext();
+                    if (request()->integer('quote')) {
+                        $quote = $project->quotes()->where('status', 'accepted')->whereNotNull('finalized_at')->whereKey(request()->integer('quote'))->firstOrFail();
+                        $this->form['quote_id'] = $quote->id;
+                    }
                     $this->form['name'] = Document::TYPES[$this->form['type']].' — '.$project->name;
                     $this->prepareLegal();
                 }
@@ -268,6 +311,9 @@ class CommercialDocuments extends AdminComponent
         $this->upload = null;
         $this->mode = 'upload';
         $this->showForm = true;
+        $this->showAllFields = false;
+        $this->visibleLegalFields = [];
+        $this->autofillContext();
         $this->resetValidation();
     }
 
@@ -344,6 +390,7 @@ class CommercialDocuments extends AdminComponent
             foreach ($exception->errors() as $key => $messages) {
                 $fields[] = ['id' => LegalDocumentRules::errorTarget($key), 'message' => implode(' ', $messages)];
             }
+            $this->visibleLegalFields = array_values(array_unique([...$this->visibleLegalFields, ...array_column($fields, 'id')]));
             $this->dispatch('document-validation-failed', fields: $fields);
             throw $exception;
         }

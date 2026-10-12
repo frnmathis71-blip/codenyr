@@ -2,9 +2,11 @@
 
 namespace App\Models;
 
+use Carbon\CarbonInterface;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
+/** @property CarbonInterface $paid_on */
 class Payment extends Model
 {
     public const METHODS = ['transfer' => 'Virement', 'card' => 'Carte', 'cheque' => 'Chèque', 'cash' => 'Espèces', 'other' => 'Autre'];
