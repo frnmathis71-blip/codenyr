@@ -9,4 +9,9 @@
         <span aria-hidden="true">{{ $testimonial->rating }} / 5</span>
     </div>
     <blockquote>{{ $testimonial->content }}</blockquote>
+    {{-- Date and origin are required for consumer reviews (Code de la consommation, art. L111-7-2 and D111-17). --}}
+    <p class="public-review-meta">
+        <span>{{ $testimonial->user_id ? 'Déposé depuis l’espace client' : 'Recueilli par Codenyr auprès du client' }}</span>
+        <time datetime="{{ $testimonial->created_at->toDateString() }}">Avis du {{ $testimonial->created_at->locale('fr')->isoFormat('D MMMM YYYY') }}</time>
+    </p>
 </figure>

@@ -1,4 +1,19 @@
 {
+  "_cookie-preferences-BVz5YgH1.js": {
+    "file": "assets/cookie-preferences-BVz5YgH1.js",
+    "name": "cookie-preferences"
+  },
+  "_demo-studio-48C49sIb.js": {
+    "file": "assets/demo-studio-48C49sIb.js",
+    "name": "demo-studio",
+    "css": [
+      "assets/demo-studio-DceWzt9I.css"
+    ]
+  },
+  "_demo-studio-DceWzt9I.css": {
+    "file": "assets/demo-studio-DceWzt9I.css",
+    "src": "_demo-studio-DceWzt9I.css"
+  },
   "_fonts-DhA1vfI8.css": {
     "file": "assets/fonts-DhA1vfI8.css",
     "src": "_fonts-DhA1vfI8.css"
@@ -20,7 +35,7 @@
     "src": "public/images/icons/check.svg"
   },
   "resources/css/app.css": {
-    "file": "assets/app-D3gq6Min.css",
+    "file": "assets/app-DacNYT5N.css",
     "name": "app",
     "names": [
       "app.css"
@@ -31,23 +46,41 @@
       "assets/check-ijvdUcxr.svg"
     ]
   },
+  "resources/css/site.css": {
+    "file": "assets/site-DGc-TBPR.css",
+    "name": "site",
+    "names": [
+      "site.css"
+    ],
+    "src": "resources/css/site.css",
+    "isEntry": true,
+    "assets": [
+      "assets/check-ijvdUcxr.svg"
+    ]
+  },
   "resources/js/app.js": {
-    "file": "assets/app-CUGz26GD.js",
+    "file": "assets/app-D2CmDgMp.js",
     "name": "app",
     "src": "resources/js/app.js",
-    "isEntry": true
+    "isEntry": true,
+    "imports": [
+      "_cookie-preferences-BVz5YgH1.js"
+    ]
   },
   "resources/js/demo-landing.js": {
-    "file": "assets/demo-landing-C1TXEgk-.js",
+    "file": "assets/demo-landing-fxRY3CiD.js",
     "name": "demo-landing",
     "src": "resources/js/demo-landing.js",
     "isEntry": true,
+    "imports": [
+      "_demo-studio-48C49sIb.js"
+    ],
     "css": [
-      "assets/demo-landing-DOSkApDh.css"
+      "assets/demo-landing-DpSi5Stl.css"
     ]
   },
   "resources/js/demo-pro.js": {
-    "file": "assets/demo-pro-eyf3WGF2.js",
+    "file": "assets/demo-pro-DAA6SfyZ.js",
     "name": "demo-pro",
     "src": "resources/js/demo-pro.js",
     "isEntry": true,
@@ -56,16 +89,19 @@
       "resources/js/demo-vitrine.js"
     ],
     "css": [
-      "assets/demo-pro-DUQpvAdl.css"
+      "assets/demo-pro-B3UW61n3.css"
     ]
   },
   "resources/js/demo-vitrine.js": {
-    "file": "assets/demo-vitrine-_Ttvy40d.js",
+    "file": "assets/demo-vitrine-DE3uE1Jh.js",
     "name": "demo-vitrine",
     "src": "resources/js/demo-vitrine.js",
     "isEntry": true,
+    "imports": [
+      "_demo-studio-48C49sIb.js"
+    ],
     "css": [
-      "assets/demo-vitrine-xMjNdQ5R.css"
+      "assets/demo-vitrine-CUnLqcZi.css"
     ]
   },
   "resources/js/passkeys.js": {
@@ -73,5 +109,14 @@
     "name": "passkeys",
     "src": "resources/js/passkeys.js",
     "isEntry": true
+  },
+  "resources/js/site.js": {
+    "file": "assets/site-Blcn40nk.js",
+    "name": "site",
+    "src": "resources/js/site.js",
+    "isEntry": true,
+    "imports": [
+      "_cookie-preferences-BVz5YgH1.js"
+    ]
   }
 }

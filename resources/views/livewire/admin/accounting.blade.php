@@ -1,19 +1,70 @@
 <div>
     <p class="eyebrow">Codenyr / Micro-entreprise</p>
-    <h1>Comptabilité et URSSAF</h1>
-    <p>Retrouve les encaissements du mois et estime le montant à mettre de côté. Tu peux préparer ton activité en faisant varier les options.</p>
+    <div class="dash-head">
+        <div>
+            <h1>Comptabilité et URSSAF</h1>
+            <p>Ce que tu as encaissé, ce que tu déclares et ce que tu mets de côté.</p>
+        </div>
+        <div class="field accounting-month"><label for="accounting-month">Mois des encaissements</label><input id="accounting-month" type="month" min="2000-01" max="2099-12" wire:model.live="month"></div>
+    </div>
     @include('livewire.admin.commercial-errors')
 
-    <section class="admin-panel">
-        <div class="form-grid">
-            <div class="field"><label for="accounting-month">Mois des encaissements</label><input id="accounting-month" type="month" min="2000-01" max="2099-12" wire:model.live="month"></div>
-            <div><p>Seuls les paiements enregistrés sur les factures sont comptabilisés, à leur date d’encaissement. Les factures impayées ne sont pas du chiffre d’affaires encaissé.</p><a class="button button-secondary" href="{{ route('admin.billing.invoices.index') }}">Factures et règlements</a></div>
-        </div>
-    </section>
+    @if($guidance)<div class="form-alert" role="status"><ul>@foreach($guidance as $message)<li>{{ $message }}</li>@endforeach</ul></div>@endif
 
-    <section class="admin-panel">
-        <h2>Mon régime pour ce mois</h2>
-        <p>Choisis la catégorie qui figurera sur ton inscription URSSAF. Tous les encaissements ci-dessous sont traités dans cette seule catégorie ; ce calcul ne ventile pas les activités mixtes.</p>
+    @if($report)
+        @if($report['warnings'])<div class="form-alert" role="alert"><strong>Récapitulatif incomplet — anomalies à corriger</strong><ul>@foreach($report['warnings'] as $warning)<li>{{ $warning }}</li>@endforeach</ul></div>@endif
+
+        {{-- The answer first: what to declare and what to set aside this month. --}}
+        <section class="accounting-summary" aria-live="polite" aria-label="Résumé du mois {{ $month }}">
+            <div class="accounting-key">
+                <span>Chiffre d’affaires à déclarer (HT)</span>
+                <strong>{{ \App\Services\CommercialCalculator::euros($report['ht']) }}</strong>
+                <small>Encaissé TTC {{ \App\Services\CommercialCalculator::euros($report['ttc']) }} · dont TVA {{ \App\Services\CommercialCalculator::euros($report['vat']) }}</small>
+            </div>
+            <div class="accounting-key is-highlight">
+                <span>À mettre de côté</span>
+                <strong>{{ $estimate ? \App\Services\CommercialCalculator::euros($estimate['total']) : '—' }}</strong>
+                <small>{{ $estimate ? 'Cotisations estimées pour ce mois' : 'Choisis ton activité dans « Mon régime » ci-dessous' }}</small>
+            </div>
+            <div class="accounting-key">
+                <span>Cumul HT depuis janvier</span>
+                <strong>{{ \App\Services\CommercialCalculator::euros($report['year_ht']) }}</strong>
+                <small>Pour suivre les seuils de la micro-entreprise</small>
+            </div>
+        </section>
+
+        @if($estimate)
+            <details class="admin-panel accounting-fold"><summary>Détail du calcul des cotisations</summary>
+                @include('livewire.admin.accounting-estimate', ['calculation' => $estimate])
+                <p>Le HT est la base du calcul URSSAF, sans déduire les dépenses ni les commissions bancaires. Enregistre donc le paiement brut du client. Pour une facture réglée en plusieurs fois, la TVA est répartie au prorata du TTC, avec conservation des centimes au solde.</p>
+            </details>
+        @endif
+        <p class="accounting-note"><small>Estimation au centime sur le CA exact ; les arrondis et le décompte du portail URSSAF font foi. Un mois à zéro reste à déclarer selon tes obligations. Ce module prépare les chiffres, sans transmettre de déclaration ni effectuer de paiement.</small></p>
+
+        <section class="admin-panel">
+            <div class="admin-toolbar">
+                <h2>Encaissements du mois</h2>
+                <div class="button-row">
+                    <a class="button button-secondary" href="{{ route('admin.billing.invoices.index') }}">Factures et règlements</a>
+                    <button type="button" class="button button-secondary" wire:click="export" wire:loading.attr="disabled" @disabled(count($report['warnings']) > 0)>Exporter les encaissements CSV</button>
+                </div>
+            </div>
+            <p><small>Seuls les paiements enregistrés sur les factures sont comptabilisés, à leur date d’encaissement. Les factures impayées ne sont pas du chiffre d’affaires encaissé.</small></p>
+            <div class="table-wrap">
+                <table class="admin-table"><thead><tr><th scope="col">Date</th><th scope="col">Facture / client</th><th scope="col">Règlement</th><th scope="col">TTC</th><th scope="col">TVA</th><th scope="col">HT</th></tr></thead><tbody>
+                    @forelse($report['rows'] as $row)
+                        <tr wire:key="receipt-{{ $row['id'] }}"><td>{{ \Carbon\CarbonImmutable::parse($row['date'])->format('d/m/Y') }}</td><td><a href="{{ route('admin.billing.invoices.edit', ['id' => $row['invoice_id']]) }}">{{ $row['number'] }}</a><br>{{ $row['client'] }}</td><td>{{ $row['method'] }}<br>{{ $row['reference'] }}</td><td>{{ \App\Services\CommercialCalculator::euros($row['ttc']) }}</td><td>{{ \App\Services\CommercialCalculator::euros($row['vat']) }}</td><td>{{ \App\Services\CommercialCalculator::euros($row['ht']) }}</td></tr>
+                    @empty<tr><td colspan="6">Aucun encaissement enregistré pour ce mois.</td></tr>@endforelse
+                </tbody></table>
+            </div>
+            <p><small>Les paiements annulés sont exclus. L’archivage d’une facture ou d’un projet ne retire pas ses encaissements. Les corrections de paiement recalculent ce récapitulatif ; conserve ton export lors de chaque déclaration. Les recettes externes doivent d’abord être enregistrées dans Factures et règlements. Les remboursements et régularisations URSSAF ne sont pas automatisés.</small></p>
+        </section>
+    @endif
+
+    {{-- Settings: rarely changed, folded unless the activity is still missing. --}}
+    <details class="admin-panel accounting-fold" wire:ignore.self @if(empty($options['activity'])) open @endif>
+        <summary>Mon régime pour ce mois <small>activité, ACRE, versement libératoire, taux</small></summary>
+        <p>Choisis la catégorie qui figurera sur ton inscription URSSAF. Tous les encaissements ci-dessus sont traités dans cette seule catégorie ; ce calcul ne ventile pas les activités mixtes.</p>
         <form wire:submit="saveSettings">
             <div class="field"><label for="accounting-activity">Activité déclarée</label><select id="accounting-activity" wire:model.live="options.activity"><option value="">Choisir une catégorie</option>@foreach($profiles as $key => $profile)<option value="{{ $key }}">{{ $profile['label'] }}</option>@endforeach</select></div>
             <div class="form-grid" style="margin-top:20px">
@@ -40,48 +91,16 @@
             <div class="field"><label for="other-rate">Autres contributions proportionnelles applicables (%)</label><input id="other-rate" inputmode="decimal" wire:model.live.debounce.400ms="options.other_rate"><small>0 par défaut. À compléter notamment si une taxe de chambre consulaire t’est applicable. La CFE et les charges fixes ne sont pas calculées ici.</small></div>
             <button class="button button-primary" wire:loading.attr="disabled">Enregistrer les options de ce mois</button>
         </form>
-    </section>
+    </details>
 
-    @if($guidance)<div class="form-alert" role="status"><ul>@foreach($guidance as $message)<li>{{ $message }}</li>@endforeach</ul></div>@endif
-    @if($report)
-        @if($report['warnings'])<div class="form-alert" role="alert"><strong>Récapitulatif incomplet — anomalies à corriger</strong><ul>@foreach($report['warnings'] as $warning)<li>{{ $warning }}</li>@endforeach</ul></div>@endif
-        <section class="admin-panel" aria-live="polite">
-            <h2>Encaissements réels · {{ $month }}</h2>
-            <div class="form-grid">
-                <div><p>Encaissé TTC</p><h3>{{ \App\Services\CommercialCalculator::euros($report['ttc']) }}</h3></div>
-                <div><p>Part de TVA</p><h3>{{ \App\Services\CommercialCalculator::euros($report['vat']) }}</h3></div>
-                <div><p><strong>Chiffre d’affaires encaissé HT</strong></p><h3>{{ \App\Services\CommercialCalculator::euros($report['ht']) }}</h3></div>
-                <div><p>Cumul HT de janvier à ce mois</p><h3>{{ \App\Services\CommercialCalculator::euros($report['year_ht']) }}</h3></div>
-            </div>
-            <p>Le HT est la base du calcul URSSAF, sans déduire les dépenses ni les commissions bancaires. Enregistre donc le paiement brut du client. Pour une facture réglée en plusieurs fois, la TVA est répartie au prorata du TTC, avec conservation des centimes au solde.</p>
-            @if($estimate)
-                @include('livewire.admin.accounting-estimate', ['calculation' => $estimate])
-            @endif
-            <p><small>Estimation au centime sur le CA exact ; les arrondis et le décompte du portail URSSAF font foi. Un mois à zéro reste à déclarer selon tes obligations. Ce module prépare les chiffres, sans transmettre de déclaration ni effectuer de paiement.</small></p>
-        </section>
-
-        <section class="admin-panel">
-            <h2>Détail des encaissements</h2>
-            <button type="button" class="button button-secondary" wire:click="export" wire:loading.attr="disabled" @disabled(count($report['warnings']) > 0)>Exporter les encaissements CSV</button>
-            <div class="table-wrap">
-                <table class="admin-table"><thead><tr><th scope="col">Date</th><th scope="col">Facture / client</th><th scope="col">Règlement</th><th scope="col">TTC</th><th scope="col">TVA</th><th scope="col">HT</th></tr></thead><tbody>
-                    @forelse($report['rows'] as $row)
-                        <tr wire:key="receipt-{{ $row['id'] }}"><td>{{ \Carbon\CarbonImmutable::parse($row['date'])->format('d/m/Y') }}</td><td><a href="{{ route('admin.billing.invoices.edit', ['id' => $row['invoice_id']]) }}">{{ $row['number'] }}</a><br>{{ $row['client'] }}</td><td>{{ $row['method'] }}<br>{{ $row['reference'] }}</td><td>{{ \App\Services\CommercialCalculator::euros($row['ttc']) }}</td><td>{{ \App\Services\CommercialCalculator::euros($row['vat']) }}</td><td>{{ \App\Services\CommercialCalculator::euros($row['ht']) }}</td></tr>
-                    @empty<tr><td colspan="6">Aucun encaissement enregistré pour ce mois.</td></tr>@endforelse
-                </tbody></table>
-            </div>
-            <p><small>Les paiements annulés sont exclus. L’archivage d’une facture ou d’un projet ne retire pas ses encaissements. Les corrections de paiement recalculent ce récapitulatif ; conserve ton export lors de chaque déclaration. Les recettes externes doivent d’abord être enregistrées dans Factures et règlements. Les remboursements et régularisations URSSAF ne sont pas automatisés.</small></p>
-        </section>
-    @endif
-
-    <section class="admin-panel">
-        <h2>Préparer mon activité</h2>
+    <details class="admin-panel accounting-fold" wire:ignore.self @if($simulation) open @endif>
+        <summary>Préparer mon activité <small>simuler un chiffre d’affaires</small></summary>
         <label class="commercial-checkbox"><input type="checkbox" wire:model.live="simulation"> Tester un chiffre d’affaires fictif</label>
         @if($simulation)
             <div class="field"><label for="simulated-revenue">Chiffre d’affaires mensuel HT à simuler (€)</label><input id="simulated-revenue" inputmode="decimal" wire:model.live.debounce.400ms="simulatedRevenue"></div>
             <p>Simulation uniquement : ce montant n’est ajouté ni aux factures ni aux encaissements. Les options choisies plus haut s’appliquent.</p>
             @if($simulated)@include('livewire.admin.accounting-estimate', ['calculation' => $simulated])@endif
         @endif
-    </section>
-    <details class="admin-panel"><summary>Sources officielles et périmètre</summary><p>Aide au suivi mensuel d’une micro-entreprise à activité unique, pas une comptabilité générale ni une déclaration de TVA. Vérifie ta catégorie, ton éligibilité aux options et tes taux après ton inscription.</p><ul>@foreach(config('urssaf.sources') as $label => $url)<li><a href="{{ $url }}" target="_blank" rel="noopener noreferrer">{{ $label }}</a></li>@endforeach</ul><p>Barèmes vérifiés le 9 octobre 2026.</p></details>
+    </details>
+    <details class="admin-panel accounting-fold"><summary>Sources officielles et périmètre</summary><p>Aide au suivi mensuel d’une micro-entreprise à activité unique, pas une comptabilité générale ni une déclaration de TVA. Vérifie ta catégorie, ton éligibilité aux options et tes taux après ton inscription.</p><ul>@foreach(config('urssaf.sources') as $label => $url)<li><a href="{{ $url }}" target="_blank" rel="noopener noreferrer">{{ $label }}</a></li>@endforeach</ul><p>Barèmes vérifiés le 9 octobre 2026.</p></details>
 </div>

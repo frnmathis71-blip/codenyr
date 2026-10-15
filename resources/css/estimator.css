@@ -1,0 +1,451 @@
+/* Budget estimator (services page). */
+.estimator-section {
+    padding-top: 40px;
+    scroll-margin-top: 90px;
+}
+.estimator {
+    border: 1px solid var(--cn-border);
+    border-radius: var(--cn-radius-lg);
+    background: var(--cn-surface);
+    overflow: hidden;
+}
+.estimator [x-cloak] {
+    display: none !important;
+}
+
+/* Steps bar */
+.estimator-steps {
+    display: flex;
+    gap: 4px;
+    margin: 0;
+    padding: 14px 18px;
+    list-style: none;
+    border-bottom: 1px solid var(--cn-border);
+    overflow-x: auto;
+    scrollbar-width: none;
+}
+.estimator-steps button {
+    display: inline-flex;
+    align-items: center;
+    gap: 9px;
+    padding: 8px 14px 8px 8px;
+    border: 0;
+    border-radius: 999px;
+    background: none;
+    color: var(--cn-muted);
+    font: inherit;
+    font-size: 14px;
+    white-space: nowrap;
+    cursor: pointer;
+    transition:
+        background 0.2s var(--cn-ease),
+        color 0.2s var(--cn-ease);
+}
+.estimator-steps button:disabled {
+    cursor: default;
+    opacity: 0.5;
+}
+.estimator-steps button:not(:disabled):hover {
+    color: var(--cn-white);
+}
+.estimator-step-index {
+    display: grid;
+    place-items: center;
+    width: 24px;
+    height: 24px;
+    border: 1px solid var(--cn-border);
+    border-radius: 50%;
+    font-size: 12px;
+    font-weight: 600;
+}
+.estimator-steps .is-current {
+    background: var(--cn-card);
+    color: var(--cn-white);
+}
+.estimator-steps .is-current .estimator-step-index {
+    border-color: var(--cn-blue);
+    background: var(--cn-blue);
+    color: #fff;
+}
+.estimator-steps .is-done .estimator-step-index {
+    border-color: var(--cn-accent);
+    color: var(--cn-accent);
+}
+
+/* Layout */
+.estimator-body {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) 340px;
+}
+.estimator-panel {
+    padding: 30px;
+    outline: none;
+}
+.estimator fieldset {
+    margin: 0;
+    padding: 0;
+    border: 0;
+    min-width: 0;
+}
+.estimator legend {
+    margin-bottom: 8px;
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    color: var(--cn-white);
+}
+.estimator-hint {
+    margin: 0 0 20px;
+    font-size: 14px;
+    color: var(--cn-muted);
+}
+.estimator-hint span + span {
+    margin-left: 4px;
+}
+
+/* Choice cards (offers, maintenance) */
+.estimator-offers,
+.estimator-plans {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 12px;
+    margin-top: 18px;
+}
+.estimator-choice {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 20px;
+    border: 1px solid var(--cn-border);
+    border-radius: var(--cn-radius);
+    background: var(--cn-bg);
+    color: var(--cn-text);
+    font: inherit;
+    text-align: left;
+    cursor: pointer;
+    transition:
+        border-color 0.2s var(--cn-ease),
+        background 0.2s var(--cn-ease),
+        transform 0.2s var(--cn-ease);
+}
+.estimator-choice:hover {
+    border-color: #4b6082;
+    transform: translateY(-2px);
+}
+.estimator-choice:has(input:focus-visible) {
+    outline: 2px solid var(--cn-accent);
+    outline-offset: 2px;
+}
+.estimator-choice strong {
+    font-size: 17px;
+    font-weight: 600;
+    color: var(--cn-white);
+}
+.estimator-choice span {
+    font-size: 14px;
+    line-height: 1.5;
+    color: var(--cn-muted);
+}
+.estimator-choice small {
+    margin-top: auto;
+    padding-top: 6px;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--cn-accent);
+}
+.estimator-choice.is-selected {
+    border-color: var(--cn-blue);
+    background: color-mix(in srgb, var(--cn-blue) 12%, var(--cn-bg));
+    box-shadow: inset 0 0 0 1px var(--cn-blue);
+}
+
+/* Counters */
+.estimator-counter {
+    display: inline-flex;
+    align-items: center;
+    gap: 18px;
+    margin-bottom: 18px;
+    padding: 10px;
+    border: 1px solid var(--cn-border);
+    border-radius: 999px;
+    background: var(--cn-bg);
+}
+.estimator-counter output {
+    min-width: 110px;
+    text-align: center;
+    color: var(--cn-text);
+}
+.estimator-counter output strong {
+    font-size: 28px;
+    font-weight: 600;
+    color: var(--cn-white);
+}
+.estimator-counter button,
+.estimator-mini-counter button {
+    display: grid;
+    place-items: center;
+    width: 44px;
+    height: 44px;
+    border: 1px solid var(--cn-border);
+    border-radius: 50%;
+    background: var(--cn-card);
+    color: var(--cn-white);
+    font: inherit;
+    font-size: 20px;
+    cursor: pointer;
+    transition: border-color 0.2s var(--cn-ease);
+}
+.estimator-counter button:hover:not(:disabled),
+.estimator-mini-counter button:hover:not(:disabled) {
+    border-color: var(--cn-blue);
+}
+.estimator-counter button:disabled,
+.estimator-mini-counter button:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+
+/* Options */
+.estimator-options {
+    display: grid;
+    gap: 8px;
+}
+.estimator-option {
+    border: 1px solid var(--cn-border);
+    border-radius: var(--cn-radius);
+    background: var(--cn-bg);
+    transition: border-color 0.2s var(--cn-ease);
+}
+.estimator-option.is-selected {
+    border-color: var(--cn-blue);
+    background: color-mix(in srgb, var(--cn-blue) 10%, var(--cn-bg));
+}
+.estimator-option-toggle {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    height: 100%;
+    padding: 14px 16px;
+    border: 0;
+    background: none;
+    color: inherit;
+    font: inherit;
+    text-align: left;
+}
+button.estimator-option-toggle {
+    cursor: pointer;
+}
+.estimator-check {
+    display: grid;
+    flex-shrink: 0;
+    place-items: center;
+    width: 22px;
+    height: 22px;
+    border: 1px solid var(--cn-border);
+    border-radius: 6px;
+    color: transparent;
+    font-size: 14px;
+}
+.estimator-option.is-selected .estimator-check {
+    border-color: var(--cn-blue);
+    background: var(--cn-blue);
+    color: #fff;
+}
+.estimator-option-text {
+    display: flex;
+    flex: 1;
+    flex-direction: column;
+    gap: 2px;
+    min-width: 0;
+}
+.estimator-option-text strong {
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--cn-white);
+}
+.estimator-option-text small {
+    display: -webkit-box;
+    -webkit-box-orient: vertical;
+    -webkit-line-clamp: 2;
+    overflow: hidden;
+    font-size: 13px;
+    line-height: 1.4;
+    color: var(--cn-muted);
+}
+.estimator-option-price {
+    flex-shrink: 0;
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--cn-accent);
+    white-space: nowrap;
+}
+.estimator-mini-counter {
+    display: inline-flex;
+    flex-shrink: 0;
+    align-items: center;
+    gap: 10px;
+    color: var(--cn-white);
+    font-weight: 600;
+}
+.estimator-mini-counter button {
+    width: 34px;
+    height: 34px;
+    font-size: 17px;
+}
+
+.estimator-nav {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    margin-top: 28px;
+}
+
+/* Live summary */
+.estimator-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    padding: 30px 28px;
+    border-left: 1px solid var(--cn-border);
+    background: var(--cn-navy-surface);
+}
+.estimator-summary-title {
+    margin: 0;
+    font-size: 12px;
+    font-weight: 500;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+    color: var(--cn-accent);
+}
+.estimator-summary > div {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+.estimator-empty {
+    margin: 0;
+    color: var(--cn-muted);
+}
+.estimator-lines {
+    display: grid;
+    gap: 8px;
+    margin: 0;
+    padding: 0 0 16px;
+    list-style: none;
+    border-bottom: 1px solid rgb(255 255 255 / 0.1);
+    font-size: 14px;
+}
+.estimator-lines li {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+    color: var(--cn-text);
+}
+.estimator-lines li span:last-child {
+    white-space: nowrap;
+    color: var(--cn-white);
+}
+.estimator-range {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    margin: 0;
+}
+.estimator-range small {
+    font-size: 13px;
+    color: var(--cn-muted);
+}
+.estimator-range strong {
+    font-size: clamp(26px, 3vw, 32px);
+    font-weight: 600;
+    letter-spacing: -0.03em;
+    color: var(--cn-white);
+}
+.estimator-monthly,
+.estimator-note {
+    margin: 0;
+    font-size: 14px;
+    color: var(--cn-text);
+}
+.estimator-note {
+    color: var(--cn-muted);
+}
+.estimator-cta {
+    justify-content: center;
+    width: 100%;
+    margin-top: 6px;
+}
+.estimator-restart {
+    align-self: center;
+    border: 0;
+    background: none;
+    color: var(--cn-muted);
+    font: inherit;
+    font-size: 14px;
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    cursor: pointer;
+}
+.estimator-restart:hover {
+    color: var(--cn-white);
+}
+.estimator-legal {
+    margin: auto 0 0;
+    padding-top: 10px;
+    font-size: 12px;
+    line-height: 1.5;
+    color: var(--cn-muted);
+}
+
+@media (max-width: 900px) {
+    .estimator-body {
+        grid-template-columns: 1fr;
+    }
+    .estimator-summary {
+        border-top: 1px solid var(--cn-border);
+        border-left: 0;
+    }
+}
+@media (max-width: 640px) {
+    .estimator-panel,
+    .estimator-summary {
+        padding: 22px 18px;
+    }
+    .estimator-offers,
+    .estimator-plans {
+        grid-template-columns: 1fr;
+    }
+    .estimator-steps {
+        padding: 10px 12px;
+    }
+    .estimator-steps button {
+        padding-right: 10px;
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .estimator-choice:hover {
+        transform: none;
+    }
+}
+@media (min-width: 901px) {
+    /* Keep the estimate in view while scrolling a long list of options. */
+    .estimator-summary > div {
+        position: sticky;
+        top: 100px;
+    }
+}
+@media (max-width: 640px) {
+    /* Four jump links wrap on phones: a soft rectangle reads better than a stretched pill. */
+    .page-jump {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        border-radius: var(--cn-radius-lg);
+    }
+    .page-jump a {
+        padding: 10px 8px;
+        border-radius: var(--cn-radius);
+        text-align: center;
+    }
+}

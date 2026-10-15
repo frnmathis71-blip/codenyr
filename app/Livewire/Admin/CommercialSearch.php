@@ -8,9 +8,11 @@ use App\Models\Document;
 use App\Models\Invoice;
 use App\Models\Quote;
 use Illuminate\View\View;
+use Livewire\Attributes\Url;
 
 class CommercialSearch extends AdminComponent
 {
+    #[Url(as: 'q', except: '')]
     public string $search = '';
 
     public function render(): View

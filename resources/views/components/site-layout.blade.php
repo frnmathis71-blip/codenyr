@@ -1,4 +1,4 @@
-@props(['title' => 'Création de sites internet à Chalon-sur-Saône', 'description' => 'Codenyr développe des sites internet sur mesure pour les artisans, commerçants et entreprises à Chalon-sur-Saône. Design soigné, tarifs transparents et accompagnement local.', 'image' => null, 'noindex' => false])
+@props(['title' => 'Création de sites internet à Chalon-sur-Saône', 'description' => 'Création de sites internet sur mesure à Chalon-sur-Saône pour artisans, commerçants et TPE. Design soigné, prix affichés dès 490 €, accompagnement local.', 'image' => null, 'noindex' => false])
 <!DOCTYPE html>
 <html lang="fr" class="dark">
 <head>
@@ -22,13 +22,28 @@
     <meta name="twitter:description" content="{{ $description }}">
     <meta name="twitter:image" content="{{ $image ?? asset('images/social-preview.png') }}">
     <meta name="theme-color" content="#0D1117">
-    <link rel="icon" type="image/png" href="{{ asset('images/codenyr.png') }}">
+    <link rel="icon" type="image/png" href="{{ asset('favicon-48.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}?v=codenyr">
     <meta name="apple-mobile-web-app-title" content="Codenyr">
     @fonts
-    @vite(['resources/css/app.css', 'resources/js/app.js'])
+    @vite(['resources/css/site.css', 'resources/js/site.js'])
     @livewireStyles
-    <script type="application/ld+json">{!! json_encode(['@context' => 'https://schema.org', '@type' => 'ProfessionalService', 'name' => 'Codenyr', 'url' => url('/'), 'logo' => asset('images/codenyr.png'), 'email' => config('codenyr.email'), 'areaServed' => ['@type' => 'City', 'name' => 'Chalon-sur-Saône']], JSON_UNESCAPED_SLASHES | JSON_HEX_TAG) !!}</script>
+    @php
+        // Local business card for search engines, built from the same data as the legal notice.
+        preg_match('/^(.*?),\s*(\d{5})\s+([^,]+)/u', (string) config('codenyr.legal.address'), $postal);
+        $organization = array_filter([
+            '@context' => 'https://schema.org', '@type' => 'ProfessionalService', 'name' => 'Codenyr', 'url' => url('/'),
+            'logo' => asset('images/codenyr.png'), 'image' => asset('images/social-preview.png'), 'email' => config('codenyr.email'),
+            'telephone' => config('codenyr.legal.phone') ? '+33'.ltrim(preg_replace('/\D/', '', config('codenyr.legal.phone')), '0') : null,
+            'founder' => ['@type' => 'Person', 'name' => config('codenyr.legal.owner')],
+            'priceRange' => 'À partir de '.number_format(min(array_column(app(\App\Services\PricingCatalog::class)->offers(), 'amount_cents')) / 100, 0, ',', ' ').' €',
+            'address' => $postal ? ['@type' => 'PostalAddress', 'streetAddress' => $postal[1], 'postalCode' => $postal[2], 'addressLocality' => trim($postal[3]), 'addressCountry' => 'FR'] : null,
+            'areaServed' => [['@type' => 'City', 'name' => 'Chalon-sur-Saône'], ['@type' => 'AdministrativeArea', 'name' => 'Saône-et-Loire'], ['@type' => 'Country', 'name' => 'France']],
+            'sameAs' => array_values(config('codenyr.social')) ?: null,
+        ]);
+    @endphp
+    <script type="application/ld+json">{!! json_encode($organization, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}</script>
+    @stack('head')
 </head>
 <body class="site-body">
     <a class="skip-link" href="#main">Aller au contenu</a>
@@ -36,7 +51,7 @@
         <div class="container header-inner">
             <a href="{{ route('home') }}" aria-label="Codenyr, accueil" class="brand"><img src="{{ asset('images/codenyr-logo.webp') }}" width="660" height="220" alt="Codenyr"></a>
             <nav class="desktop-nav" aria-label="Navigation principale">
-                @foreach(['home' => 'Accueil', 'services' => 'Services', 'projects' => 'Réalisations', 'reviews' => 'Avis clients', 'pricing' => 'Tarifs', 'about' => 'À propos', 'contact' => 'Contact'] as $route => $label)
+                @foreach(['home' => 'Accueil', 'services' => 'Offres et tarifs', 'projects' => 'Réalisations', 'reviews' => 'Avis clients', 'about' => 'À propos', 'contact' => 'Contact'] as $route => $label)
                     <a href="{{ route($route) }}" @class(['active' => request()->routeIs($route)]) @if(request()->routeIs($route)) aria-current="page" @endif>{{ $label }}</a>
                 @endforeach
             </nav>
@@ -51,7 +66,7 @@
             <button type="button" x-ref="menuButton" class="menu-toggle" @click="open = !open" :aria-expanded="open" aria-controls="mobile-menu" :aria-label="open ? 'Fermer le menu' : 'Ouvrir le menu'" aria-label="Ouvrir le menu"><span x-text="open ? 'Fermer' : 'Menu'">Menu</span> <span aria-hidden="true"><x-ui-icon name="menu" /></span></button>
         </div>
         <nav id="mobile-menu" class="mobile-nav" x-show="open" x-cloak @click="if ($event.target.closest('a')) open = false" aria-label="Navigation mobile">
-            @foreach(['home' => 'Accueil', 'services' => 'Services', 'projects' => 'Réalisations', 'reviews' => 'Avis clients', 'pricing' => 'Tarifs', 'about' => 'À propos', 'contact' => 'Contact', 'quote' => 'Demander un devis'] as $route => $label)<a href="{{ route($route) }}" @if(request()->routeIs($route)) aria-current="page" @endif>{{ $label }}</a>@endforeach
+            @foreach(['home' => 'Accueil', 'services' => 'Offres et tarifs', 'projects' => 'Réalisations', 'reviews' => 'Avis clients', 'about' => 'À propos', 'contact' => 'Contact', 'quote' => 'Demander un devis'] as $route => $label)<a href="{{ route($route) }}" @if(request()->routeIs($route)) aria-current="page" @endif>{{ $label }}</a>@endforeach
             @auth
                 <a href="{{ route('dashboard') }}">{{ auth()->user()->is_admin ? 'Administration' : 'Mon espace client' }}</a>
             @else
@@ -63,11 +78,18 @@
     <footer class="site-footer">
         <div class="container footer-top">
             <div><a class="brand footer-brand" href="{{ route('home') }}"><img src="{{ asset('images/codenyr-logo.webp') }}" alt="Codenyr" width="660" height="220" loading="lazy"></a><p>Le web, pensé pour votre activité.<br>Chalon-sur-Saône & partout en France.</p></div>
-            <div><span class="eyebrow">Explorer</span><a href="{{ route('services') }}">Services</a><a href="{{ route('projects') }}">Réalisations</a><a href="{{ route('pricing') }}">Tarifs</a><a href="{{ route('reviews') }}">Avis clients</a></div>
+            <div><span class="eyebrow">Explorer</span><a href="{{ route('services') }}">Offres et tarifs</a><a href="{{ route('projects') }}">Réalisations</a><a href="{{ route('reviews') }}">Avis clients</a></div>
             <div><span class="eyebrow">Échangeons</span><a href="mailto:{{ config('codenyr.email') }}">{{ config('codenyr.email') }}</a><a href="{{ route('quote') }}">Demander un devis <span class="mobile-decoration" aria-hidden="true"><x-ui-icon name="arrow-up-right" /></span></a>@foreach(config('codenyr.social') as $name => $url)<a href="{{ $url }}" rel="noopener noreferrer" target="_blank">{{ $name }} <x-ui-icon name="arrow-up-right" /></a>@endforeach</div>
         </div>
         <div class="container footer-bottom"><span>© {{ date('Y') }} Codenyr. Tous droits réservés.</span><div><a href="{{ route('legal') }}">Mentions légales</a><a href="{{ route('privacy') }}">Confidentialité</a><a href="{{ route('terms') }}">CGU</a><button type="button" class="cookie-settings" id="cookie-settings">Gérer les cookies</button></div><span>Conçu avec soin. Développé sur mesure.</span></div>
     </footer>
+    @unless(request()->routeIs('quote', 'contact', 'customer.*'))
+        {{-- Phones only: the main action always within thumb reach. --}}
+        <nav class="mobile-cta" aria-label="Action rapide">
+            <a class="mobile-cta-secondary" href="{{ route('services') }}#estimer">Estimer mon prix</a>
+            <a class="button button-primary" href="{{ route('quote') }}">Demander un devis</a>
+        </nav>
+    @endunless
     <x-cookie-banner />
     @livewireScriptConfig
 </body>

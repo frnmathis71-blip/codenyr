@@ -1,7 +1,6 @@
 /* Decorative glyphs are omitted on phone layouts; labels and rating controls remain. */
 @media (max-width: 767px) {
     .mobile-decoration,
-    .home-note-icon,
     .success-icon {
         display: none !important;
     }

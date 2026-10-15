@@ -1,3 +1,74 @@
 :root{--paper:#f1f2e9;--ink:#293c2b;--muted:#626e5d;--accent:#587343;--surface:#e0e6d5;--line:#293c2b30}.hero-image img{object-position:center}.collection-search{display:block;width:min(100%,520px);padding:14px;margin:10px 0 35px;border:1px solid var(--line);background:var(--paper);color:var(--ink)}.search-label{font-size:12px}.collection-status{font-size:12px;margin-top:22px}.manager-toolbar{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:25px}.manager-toolbar .filters,.manager-toolbar .button{margin:0}.manager-row{display:flex;align-items:center;justify-content:space-between;gap:25px;padding:25px 0;border-top:1px solid var(--line)}.manager-row h3{font-size:24px;margin:10px 0}.manager-row p{font-size:12px;color:var(--muted)}.entry-state{font-size:10px;text-transform:uppercase;letter-spacing:.12em;color:var(--accent)}.entry-actions{display:flex;gap:10px}.entry-actions button,.manager-feedback button{padding:10px 15px;background:var(--surface);color:var(--ink);border:1px solid var(--line);font-size:12px}.manager-feedback{font-size:13px;line-height:1.8;margin-bottom:20px}.reset-content{background:none;border:0;border-bottom:1px solid var(--line);color:var(--ink)}.storage-note{font-size:12px;color:var(--muted);margin-top:20px;line-height:1.8}#editor{width:min(600px,calc(100% - 32px));max-height:calc(100dvh - 40px);overflow:auto;background:var(--paper);color:var(--ink);border:1px solid var(--line);padding:30px}#editor::backdrop{background:#132719a6;backdrop-filter:blur(4px)}.editor-head{display:flex;justify-content:space-between;gap:20px;align-items:start}.editor-head h2{font-size:30px}.editor-head button{background:none;border:0;color:var(--ink);font-size:26px}#editor label{display:block;font-size:12px;margin:17px 0 8px}#editor input:not([type=hidden]),#editor textarea,#editor select{width:100%;padding:12px;border:1px solid var(--line);background:var(--paper);color:var(--ink)}body:has(#editor[open]){overflow:hidden}.project p{white-space:pre-line;overflow-wrap:anywhere}.manager-row h3{overflow-wrap:anywhere}@media(max-width:600px){.manager-toolbar,.manager-row{align-items:start;flex-direction:column}.manager-toolbar .filters{gap:8px}#editor{padding:22px}.entry-actions{width:100%}.entry-actions button{flex:1}}
 
 [hidden]{display:none!important}.demo-login{display:grid;grid-template-columns:1.2fr 1fr;gap:80px;align-items:center;min-height:70vh}.demo-login form,.admin-card{padding:30px;background:var(--surface);border:1px solid var(--line)}.demo-login h1{font-size:clamp(48px,6vw,86px)}.demo-login h2{font-size:32px;margin-bottom:25px}.demo-login label,.demo-workspace label{display:block;font-size:13px;margin:18px 0 8px}.demo-login input,.demo-workspace input,.demo-workspace textarea,.demo-workspace select{display:block;width:100%;padding:12px;background:var(--paper);color:var(--ink);border:1px solid var(--line);margin-top:8px}.demo-login .button{margin-top:25px;width:100%}.password-field{display:flex;align-items:center;gap:8px}.password-field input{min-width:0}.password-field button,.demo-workspace button:not(.button),#demo-logout{padding:10px;color:var(--ink);background:var(--paper);border:1px solid var(--line)}.demo-admin{display:grid;grid-template-columns:245px minmax(0,1fr);max-width:1500px;margin:35px auto 80px;border:1px solid var(--line)}.demo-sidebar{padding:30px 22px;background:var(--surface)}.demo-sidebar h2{font-size:36px}.demo-sidebar nav{display:grid;gap:8px;margin:35px 0}.demo-sidebar nav button{text-align:left;padding:14px;border:0;background:transparent;color:var(--ink)}.demo-sidebar nav button[aria-pressed=true]{background:var(--ink);color:var(--paper)}.demo-workspace{padding:30px 40px;min-width:0}.admin-topbar{display:flex;justify-content:space-between;gap:15px;font-size:11px;letter-spacing:.08em;border-bottom:1px solid var(--line);padding-bottom:20px}.demo-workspace h1{font-size:60px;margin:25px 0}.demo-workspace h2{font-size:32px;margin:18px 0 25px}.demo-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:30px 0}.demo-metrics .admin-card{padding:22px 16px}.demo-metrics strong{font-size:30px}.demo-metrics p{font-size:12px;line-height:1.5}.dashboard-columns{display:grid;grid-template-columns:1fr 1fr;gap:20px}.dashboard-columns h2{font-size:24px}.dashboard-columns .manager-row h3{font-size:18px}.inline-form{display:flex;gap:15px;align-items:end;margin:25px 0}.inline-form label{flex:1;min-width:0}.inline-form .button{margin-bottom:8px;white-space:nowrap}.request-controls{width: min(100%,340px)}#business-feedback{font-size:13px;min-height:20px;line-height:1.8}.demo-workspace .manager-toolbar{margin-top:30px}.demo-workspace .manager-row{align-items:start}.demo-workspace textarea{resize:vertical}@media(max-width:1050px){.demo-metrics{grid-template-columns:repeat(2,1fr)}.dashboard-columns{grid-template-columns:1fr}.demo-admin{grid-template-columns:210px minmax(0,1fr)}.demo-workspace{padding:25px}.inline-form{flex-wrap:wrap}.demo-login{gap:30px}}@media(max-width:700px){.demo-admin{display:block;margin:20px 16px}.demo-sidebar nav{grid-template-columns:1fr 1fr;margin:20px 0}.demo-sidebar{padding:20px}.demo-sidebar .storage-note{margin:10px 0}.demo-workspace{padding:20px}.demo-workspace h1{font-size:46px}.demo-login{grid-template-columns:1fr;gap:25px}.demo-login form{padding:22px}.admin-topbar{flex-wrap:wrap}.inline-form{display:grid}.request-controls{width:100%}.demo-workspace .manager-row{flex-direction:column}.demo-metrics strong{font-size:26px}}
+
+/* ---------- Pro-only studio options: its own identity next to the vitrine ---------- */
+/* Immersive opening: full-bleed photo with the message laid over it. */
+:root[data-layout=immersive] .hero{position:relative;display:flex;align-items:flex-end;width:100%;max-width:none;min-height:min(82vh,780px);margin:0;padding:0;overflow:hidden}
+:root[data-layout=immersive] .hero-image{position:absolute;inset:0}
+:root[data-layout=immersive] .hero-image img{height:100%;border-radius:0!important}
+:root[data-layout=immersive] .hero-image::after{content:"";position:absolute;inset:0;background:linear-gradient(180deg,#0a120c10 25%,#0a120cd9)}
+:root[data-layout=immersive] .hero-image figcaption{display:none}
+:root[data-layout=immersive] .hero-copy{position:relative;z-index:1;width:min(1320px,calc(100% - 100px));margin:0 auto;padding-bottom:72px;color:#fff}
+:root[data-layout=immersive] .hero-copy :is(h1,em,.eyebrow,.hero-foot){color:#fff}
+:root[data-layout=immersive] .hero-copy em{color:#d8e6c2}
+:root[data-layout=immersive] .hero .lead{color:#ffffffd9;max-width:560px}
+:root[data-layout=immersive] .hero .button{background:#fff;color:#1d2a1f;border-color:#fff}
+:root[data-layout=immersive][data-buttons=outline] .hero .button{background:transparent;color:#fff}
+
+/* Cards: content as raised tiles, typical of a site the client updates. */
+:root[data-cards=tiles] .projects{grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:24px}
+:root[data-cards=tiles] .project{overflow:hidden;background:var(--surface);border:1px solid var(--line);transition:transform .25s ease,box-shadow .25s ease}
+:root[data-cards=tiles] .project:hover{transform:translateY(-4px);box-shadow:0 18px 40px #0000001f}
+:root[data-cards=tiles] .project img{height:240px}
+:root[data-cards=tiles] .project>div{padding:22px 24px 26px}
+:root[data-cards=tiles] .project :is(h2,h3){font-size:24px}
+:root[data-cards=tiles][data-corners=rounded] .project{border-radius:24px}
+:root[data-cards=tiles][data-corners=rounded] .project img{border-radius:0}
+
+/* Sticky header gets a translucent backdrop on the pro site. */
+:root[data-nav=sticky] .header{background:color-mix(in srgb,var(--paper) 88%,transparent);backdrop-filter:blur(12px)}
+
+@media(max-width:800px){:root[data-layout=immersive] .hero{min-height:620px}:root[data-layout=immersive] .hero-copy{width:calc(100% - 40px);padding-bottom:44px}}
+
+/* ==========================================================================
+   Relief — organic and alive (overrides the vitrine's architectural relief).
+   ========================================================================== */
+:root:not([data-decor=flat]){--leaf:42% 58% 70% 30%/45% 45% 55% 55%}
+
+/* Immersive hero: soft rounded base and a leaf-shaped light behind the message. */
+:root:not([data-decor=flat])[data-layout=immersive] .hero{border-radius:0 0 56px 56px}
+:root:not([data-decor=flat])[data-layout=immersive] .hero-copy::before{content:"";position:absolute;z-index:-1;left:-80px;bottom:-60px;width:520px;height:420px;border-radius:var(--leaf);background:radial-gradient(circle at 40% 40%,#587343aa,transparent 70%);filter:blur(10px)}
+
+/* Non-immersive heroes get a leaf mask instead of the vitrine arch. */
+:root:not([data-decor=flat]):not([data-layout=wide]):not([data-layout=immersive]) .hero-image img{border-radius:var(--leaf)}
+:root:not([data-decor=flat]):not([data-layout=wide]):not([data-layout=immersive]) .hero-image::before{border-radius:var(--leaf);border-color:color-mix(in srgb,var(--accent) 60%,transparent)}
+:root:not([data-decor=flat]):not([data-layout=wide]):not([data-layout=immersive]) .hero-image::after{border-radius:50%;background:color-mix(in srgb,var(--accent) 20%,var(--surface))}
+
+/* Intro as a rounded panel with a leaf in the corner instead of the quote mark. */
+:root:not([data-decor=flat]) .intro{border:0;border-radius:40px;padding:64px;background:var(--surface);margin-top:40px}
+:root:not([data-decor=flat]) .intro::after{content:"";right:-60px;top:-60px;width:260px;height:260px;border-radius:var(--leaf);background:color-mix(in srgb,var(--accent) 22%,transparent);-webkit-text-stroke:0;transform:rotate(-20deg)}
+
+/* Tiles: no offset plane, a pill tag and a gentle lift instead. */
+:root:not([data-decor=flat])[data-cards=tiles] .project img{box-shadow:none;transform:none}
+:root:not([data-decor=flat])[data-cards=tiles] .project .eyebrow{display:inline-block;padding:5px 12px;border-radius:999px;background:var(--paper);color:var(--accent)}
+:root:not([data-decor=flat])[data-cards=tiles] .project:hover{transform:translateY(-6px);box-shadow:0 26px 50px -24px #1d2a1f66}
+:root:not([data-decor=flat]):not([data-cards=tiles]) .project img{border-radius:28px}
+:root:not([data-decor=flat]) .editorial>img{border-radius:var(--leaf);box-shadow:none}
+
+/* Pillars: rounded cards with a numbered seed. */
+:root:not([data-decor=flat]) .pillars article{border-top:0;border-radius:28px;background:var(--surface)}
+:root:not([data-decor=flat]) .pillars article>span{display:inline-block;padding:6px 12px;border-radius:999px;background:var(--paper);color:var(--accent)}
+
+/* Invitation: a lush gradient card instead of the vitrine's arch. */
+:root:not([data-decor=flat]) .invitation{border-radius:40px;padding:80px 40px;background:radial-gradient(circle at 15% 20%,color-mix(in srgb,var(--accent) 55%,transparent),transparent 45%),radial-gradient(circle at 85% 90%,color-mix(in srgb,var(--accent) 40%,transparent),transparent 50%),var(--ink);color:var(--paper)}
+:root:not([data-decor=flat]) .invitation em{color:color-mix(in srgb,var(--accent) 45%,var(--paper))}
+:root:not([data-decor=flat]) .invitation::before{inset:auto -60px -80px auto;width:280px;height:280px;border:0;border-radius:var(--leaf);background:#ffffff14}
+:root:not([data-decor=flat]) .invitation .button{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+
+/* Admin workspace: softer, raised cards. */
+:root:not([data-decor=flat]) .demo-admin{border-radius:28px;overflow:hidden;box-shadow:0 40px 80px -40px #1d2a1f55}
+:root:not([data-decor=flat]) :is(.admin-card,.demo-login form){border-radius:22px;box-shadow:0 18px 40px -26px #1d2a1f66}
+:root:not([data-decor=flat]) .demo-sidebar nav button{border-radius:12px}
+
+@media(max-width:800px){:root:not([data-decor=flat]) .intro{padding:36px 24px;border-radius:28px}:root:not([data-decor=flat])[data-layout=immersive] .hero{border-radius:0 0 32px 32px}:root:not([data-decor=flat]) .invitation{padding:56px 22px;border-radius:28px}}

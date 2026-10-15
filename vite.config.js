@@ -9,6 +9,8 @@ export default defineConfig({
             input: [
                 'resources/css/app.css',
                 'resources/js/app.js',
+                'resources/css/site.css',
+                'resources/js/site.js',
                 'resources/js/passkeys.js',
                 'resources/js/demo-landing.js',
                 'resources/js/demo-vitrine.js',

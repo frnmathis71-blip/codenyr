@@ -14,10 +14,12 @@ use App\Livewire\Admin\Pricing;
 use App\Livewire\Admin\PrivacyRequests;
 use App\Livewire\Admin\ProjectDossier;
 use App\Livewire\Admin\Projects;
+use App\Livewire\Admin\Tasks;
 use App\Livewire\Admin\Testimonials;
 use App\Livewire\CustomerReviews;
 use App\Livewire\InquiryForm;
 use App\Models\Lead;
+use App\Models\PrivacyRequest;
 use App\Models\Project;
 use App\Models\Testimonial;
 use App\Services\CommercialOverview;
@@ -36,7 +38,7 @@ Route::get('/demonstrations/canopee/{page?}', function (string $page = 'accueil'
 
     return view('demos.canopee', ['page' => $page]);
 })->name('demo.pro');
-Route::view('/tarifs', 'site.pricing')->name('pricing');
+Route::permanentRedirect('/tarifs', '/services#tarifs')->name('pricing');
 Route::get('/realisations', [SiteController::class, 'projects'])->name('projects');
 Route::get('/avis', [SiteController::class, 'reviews'])->name('reviews');
 Route::get('/realisations/{slug}', [SiteController::class, 'project'])->name('project');
@@ -51,14 +53,14 @@ Route::get('/robots.txt', fn () => response("User-agent: *\nAllow: /\nDisallow: 
 
 Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', fn () => view('admin.dashboard', [
-        'counts' => collect(Lead::STATUSES)->map(fn () => 0)->merge(
-            Lead::whereNull('archived_at')->selectRaw('status, COUNT(*) as total')->groupBy('status')->pluck('total', 'status')
-        ),
+        'counts' => Lead::openStatusCounts(),
         'projectCount' => Project::count(),
         'pendingReviewCount' => Testimonial::where('moderation_status', 'pending')->count(),
+        'privacyRequestCount' => PrivacyRequest::whereNull('resolved_at')->count(),
         'commercial' => app(CommercialOverview::class)->data(),
         'leads' => Lead::whereNull('archived_at')->latest()->limit(8)->get(['firstname', 'lastname', 'company', 'project_type', 'status', 'created_at']),
     ]))->name('dashboard');
+    Route::get('/a-faire', Tasks::class)->name('tasks');
     Route::get('/prospects', Leads::class)->name('leads');
     Route::get('/archives', Leads::class)->defaults('archived', true)->name('archives');
     Route::get('/realisations', Projects::class)->name('projects');

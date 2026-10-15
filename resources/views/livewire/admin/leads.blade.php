@@ -1,6 +1,7 @@
 <div>
     <p class="eyebrow">CRM / Codenyr</p>
     <h1>{{ $archived ? 'Archives' : 'Prospects' }}</h1>
+    <nav class="admin-tabs" aria-label="Affichage des prospects"><a href="{{ route('admin.leads') }}" @if(!$archived) aria-current="page" @endif>En cours</a><a href="{{ route('admin.archives') }}" @if($archived) aria-current="page" @endif>Archivés</a></nav>
     <p>{{ $archived ? 'Les sites terminés sont conservés ici. Restaurez un projet pour reprendre son suivi.' : 'Pour archiver un site terminé, acceptez le devis puis confirmez sa livraison dans le détail du projet.' }}</p>
     @if(session('success'))<div class="flash" role="status">{{ session('success') }}</div>@endif
     @error('archive')<div class="form-alert" role="alert">{{ $message }}</div>@enderror
@@ -11,7 +12,7 @@
     @if($lead)
         <section class="admin-panel">
             <div class="admin-toolbar"><h2>{{ $lead->firstname }} {{ $lead->lastname }}</h2><button type="button" class="button button-secondary" wire:click="close">Fermer</button></div>
-            <p><a class="button button-secondary" href="{{ route('admin.client-projects.index', ['lead' => $lead->id]) }}">+ Créer un projet commercial depuis ce prospect</a></p>
+            <p><a class="button button-primary" href="{{ route('admin.client-projects.index', ['lead' => $lead->id]) }}">Préparer un devis</a> <small>Crée le client et son projet à partir de ce prospect, puis le devis.</small></p>
             <div class="admin-details">
                 <div><strong>Coordonnées</strong><p>{{ $lead->company }}<br><a href="mailto:{{ $lead->email }}">{{ $lead->email }}</a><br>{{ $lead->phone }}</p></div>
                 <div><strong>Projet</strong><p>{{ $lead->project_type }}@if($lead->budget)<br>Ancien budget renseigné : {{ $lead->budget }}@endif<br>Délai : {{ $lead->desired_date ?: 'À définir' }}<br>{{ $lead->website }}</p></div>

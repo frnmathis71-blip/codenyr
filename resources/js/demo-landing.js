@@ -1,4 +1,5 @@
 import '../css/demo-landing.css';
+import { initStudio } from './demo-studio.js';
 
 const coffees = {
     soleil: { name: 'Le Soleil', origin: 'Brésil · Doux & généreux', description: 'Un café rond et réconfortant. Des notes de noisette et de chocolat au lait, pour commencer la journée du bon pied.', notes: ['Noisette', 'Chocolat au lait', 'Tout en rondeur'], tasting: 'Une texture enveloppante, une douceur familière et une finale gourmande. Le Soleil évoque les matins tranquilles et les grandes tablées.', number: '01' },
@@ -22,27 +23,5 @@ document.querySelectorAll('[data-coffee]').forEach((button) => {
     });
 });
 
-const toggle = document.querySelector('#customizer-toggle');
-const panel = document.querySelector('#customizer');
-const form = document.querySelector('#customizer-form');
-toggle.hidden = false;
-function setPanel(open) {
-    panel.hidden = !open;
-    toggle.setAttribute('aria-expanded', String(open));
-    if (open) document.querySelector('#demo-palette').focus({ preventScroll: true });
-    else toggle.focus({ preventScroll: true });
-}
-toggle.addEventListener('click', () => setPanel(panel.hidden));
-document.querySelector('#customizer-close').addEventListener('click', () => setPanel(false));
-document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && !panel.hidden) setPanel(false);
-});
-form.addEventListener('change', (event) => {
-    const control = event.target;
-    document.documentElement.dataset[control.name] = control.value;
-    document.querySelector('.customizer-status').textContent = `Aperçu mis à jour : ${control.selectedOptions[0].textContent}.`;
-});
-form.addEventListener('reset', () => {
-    for (const key of ['palette', 'type', 'layout', 'corners', 'density']) delete document.documentElement.dataset[key];
-    document.querySelector('.customizer-status').textContent = 'Le design initial est rétabli.';
-});
+
+initStudio();

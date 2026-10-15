@@ -338,6 +338,13 @@ class Billing extends AdminComponent
         });
     }
 
+    /** One-click variant of changeStatus() for the status buttons in the quote follow-up panel. */
+    public function setStatus(string $status): void
+    {
+        $this->statusChoice = $status;
+        $this->changeStatus();
+    }
+
     public function duplicate(): void
     {
         abort_unless($this->kind === 'quotes', 404);

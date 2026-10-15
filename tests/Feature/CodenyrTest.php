@@ -35,7 +35,7 @@ beforeEach(function () {
 test('public pages render and include a single main heading', function (string $path) {
     $response = $this->get($path)->assertOk();
     expect(substr_count($response->getContent(), '<h1'))->toBe(1);
-})->with(['/', '/services', '/tarifs', '/realisations', '/a-propos', '/devis', '/contact', '/mentions-legales', '/politique-confidentialite', '/login']);
+})->with(['/', '/services', '/realisations', '/a-propos', '/devis', '/contact', '/mentions-legales', '/politique-confidentialite', '/login']);
 
 test('customer registration is available and validates input', function () {
     $this->get('/register')->assertOk()->assertSee('Créer mon compte client');
@@ -184,4 +184,8 @@ test('mail renders both variants with the complete request', function () {
     $lead = Lead::create(['firstname' => 'Camille', 'lastname' => 'Test', 'email' => 'test@example.test', 'project_type' => 'Site Pro', 'description' => 'Une demande avec des informations détaillées.', 'features' => ['Administration']]);
     (new InquiryReceived($lead, true))->assertSeeInHtml('Camille')->assertSeeInHtml('Administration');
     (new InquiryReceived($lead, false))->assertSeeInHtml('test@example.test')->assertSeeInHtml('Consulter les prospects');
+});
+
+test('the former pricing page permanently redirects to the merged offers page', function () {
+    $this->get('/tarifs')->assertStatus(301)->assertRedirect('/services#tarifs');
 });

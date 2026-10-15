@@ -1,36 +1,6 @@
 import '../css/demo-vitrine.css';
-const form = document.querySelector('#studio-form');
-const fields = [...form.querySelectorAll('select')];
-const key = document.body.dataset.previewKey || 'codenyr-atelier-preview-v1';
-try {
-    const saved = JSON.parse(sessionStorage.getItem(key) || '{}');
-    for (const field of fields) if ([...field.options].some(option => option.value === saved[field.name])) {
-        field.value = saved[field.name];
-        document.documentElement.dataset[field.name] = field.value;
-    }
-} catch { /* Preview remains usable when storage is unavailable. */ }
-const toggle = document.querySelector('#studio-toggle');
-const panel = document.querySelector('#studio');
-toggle.hidden = false;
-function setPanel(open) {
-    panel.hidden = !open;
-    toggle.setAttribute('aria-expanded', String(open));
-    (open ? fields[0] : toggle).focus({preventScroll:true});
-}
-toggle.addEventListener('click', () => setPanel(panel.hidden));
-document.querySelector('#studio-close').addEventListener('click', () => setPanel(false));
-document.addEventListener('keydown', event => { if (event.key === 'Escape' && !panel.hidden) setPanel(false); });
-form.addEventListener('change', event => {
-    const field = event.target;
-    document.documentElement.dataset[field.name] = field.value;
-    try { sessionStorage.setItem(key, JSON.stringify(Object.fromEntries(fields.map(item => [item.name, item.value])))); } catch {}
-    document.querySelector('.studio-status').textContent = `Aperçu mis à jour : ${field.selectedOptions[0].textContent}.`;
-});
-form.addEventListener('reset', () => {
-    fields.forEach(field => delete document.documentElement.dataset[field.name]);
-    try { sessionStorage.removeItem(key); } catch {}
-    document.querySelector('.studio-status').textContent = 'Le design initial est rétabli.';
-});
+import { initStudio } from './demo-studio.js';
+initStudio();
 const menu = document.querySelector('.menu-toggle');
 menu.hidden = false;
 document.querySelector('.header').classList.add('js-menu');

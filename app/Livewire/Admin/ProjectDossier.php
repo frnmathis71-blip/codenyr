@@ -16,6 +16,7 @@ use App\Services\CommercialBilling;
 use App\Services\CommercialCalculator;
 use App\Services\CustomerDocumentSharing;
 use App\Services\InvoicePayments;
+use App\Services\ProjectAutopilot;
 use App\Support\ProjectWebsite;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
@@ -60,6 +61,10 @@ class ProjectDossier extends AdminComponent
 
     #[Locked]
     public string $paymentKey;
+
+    /** @var list<string> Information still missing after the last start-kit attempt. */
+    #[Locked]
+    public array $kitMissing = [];
 
     public function mount(ClientProject $clientProject): void
     {
@@ -220,6 +225,54 @@ class ProjectDossier extends AdminComponent
         });
     }
 
+    /* ---------- Autopilot: one click per step ---------- */
+
+    public function setAudience(string $audience): void
+    {
+        abort_unless(in_array($audience, ['professional', 'consumer'], true), 422);
+        $this->writable()->client->update(['audience' => $audience]);
+    }
+
+    public function answerQuote(int $quoteId, string $status): void
+    {
+        $this->writable();
+        app(ProjectAutopilot::class)->answerQuote(Quote::where('client_project_id', $this->projectId)->findOrFail($quoteId), $status);
+        session()->flash('success', $status === 'accepted' ? 'Devis accepté. Étape suivante : préparer les documents de démarrage.' : 'Devis refusé. Vous pouvez en préparer un nouveau.');
+    }
+
+    public function startKit(): void
+    {
+        $result = app(ProjectAutopilot::class)->startKit($this->writable());
+        $this->kitMissing = $result['missing'];
+        session()->flash('success', $result['done'] ? implode(' · ', $result['done']).'.' : 'Aucun nouveau document à générer.');
+    }
+
+    public function issueInvoice(int $invoiceId): void
+    {
+        $this->writable();
+        app(ProjectAutopilot::class)->issue(Invoice::where('client_project_id', $this->projectId)->findOrFail($invoiceId));
+        session()->flash('success', 'Facture émise et PDF enregistré.');
+    }
+
+    public function markPaid(int $invoiceId): void
+    {
+        $this->writable();
+        app(ProjectAutopilot::class)->markPaid(Invoice::where('client_project_id', $this->projectId)->findOrFail($invoiceId));
+        session()->flash('success', 'Paiement enregistré. Il apparaît dans la comptabilité du mois.');
+    }
+
+    public function markDelivered(): void
+    {
+        app(ProjectAutopilot::class)->markDelivered($this->writable());
+        session()->flash('success', 'Site marqué comme livré. Étape suivante : la facture de solde.');
+    }
+
+    public function finalInvoice(): void
+    {
+        $invoice = app(ProjectAutopilot::class)->finalInvoice($this->writable());
+        session()->flash('success', 'Facture '.$invoice->number.' émise.');
+    }
+
     public function invoiceFromQuote(int $quoteId, string $type): void
     {
         $this->writable();
@@ -236,6 +289,12 @@ class ProjectDossier extends AdminComponent
         $billed = (int) $issued->sum(fn (Invoice $invoice): int => $invoice->totals['initial']['ttc']);
         $paid = (int) $issued->sum(fn (Invoice $invoice): int => $invoice->paidCents());
 
-        return view('livewire.admin.project-dossier', ['project' => $project, 'clients' => Client::orderBy('name')->get(), 'billed' => $billed, 'paid' => $paid, 'checklist' => $project->checklist(), 'alerts' => $project->archived_at ? [] : $project->alerts()])->layout('components.admin-layout', ['title' => $project->name]);
+        $autopilot = app(ProjectAutopilot::class);
+
+        return view('livewire.admin.project-dossier', [
+            'project' => $project, 'clients' => Client::orderBy('name')->get(), 'billed' => $billed, 'paid' => $paid, 'checklist' => $project->checklist(), 'alerts' => $project->archived_at ? [] : $project->alerts(),
+            'steps' => $autopilot->progress($project), 'step' => $autopilot->current($project),
+            'acceptedQuote' => $autopilot->acceptedQuote($project), 'legal' => $autopilot->legalDocuments($project), 'deposit' => $autopilot->depositInvoice($project),
+        ])->layout('components.admin-layout', ['title' => $project->name]);
     }
 }

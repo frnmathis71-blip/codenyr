@@ -21,10 +21,10 @@ test('saved offer and maintenance prices appear across the site', function () {
         ->call('save')->assertHasNoErrors()->assertSee('Tarifs enregistrés');
     expect(Price::find('offer_vitrine')->amount_cents)->toBe(123450);
     expect(Price::find('maintenance_essential')->amount_cents)->toBe(2490);
-    foreach (['/', '/services', '/tarifs'] as $path) {
+    foreach (['/', '/services'] as $path) {
         $this->get($path)->assertOk()->assertSee('1 234,50');
     }
-    $this->get('/tarifs')->assertSee('24,90')->assertDontSee('19,90');
+    $this->get('/services')->assertSee('24,90')->assertDontSee('19,90');
     Livewire::test(Pricing::class)->assertSet('prices.offer_vitrine', '1234,50');
 });
 

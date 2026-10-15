@@ -56,6 +56,16 @@ class InquiryForm extends Component
         if (is_string($offer) && in_array($offer, array_column(config('codenyr.offers'), 'name'), true)) {
             $this->project_type = $offer;
         }
+        // Configuration chosen in a demo's customisation panel, prefilled as an editable starting point.
+        $design = request()->query('design');
+        if ($this->mode === 'quote' && is_string($design) && trim($design) !== '') {
+            $this->description = "J’ai personnalisé une démonstration :\n".mb_substr(strip_tags(trim($design)), 0, 1500)."\n\n";
+        }
+        // Summary from the budget estimator, kept editable so the visitor can complete it.
+        $estimate = request()->query('estimate');
+        if ($this->mode === 'quote' && is_string($estimate) && trim($estimate) !== '') {
+            $this->description .= mb_substr(strip_tags(trim($estimate)), 0, 1500)."\n\nMon projet en quelques mots : ";
+        }
     }
 
     public function submit(): void

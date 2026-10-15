@@ -82,7 +82,7 @@ test('commercial pages render and existing public routes remain intact', functio
     }
     $project = commercialProject();
     $this->get('/admin/projets/'.$project->id)->assertOk()->assertSee('Restaurant Sithinem');
-    $this->get('/admin/devis/nouveau?project='.$project->id)->assertOk()->assertSee('Catalogue de prestations')->assertSee('Configuration')->assertSee('Site Vitrine');
+    $this->get('/admin/devis/nouveau?project='.$project->id)->assertOk()->assertSee('Offre et prestations')->assertSee('Client et projet')->assertSee('Site Vitrine');
     $this->get('/devis')->assertOk();
     $this->get('/admin/realisations')->assertOk();
 });
@@ -119,7 +119,7 @@ test('catalog prices remain linked to public pricing and initialization preserve
     expect(Price::find('offer_vitrine')->amount_cents)->toBe(123450);
     Livewire::test(CommercialDirectory::class, ['module' => 'catalog']);
     expect($service->refresh()->currentPrice())->toBe(123450);
-    $this->get('/tarifs')->assertSee('1 234,50');
+    $this->get('/services')->assertSee('1 234,50');
 });
 
 test('project creation accepts optional websites and adds https to bare domains', function (string $input, ?string $expected) {
@@ -259,7 +259,7 @@ test('document templates snapshots PDFs and versions remain historical', functio
     Livewire::test(CommercialDocuments::class)->call('create')->set('mode', 'generate')->set('form.client_project_id', $project->id)->set('form.template_id', $template->id)->call('save')->assertHasNoErrors();
     $document = Document::first();
     DocumentTemplate::create(['name' => $template->name, 'type' => 'terms', 'content' => 'Nouvelles conditions', 'revision' => 2, 'previous_id' => $template->id]);
-    expect($document->refresh()->content)->toContain('Conditions de Codenyr pour Restaurant Sithinem.');
+    expect($document->refresh()->content)->toContain('Conditions de Mathis Fornari (EI) pour Restaurant Sithinem.');
     app(CommercialPdf::class)->document($document, false);
     expect(substr(Storage::disk('local')->get($document->refresh()->path), 0, 5))->toBe('%PDF-');
     $quote = commercialQuote($project);
@@ -336,7 +336,7 @@ test('saved editor routes render and finalized fields reject crafted Livewire ed
     Storage::fake('local');
     $project = commercialProject();
     $quote = commercialQuote($project);
-    $this->get('/admin/devis/'.$quote->id)->assertOk()->assertSee('Configuration');
+    $this->get('/admin/devis/'.$quote->id)->assertOk()->assertSee('Client et projet');
     $component = Livewire::test(Billing::class, ['kind' => 'quotes', 'id' => $quote->id]);
     $component->set('items.0.price', ['malformed'])->call('save')->assertHasErrors('items.0.price');
     expect($quote->refresh()->totals['initial']['ttc'])->toBe(150000);
@@ -348,6 +348,18 @@ test('saved editor routes render and finalized fields reject crafted Livewire ed
     $this->get('/admin/factures/'.$invoice->id)->assertOk()->assertSee('calculés depuis le devis');
     Livewire::test(Billing::class, ['kind' => 'invoices', 'id' => $invoice->id])->set('items.0.price', '1')->call('save')->assertHasNoErrors();
     expect($invoice->refresh()->totals['initial']['ttc'])->toBe(150000);
+});
+
+test('quote status buttons apply the same rules as the status selector', function () {
+    Storage::fake('local');
+    $quote = commercialQuote(commercialProject());
+    $component = Livewire::test(Billing::class, ['kind' => 'quotes', 'id' => $quote->id]);
+
+    $component->call('setStatus', 'accepted')->assertHasErrors('billing');
+    expect($quote->refresh()->status)->not->toBe('accepted');
+
+    $component->call('finalize')->assertHasNoErrors()->call('setStatus', 'accepted')->assertHasNoErrors();
+    expect($quote->refresh()->status)->toBe('accepted');
 });
 
 test('maintenance lifecycle and notes stay scoped to their project', function () {

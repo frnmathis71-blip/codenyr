@@ -2,7 +2,7 @@
 
 test('vitrine demo pages are accessible with the customization panel', function (string $page) {
     $response = $this->get(route('demo.vitrine', ['page' => $page]))->assertOk()
-        ->assertSee('Plus de possibilités')->assertSee('noindex,nofollow');
+        ->assertSee('Personnaliser ce site')->assertSee('noindex,nofollow');
     expect(substr_count($response->getContent(), '<h1'))->toBe(1);
 })->with(['accueil', 'atelier', 'expertises', 'realisations', 'contact']);
 

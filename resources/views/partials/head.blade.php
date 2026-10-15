@@ -6,7 +6,7 @@
 </title>
 
 <meta name="robots" content="noindex,nofollow">
-<link rel="icon" href="{{ asset('images/codenyr.png') }}" type="image/png">
+<link rel="icon" href="{{ asset('favicon-48.png') }}" type="image/png">
 <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}?v=codenyr">
 <meta name="apple-mobile-web-app-title" content="Codenyr">
 

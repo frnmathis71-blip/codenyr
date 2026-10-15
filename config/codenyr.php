@@ -4,6 +4,32 @@ return [
     'landing_demo_url' => env('CODENYR_LANDING_DEMO_URL', 'http://demo-vitrine.test/demo/landing-page'),
     'vitrine_demo_url' => env('CODENYR_VITRINE_DEMO_URL', 'http://demo-vitrine.test/demo/site-vitrine'),
     'email' => env('CODENYR_EMAIL', 'contact@codenyr.fr'),
+    // Test mode (on by default in local only): documents can be issued even when legal
+    // information is missing, and every PDF is stamped "MODE TEST — sans valeur".
+    'test_mode' => (bool) env('CODENYR_TEST_MODE', env('APP_ENV') === 'local'),
+    // Mentions légales (LCEN art. 6). Empty values are shown as "en cours" on the public page.
+    'legal' => [
+        'owner' => env('CODENYR_LEGAL_OWNER', 'Mathis Fornari'),
+        'status' => env('CODENYR_LEGAL_STATUS', 'Entrepreneur individuel (EI), micro-entreprise'),
+        'address' => env('CODENYR_LEGAL_ADDRESS', '40 rue du Bourg, 71880 Châtenoy-le-Royal, France'),
+        'phone' => env('CODENYR_LEGAL_PHONE', '07 67 71 14 94'),
+        'siret' => env('CODENYR_LEGAL_SIRET'),
+        'vat' => env('CODENYR_LEGAL_VAT', 'TVA non applicable, art. 293 B du CGI'),
+        'mediator' => env('CODENYR_LEGAL_MEDIATOR'),
+        // Printed on invoices so clients can pay by transfer straight away.
+        'bank' => [
+            'holder' => env('CODENYR_BANK_HOLDER', env('CODENYR_LEGAL_OWNER', 'Mathis Fornari')),
+            'iban' => env('CODENYR_BANK_IBAN'),
+            'bic' => env('CODENYR_BANK_BIC'),
+        ],
+        'host' => [
+            'name' => 'OVH SAS',
+            'address' => '2 rue Kellermann, 59100 Roubaix, France',
+            'phone' => '1007 depuis la France (+33 9 72 10 10 07)',
+            'registration' => 'RCS Lille Métropole 424 761 419',
+            'url' => 'https://www.ovhcloud.com',
+        ],
+    ],
     'social' => array_filter(['LinkedIn' => env('CODENYR_LINKEDIN'), 'Instagram' => env('CODENYR_INSTAGRAM')]),
     'offers' => [
         'landing' => ['name' => 'Landing Page', 'description' => 'Une page unique pour présenter une offre, lancer une activité ou inviter vos visiteurs à vous contacter.', 'price' => '490', 'intro' => 'Une page, un message. L’essentiel pour vous faire connaître.', 'features' => ['1 page, jusqu’à 6 sections', 'Design personnalisé et responsive', 'Formulaire de contact', 'SEO de base et favicon', 'HTTPS et mise en ligne', '2 séries de modifications']],

@@ -1,0 +1,319 @@
+/* Shared customisation panel for the product demos. Self-contained: it must read the same on every demo theme. */
+.cz-toggle,
+.cz-panel {
+    --cz-ink: #1f2420;
+    --cz-muted: #5f665f;
+    --cz-line: #dcdfd8;
+    --cz-paper: #fffefb;
+    --cz-blue: #2563eb;
+    font: 14px/1.5 'Instrument Sans', system-ui, sans-serif;
+    letter-spacing: normal;
+    text-transform: none;
+}
+.cz-toggle[hidden],
+.cz-panel[hidden],
+.cz-link[hidden] {
+    display: none !important;
+}
+.cz-toggle {
+    position: fixed;
+    right: 24px;
+    bottom: max(24px, env(safe-area-inset-bottom));
+    z-index: 60;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border: 1px solid #ffffff40;
+    border-radius: 999px;
+    background: var(--cz-ink);
+    color: white;
+    font-weight: 500;
+    box-shadow: 0 10px 34px #0004;
+    cursor: pointer;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+.cz-toggle:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 14px 40px #0005;
+}
+.cz-toggle-dot {
+    width: 14px;
+    height: 14px;
+    border-radius: 50%;
+    background: conic-gradient(#eb622d, #d9b44a, #587343, #346b90, #965765, #eb622d);
+}
+.cz-toggle[aria-expanded="true"] .cz-toggle-dot {
+    transform: rotate(180deg);
+    transition: transform 0.4s ease;
+}
+.cz-panel {
+    position: fixed;
+    right: 24px;
+    bottom: 92px;
+    z-index: 61;
+    width: 380px;
+    max-width: calc(100vw - 32px);
+    max-height: calc(100dvh - 120px);
+    overflow: auto;
+    overscroll-behavior: contain;
+    padding: 24px;
+    border: 1px solid var(--cz-line);
+    border-radius: 20px;
+    background: var(--cz-paper);
+    color: var(--cz-ink);
+    box-shadow: 0 24px 80px #0004;
+}
+.cz-panel * {
+    box-sizing: border-box;
+}
+.cz-head {
+    display: flex;
+    justify-content: space-between;
+    gap: 12px;
+}
+.cz-kicker {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--cz-muted);
+}
+.cz-panel h2 {
+    margin: 6px 0 0;
+    font: 600 24px/1.2 'Instrument Sans', system-ui, sans-serif !important;
+    letter-spacing: -0.03em !important;
+    color: var(--cz-ink) !important;
+}
+.cz-close {
+    align-self: start;
+    padding: 4px;
+    border: 0;
+    background: none;
+    color: var(--cz-ink);
+    font-size: 22px;
+    cursor: pointer;
+}
+.cz-intro {
+    margin: 10px 0 4px !important;
+    font-size: 13px !important;
+    line-height: 1.55 !important;
+    color: var(--cz-muted) !important;
+}
+.cz-group {
+    margin: 18px 0 0;
+    padding: 18px 0 0;
+    border: 0;
+    border-top: 1px solid var(--cz-line);
+}
+.cz-group legend {
+    float: left;
+    width: 100%;
+    margin-bottom: 10px;
+    padding: 0;
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--cz-ink);
+}
+.cz-panel label {
+    display: block;
+    clear: both;
+    margin: 12px 0 6px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--cz-ink);
+}
+.cz-panel select,
+.cz-panel input:not([type=radio]):not([type=color]) {
+    width: 100%;
+    padding: 10px 12px;
+    border: 1px solid var(--cz-line);
+    border-radius: 10px;
+    background: white;
+    color: var(--cz-ink);
+    font: inherit;
+}
+.cz-panel select:focus-visible,
+.cz-panel input:focus-visible,
+.cz-panel button:focus-visible,
+.cz-panel a:focus-visible,
+.cz-toggle:focus-visible {
+    outline: 3px solid var(--cz-blue);
+    outline-offset: 2px;
+}
+.cz-accent > div {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+.cz-accent input[type=color] {
+    width: 48px;
+    height: 36px;
+    padding: 2px;
+    border: 1px solid var(--cz-line);
+    border-radius: 10px;
+    background: white;
+    cursor: pointer;
+}
+.cz-link {
+    border: 0;
+    background: none;
+    color: var(--cz-blue);
+    font: inherit;
+    font-size: 13px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+.cz-presets {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    clear: both;
+}
+.cz-preset {
+    display: grid;
+    gap: 2px;
+    padding: 10px 12px;
+    border: 1px solid var(--cz-line);
+    border-radius: 12px;
+    background: white;
+    color: var(--cz-ink);
+    text-align: left;
+    font: inherit;
+    cursor: pointer;
+    transition: border-color 0.2s ease, background 0.2s ease;
+}
+.cz-preset strong {
+    font-size: 13px;
+    font-weight: 600;
+}
+.cz-preset small {
+    font-size: 12px;
+    line-height: 1.35;
+    color: var(--cz-muted);
+}
+.cz-preset:hover {
+    border-color: #9aa39a;
+}
+.cz-preset[aria-pressed="true"] {
+    border-color: var(--cz-blue);
+    background: #2563eb0f;
+    box-shadow: inset 0 0 0 1px var(--cz-blue);
+}
+.cz-swatches {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    gap: 8px;
+    clear: both;
+}
+.cz-panel .cz-swatch {
+    position: relative;
+    display: grid;
+    justify-items: center;
+    gap: 4px;
+    margin: 0;
+    cursor: pointer;
+}
+.cz-swatch input {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+}
+.cz-swatch-chip {
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    border: 1px solid #0002;
+    background:
+        linear-gradient(135deg, var(--sw-paper) 0 50%, var(--sw-accent) 50% 100%);
+    box-shadow: inset 0 0 0 6px var(--sw-paper), inset 0 0 0 7px var(--sw-ink);
+    transition: transform 0.2s ease;
+}
+.cz-swatch input:checked + .cz-swatch-chip {
+    outline: 2px solid var(--cz-blue);
+    outline-offset: 3px;
+}
+.cz-swatch input:focus-visible + .cz-swatch-chip {
+    outline: 3px solid var(--cz-blue);
+    outline-offset: 3px;
+}
+.cz-swatch:hover .cz-swatch-chip {
+    transform: scale(1.06);
+}
+.cz-swatch-label {
+    font-size: 11px;
+    font-weight: 400;
+    line-height: 1.25;
+    text-align: center;
+    color: var(--cz-muted);
+}
+.cz-actions {
+    display: grid;
+    gap: 8px;
+    margin-top: 20px;
+}
+.cz-secondary {
+    width: 100%;
+    padding: 11px;
+    border: 1px solid var(--cz-line);
+    border-radius: 10px;
+    background: white;
+    color: var(--cz-ink);
+    font: inherit;
+    font-size: 13px;
+    cursor: pointer;
+}
+.cz-secondary:hover {
+    border-color: #9aa39a;
+}
+.cz-cta {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    margin-top: 12px;
+    padding: 14px;
+    border-radius: 12px;
+    background: var(--cz-blue);
+    color: white !important;
+    font-weight: 600;
+    text-decoration: none !important;
+}
+.cz-cta:hover {
+    background: #1d4ed8;
+}
+.cz-status {
+    min-height: 1.4em;
+    margin: 10px 0 0 !important;
+    font-size: 12px !important;
+    color: var(--cz-muted) !important;
+}
+@media (max-width: 600px) {
+    .cz-toggle {
+        right: 16px;
+        bottom: max(16px, env(safe-area-inset-bottom));
+        padding: 12px 16px;
+    }
+    .cz-panel {
+        right: 8px;
+        left: 8px;
+        bottom: 76px;
+        width: auto;
+        max-width: none;
+        max-height: calc(100dvh - 96px);
+        padding: 20px;
+    }
+    .cz-swatches {
+        grid-template-columns: repeat(5, minmax(0, 1fr));
+    }
+}
+@media (prefers-reduced-motion: reduce) {
+    .cz-toggle,
+    .cz-preset,
+    .cz-swatch-chip,
+    .cz-toggle-dot {
+        transition: none !important;
+    }
+}

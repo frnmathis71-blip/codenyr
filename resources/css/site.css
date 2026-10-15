@@ -1,0 +1,17 @@
+/* Public site bundle: same styles as app.css without the Flux UI kit (admin and account pages only). */
+@import 'tailwindcss';
+@import './codenyr.css';
+@import './home.css';
+@import './reviews.css';
+@import './mobile-presentation.css';
+@import './polish.css';
+@import './home-layout.css';
+@import './cookie-banner.css';
+@import './estimator.css';
+
+@source '../views';
+@source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';
+
+@theme {
+    --font-sans: 'Instrument Sans', ui-sans-serif, system-ui, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol', 'Noto Color Emoji';
+}

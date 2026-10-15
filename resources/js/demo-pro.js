@@ -5,7 +5,7 @@ const defaults = {
     projects: [{id:'p1',title:'Un jardin à partager',category:'Jardin familial',text:'Des cheminements simples, des plantations généreuses et un espace pour se retrouver. Un concept de jardin qui accompagne les moments du quotidien.',image:'garden',state:'published'}, {id:'p2',title:'La terrasse habitée',category:'Terrasse',text:'Créer une continuité entre intérieur et extérieur grâce aux matières naturelles et à une composition végétale structurée.',image:'interior',state:'published'}, {id:'p3',title:'Le patio calme',category:'Patio',text:'Une parenthèse intime faite de textures, de feuillages et de lumière. Projet de concept en cours de réflexion.',image:'material',state:'draft'}],
     articles: [{id:'a1',title:'Le jardin, une pièce à vivre',category:'Inspiration',text:'Observer les usages avant de dessiner : un coin pour lire, une table pour partager, un passage vers la maison. La conception commence avec ces gestes simples.',image:'garden',state:'published'}, {id:'a2',title:'Composer avec les matières',category:'Carnet du studio',text:'Le bois, la pierre et le végétal apportent chacun une texture différente. Leur association donne le ton du jardin et relie ses différents espaces.',image:'material',state:'published'}],
 };
-const images = {garden:'/images/canopee/jardin.jpg',interior:'/images/atelier/interieur.jpg',material:'/images/atelier/matiere.jpg'};
+const images = {garden:'/images/canopee/jardin.webp',interior:'/images/atelier/interieur.webp',material:'/images/atelier/matiere.webp'};
 let data = structuredClone(defaults);
 let persistent = true;
 try {

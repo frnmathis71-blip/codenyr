@@ -7,6 +7,7 @@ use App\Models\CommercialSetting;
 use App\Models\Document;
 use App\Models\DocumentTemplate;
 use App\Models\Quote;
+use Carbon\Carbon;
 
 class ProjectLegalDocuments
 {
@@ -171,32 +172,36 @@ class ProjectLegalDocuments
         $context = 'Client : '.$client?->name.' ; projet : '.$project?->name.' ; devis : '.$quote?->number."\nCGV : ".$termsReference.' ; date : '.$document->document_date->format('d/m/Y');
         $sections = [];
         if ($document->type === 'terms') {
+            // Ordered like a professional CGV: scope, ordering, money, execution, risks, final provisions.
+            $versionLabel = $template ? $template->name.' (version '.$template->revision.($template->effective_on ? ', en vigueur depuis le '.Carbon::parse($template->effective_on)->format('d/m/Y') : '').')' : '[À compléter : version des CGV]';
             $sections = [
+                'Préambule' => $template->content ?? '',
                 'Identification du prestataire' => $identity,
-                'Objet et champ d’application' => 'Le devis définit les prestations, leur périmètre et leur prix.',
+                'Objet et champ d’application' => 'Les présentes conditions générales de vente (CGV) régissent les prestations de conception, de développement, de mise en ligne et, le cas échéant, de maintenance de sites internet et d’applications web réalisées par le prestataire. Le périmètre exact, le prix et les délais de chaque prestation sont fixés par le devis accepté.',
+                'Documents contractuels' => 'Le contrat est formé du devis accepté, des présentes CGV et, le cas échéant, du contrat de prestation et de ses annexes. '.$seller['clause_priority'],
                 'Devis et formation du contrat' => $seller['clause_order'],
-                'Prix' => 'Les prix sont définis dans le devis associé. Les frais tiers ne sont inclus que lorsqu’ils sont explicitement prévus.',
+                'Prix' => 'Les prix figurant au devis sont fermes pendant sa durée de validité. Ils sont exprimés en euros. '.$seller['tax_mention'].'. Les frais de services tiers ne sont inclus que lorsqu’ils sont expressément mentionnés au devis.',
                 'Modalités de paiement' => $seller['clause_payment'],
                 'Retards de paiement' => $seller['clause_late_'.$audience] ?? '',
-                'Délais et exécution' => 'Le démarrage dépend des conditions convenues et des éléments nécessaires. Un retard de contenus, accès ou validations peut affecter le planning.',
-                'Obligations du client' => 'Le client fournit les éléments nécessaires et dispose des droits sur les contenus transmis.',
-                'Modifications et demandes hors périmètre' => 'Une correction du périmètre initial se distingue d’une nouvelle fonctionnalité. Les prestations supplémentaires nécessitent un accord préalable adapté. Tarif indicatif configuré : '.$seller['extra_hourly_rate'].' €/h, sous réserve du devis convenu.',
+                'Réserve de propriété' => 'Le transfert au client de la propriété des livrables et des droits d’exploitation n’intervient qu’après le paiement intégral du prix. Jusqu’à ce paiement, le prestataire peut suspendre la mise en ligne ou l’accès aux livrables.',
+                'Délais et exécution' => 'Les délais indiqués au devis courent à compter de la réception de l’acompte et des éléments nécessaires (contenus, visuels, accès). Ils sont donnés de bonne foi ; un retard dans la transmission des éléments ou des validations par le client décale d’autant le planning, sans engager la responsabilité du prestataire.',
+                'Obligations du client' => 'Le client s’engage à fournir des contenus exacts et licites dont il détient les droits, à répondre aux demandes de validation dans des délais raisonnables et à désigner un interlocuteur. Il garantit le prestataire contre toute réclamation relative aux contenus qu’il transmet.',
+                'Modifications et prestations supplémentaires' => 'Toute demande dépassant le périmètre du devis (nouvelle page, nouvelle fonctionnalité, changement de direction graphique) fait l’objet d’un devis complémentaire ou, à défaut, est facturée au temps passé au tarif de '.$seller['extra_hourly_rate'].' € de l’heure, après accord préalable écrit du client.',
                 'Validation et livraison' => $seller['clause_delivery'],
                 'Propriété intellectuelle' => $seller['clause_rights'],
                 'Services et frais tiers' => $seller['external_fees_mention'],
                 'Hébergement et nom de domaine' => $seller['clause_hosting'],
                 'Maintenance' => $seller['clause_maintenance'],
+                'Sous-traitance' => 'Le prestataire peut confier une partie des prestations à des sous-traitants de son choix, en restant seul responsable de leur bonne exécution envers le client.',
                 'Responsabilité' => $seller['clause_liability'],
                 'Sauvegarde et sécurité' => $seller['clause_security'],
                 'Données personnelles' => $seller['clause_privacy'],
-                'Résiliation et annulation' => $seller['clause_termination'],
-                'Force majeure' => 'Les conséquences d’un événement de force majeure sont appréciées selon le droit applicable.',
-                'Droit applicable et règlement des différends' => $seller['clause_disputes_'.$audience] ?? '',
-                'Acceptation et version des CGV' => $context."\n".$seller['clause_acceptance'],
-                'Texte de la version applicable' => $template->content ?? '',
                 'Confidentialité' => $seller['clause_confidentiality'],
-                'Ordre de priorité contractuel' => $seller['clause_priority'],
-                'Identification du client' => implode(' — ', array_filter(array_map(fn ($key) => $client?->$key, ['name', 'company', 'contact', 'address', 'country', 'registration', 'vat_number', 'email', 'phone']))),
+                'Résiliation et annulation' => $seller['clause_termination'],
+                'Force majeure' => 'Aucune partie n’est responsable d’un manquement causé par un événement de force majeure au sens de l’article 1218 du Code civil. L’exécution est suspendue pendant sa durée ; si l’empêchement dépasse trente jours, chaque partie peut résilier le contrat par écrit, les prestations déjà réalisées restant dues.',
+                'Droit applicable et règlement des différends' => $seller['clause_disputes_'.$audience] ?? '',
+                'Dispositions générales' => 'Si une clause des présentes est déclarée nulle, les autres clauses restent applicables. Le fait de ne pas se prévaloir d’un manquement ne vaut pas renonciation à s’en prévaloir ultérieurement. Le prestataire peut faire évoluer ses CGV ; la version applicable est celle en vigueur à la date d’acceptation du devis.',
+                'Acceptation et version des CGV' => 'Les présentes conditions, '.$versionLabel.', s’appliquent au devis '.($quote?->number ?? '[À compléter : devis]').' accepté par '.($client?->name ?? '[À compléter : client]').($project ? ' pour le projet « '.$project->name.' »' : '').'. '.$seller['clause_acceptance'],
                 'Signataires' => 'Prestataire : '.$seller['signatory'].' — '.$seller['signatory_role']."\nClient : ".$client?->signatory.' — '.$client?->signatory_role,
             ];
         } else {
