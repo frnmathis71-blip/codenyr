@@ -118,3 +118,13 @@ test('standard profile fills legal identity and mandatory invoice mentions witho
     $settings = CommercialSetting::current();
     expect($settings['legal_name'])->toBe('Autre nom')->and($settings['invoice_mention'])->toContain('40 €');
 });
+
+test('the document editor repeats its actions under the form', function () {
+    $quote = autopilotQuote(autopilotProject());
+
+    $html = $this->actingAs(autopilotAdmin())->get(route('admin.billing.quotes.edit', ['id' => $quote->id]))->assertOk()->getContent();
+
+    expect(substr_count($html, 'Ouvrir le projet'))->toBe(2)
+        ->and($html)->toContain('commercial-actions-bottom')
+        ->and(substr_count($html, 'wire:click="duplicate"'))->toBe(2);
+});

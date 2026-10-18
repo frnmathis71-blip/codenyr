@@ -1291,6 +1291,12 @@ summary:focus-visible {
     font-size: 12px;
     line-height: 1.4;
 }
+/* Same actions repeated under the editor, so there is no need to scroll back up. */
+.commercial-actions-bottom {
+    margin-top: 28px;
+    padding-top: 20px;
+    border-top: 1px solid var(--cn-border);
+}
 
 /* ---------- Admin: to-do list ---------- */
 .tasks-progress {

@@ -4,7 +4,7 @@
 <div class="admin-toolbar"><input placeholder="Numéro, client ou projet…" aria-label="Rechercher" wire:model.live.debounce.300ms="search"><select aria-label="Statut" wire:model.live="filter"><option value="">Tous les documents actifs</option>@foreach($kind==='quotes' ? \App\Models\Quote::STATUSES : ['draft'=>'Brouillon','issued'=>'Émise'] as $key=>$label)<option value="{{ $key }}">{{ $label }}</option>@endforeach<option value="archived">Archivés</option></select></div>
 <div class="admin-panel table-wrap"><table class="admin-table"><thead><tr><th>Numéro</th><th>Client / projet</th><th>Total initial TTC</th><th>Statut</th><th></th></tr></thead><tbody>@forelse($records as $item)<tr><td>{{ $item->number ?? 'Brouillon #'.$item->id }}</td><td>{{ $item->project->client->name }}<small>{{ $item->project->name }}</small></td><td>{{ \App\Services\CommercialCalculator::euros($item->totals['initial']['ttc']) }}</td><td>{{ $item->archived_at ? 'Archivé' : ($kind==='quotes' ? \App\Models\Quote::STATUSES[$item->status] : $item->paymentLabel()) }}</td><td><a class="text-link" href="{{ route('admin.billing.'.$kind.'.edit',['id'=>$item->id]) }}">Consulter →</a></td></tr>@empty<tr><td colspan="5">Aucun document.</td></tr>@endforelse</tbody></table></div>{{ $records->links() }}
 @else
-@if($record)<div class="button-row commercial-actions"><a class="button button-secondary" href="{{ route('admin.client-projects.show',$record->client_project_id) }}">Ouvrir le projet</a><button class="button button-secondary" wire:click="generatePdf" wire:loading.attr="disabled">{{ $record->finalized_at ? 'Télécharger le PDF' : 'Générer le PDF enregistré' }}</button>@if($kind==='quotes')<button class="button button-secondary" wire:click="duplicate">Dupliquer</button>@endif<button class="button button-secondary" wire:click="archive">{{ $record->archived_at ? 'Restaurer' : 'Archiver' }}</button><span class="status-pill">{{ $kind==='quotes' ? \App\Models\Quote::STATUSES[$record->status] : $record->paymentLabel() }}</span></div>@endif
+@include('livewire.admin.billing-actions')
 @if($record instanceof \App\Models\Quote && $record->status==='accepted' && !$record->archived_at && !$record->project->archived_at)
 <a class="button button-primary" href="{{ route('admin.documents', ['project'=>$record->client_project_id, 'quote'=>$record->id, 'create'=>1, 'type'=>'contract', 'mode'=>'generate']) }}">Créer le contrat</a>
 @endif
@@ -89,6 +89,7 @@
 <p>{{ $previewSeller['external_fees_mention'] ?? '' }}</p>
 @if($kind==='quotes')<small>Les récurrences sont séparées du paiement initial. Les options non retenues sont exclues.</small>@else<small>Les abonnements inclus sont facturés uniquement pour les périodes indiquées.</small>@endif
 @endif</aside></div>
+@include('livewire.admin.billing-actions', ['bottom' => true])
 @endunless</div>
 
 
