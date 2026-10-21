@@ -1,4 +1,4 @@
-@props(['title' => 'Création de sites internet à Chalon-sur-Saône', 'description' => 'Création de sites internet sur mesure à Chalon-sur-Saône pour artisans, commerçants et TPE. Design soigné, prix affichés dès 490 €, accompagnement local.', 'image' => null, 'noindex' => false])
+@props(['title' => 'Création de sites internet à Chalon-sur-Saône', 'description' => 'Création de sites internet sur mesure à Chalon-sur-Saône pour artisans, commerçants et TPE. Design soigné, prix affichés dès 390 €, accompagnement local.', 'image' => null, 'noindex' => false])
 <!DOCTYPE html>
 <html lang="fr" class="dark">
 <head>

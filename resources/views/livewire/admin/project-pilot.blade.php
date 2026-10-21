@@ -56,9 +56,29 @@
                 </div>
                 <small>Cela choisit les bonnes clauses : pénalités de retard pour un professionnel, droit de rétractation et médiation pour un particulier.</small>
             @else
-                <p>En un clic : CGV et contrat générés en PDF à partir du devis {{ $acceptedQuote?->number }}@if(($acceptedQuote?->totals['deposit'] ?? 0) > 0), et facture d’acompte de {{ $euros($acceptedQuote->totals['deposit']) }} émise.@else.@endif Les dates de début et de livraison sont planifiées si elles manquent.</p>
+                {{-- Drafts prepared for review (by the assistant): official only once validated here. --}}
+                @php($legalDrafts = $project->documents->whereIn('type', ['terms', 'contract'])->whereNull('original_id')->whereNull('archived_at')->whereNull('finalized_at')->filter(fn ($document) => isset($document->snapshot['draft_content_hash']))->sortBy('type'))
+                @php($review = $legalDrafts->map(fn ($document) => $document->snapshot['assistant_review'] ?? null)->filter()->first())
+                @if($legalDrafts->isNotEmpty())
+                    <div class="pilot-drafts">
+                        <p><strong>Brouillons à relire</strong> — rien n’est officiel tant que vous n’avez pas validé.</p>
+                        <ul class="pilot-docs">
+                            @foreach($legalDrafts as $draft)
+                                <li wire:key="draft-{{ $draft->id }}"><span>{{ $draft->name }} <small>(brouillon)</small></span><button type="button" class="button button-secondary" wire:click="previewDocument({{ $draft->id }})">Relire le PDF</button></li>
+                            @endforeach
+                        </ul>
+                        @if($review)
+                            <div class="pilot-review">
+                                <p><strong>Relecture de l’assistant</strong> · {{ \Carbon\CarbonImmutable::parse($review['at'])->format('d/m à H:i') }}</p>
+                                <p>{{ $review['summary'] }}</p>
+                                @if($review['points'])<ul>@foreach($review['points'] as $point)<li>{{ $point }}</li>@endforeach</ul>@endif
+                            </div>
+                        @endif
+                    </div>
+                @endif
+                <p>{{ $legalDrafts->isNotEmpty() ? 'Une fois relus : ' : 'En un clic : ' }}CGV et contrat générés en PDF à partir du devis {{ $acceptedQuote?->number }}@if(($acceptedQuote?->totals['deposit'] ?? 0) > 0), et facture d’acompte de {{ $euros($acceptedQuote->totals['deposit']) }} émise.@else.@endif Les dates de début et de livraison sont planifiées si elles manquent.</p>
                 @if(\App\Support\TestMode::enabled())<p class="pilot-warning">Mode test local : les documents sont émis même s’il manque des informations, et chaque PDF porte la mention « MODE TEST — sans valeur ».</p>@elseif(blank(config('codenyr.legal.siret')))<p class="pilot-warning">SIRET pas encore renseigné : les documents mentionneront « immatriculation en cours ». Attendez votre SIRET avant de les faire signer.</p>@endif
-                <div class="button-row"><button type="button" class="button button-primary" wire:click="startKit" wire:loading.attr="disabled">Tout préparer</button></div>
+                <div class="button-row"><button type="button" class="button button-primary" wire:click="startKit" wire:loading.attr="disabled" @if($legalDrafts->isNotEmpty()) wire:confirm="Créer la version officielle des CGV et du contrat telle que relue ? Elle ne pourra plus être modifiée." @endif>{{ $legalDrafts->isNotEmpty() ? 'Valider et créer la version officielle' : 'Tout préparer' }}</button></div>
                 <small>Client {{ match($project->client->audience) { 'professional' => 'professionnel', 'consumer' => 'particulier', default => 'professionnel (par défaut en mode test)' } }} · <button type="button" class="text-link" wire:click="setAudience('{{ $project->client->audience === 'professional' ? 'consumer' : 'professional' }}')">changer</button></small>
             @endif
             @if($kitMissing)

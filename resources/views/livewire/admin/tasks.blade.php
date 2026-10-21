@@ -18,6 +18,7 @@
                         <div>
                             <label for="task-{{ $task->id }}">{{ $task->title }}</label>
                             @if($task->details)<p>{{ $task->details }}</p>@endif
+                            @if($task->project)<small><a class="tasks-project" href="{{ route('admin.client-projects.show', ['clientProject' => $task->project]) }}">Projet : {{ $task->project->name }}</a></small>@endif
                             @if($task->auto_check)<small class="tasks-auto">Se coche automatiquement</small>@endif
                         </div>
                         <button type="button" class="tasks-delete" wire:click="delete({{ $task->id }})" wire:confirm="Supprimer cette tâche ?" aria-label="Supprimer « {{ $task->title }} »"><x-ui-icon name="close" /></button>

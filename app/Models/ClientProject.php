@@ -68,6 +68,12 @@ class ClientProject extends Model
         return $this->hasMany(ProjectNote::class);
     }
 
+    /** @return HasMany<AdminTask, $this> */
+    public function tasks(): HasMany
+    {
+        return $this->hasMany(AdminTask::class);
+    }
+
     /** @return HasMany<ProjectEvent, $this> */
     public function events(): HasMany
     {

@@ -2,6 +2,7 @@
 
 namespace App\Providers;
 
+use Anthropic\Client;
 use App\Http\Middleware\EnsureEmailVerificationIfEnabled;
 use App\Models\User;
 use Carbon\CarbonImmutable;
@@ -20,7 +21,7 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register(): void
     {
-        //
+        $this->app->bind(Client::class, fn (): Client => new Client(apiKey: (string) config('services.anthropic.key')));
     }
 
     /**

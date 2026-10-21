@@ -55,7 +55,7 @@ test('each offer only promises the options purchased', function (string $offer, 
     ['offer_vitrine', []], ['offer_vitrine', ['booking']],
     ['offer_vitrine', ['booking', 'maintenance_essential']],
     ['offer_pro', []], ['offer_pro', ['user_accounts']], ['offer_pro', ['stripe']],
-    ['offer_custom', []], ['offer_custom', ['gallery']],
+    ['offer_custom', []], ['offer_custom', ['seo']],
 ]);
 
 test('removed defaults custom features and unchecked options survive catalog changes', function () {

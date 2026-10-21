@@ -12,6 +12,7 @@
         null => [
             ['Tableau de bord', 'admin.dashboard', [], 0],
             ['À faire', 'admin.tasks', [], $badges['tasks']],
+            ['Assistant', 'admin.assistant', ['admin.assistant.*'], 0],
         ],
         'Activité' => [
             ['Prospects', 'admin.leads', ['admin.archives'], $badges['leads']],
@@ -72,4 +73,8 @@
         {{ $slot }}
     </main>
 </div>
+{{-- The full assistant page already shows the conversation. --}}
+@unless(request()->routeIs('admin.assistant', 'admin.assistant.*'))
+    <livewire:admin.assistant :panel="true" />
+@endunless
 @livewireScriptConfig</body></html>

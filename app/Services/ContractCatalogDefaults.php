@@ -9,10 +9,7 @@ class ContractCatalogDefaults
 {
     public function initialize(): void
     {
-        $optional = ['contact_form' => 'Formulaire de contact', 'booking' => 'Réservation en ligne', 'stripe' => 'Paiement Stripe', 'gallery' => 'Galerie', 'blog' => 'Blog', 'language' => 'Multilingue', 'user_accounts' => 'Espace client', 'admin_area' => 'Espace administrateur', 'seo' => 'SEO avancé', 'hosting' => 'Hébergement Codenyr', 'domain' => 'Gestion du domaine'];
-        foreach (['contact_form', 'gallery', 'blog', 'maps', 'hosting', 'domain'] as $key) {
-            Service::firstOrCreate(['catalog_key' => $key], ['name' => $optional[$key] ?? 'Google Maps', 'category' => 'Options', 'amount_cents' => 0, 'pricing_mode' => 'quote', 'frequency' => in_array($key, ['hosting', 'domain']) ? 'yearly' : 'once', 'description' => 'Périmètre et tarif à définir dans le devis.']);
-        }
+        $optional = ['contact_form' => 'Formulaire de contact', 'booking' => 'Réservation en ligne', 'stripe' => 'Paiement en ligne', 'language' => 'Multilingue', 'user_accounts' => 'Espace client', 'admin_area' => 'Espace d’administration', 'seo' => 'Référencement local avancé', 'hosting' => 'Hébergement Codenyr', 'domain' => 'Gestion du domaine'];
         foreach (Service::whereNull('contract_rules')->get() as $service) {
             $key = $service->price_key ?: $service->catalog_key;
             $rules = ['deliverables' => [], 'exclusions' => [], 'effects' => [], 'clauses' => []];
@@ -35,7 +32,7 @@ class ContractCatalogDefaults
             if ($key === 'stripe') {
                 $rules['clauses']['Paiement tiers'] = 'Le paiement est assuré par Stripe. Codenyr réalise l’intégration technique et n’est pas l’établissement de paiement. Les frais du prestataire sont distincts sauf mention expresse au devis.';
             }
-            if (in_array($key, ['maps', 'newsletter', 'api'], true)) {
+            if ($key === 'api') {
                 $rules['clauses']['Service tiers'] = 'Le service tiers utilisé reste soumis aux conditions du fournisseur identifié dans le devis. Ses frais ne sont inclus que si le devis le prévoit.';
             }
             if (str_starts_with($key ?? '', 'maintenance_')) {

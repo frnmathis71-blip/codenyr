@@ -31,7 +31,7 @@ test('restaurant quote separates maintenance and preserves all snapshots after c
     $quote = Quote::firstOrFail();
     expect($quote->totals['initial']['ttc'])->toBe(142000)
         ->and($quote->totals['recurring']['monthly']['ttc'])->toBe(3990)
-        ->and($quote->items[1]['category'])->toBe('Contenu / Structure')
+        ->and($quote->items[1]['category'])->toBe('Contenu')
         ->and($quote->items[1]['unit'])->toBe('page');
     $page->update(['amount_cents' => 11000, 'name' => 'Nouveau nom', 'category' => 'Autre', 'active' => false, 'archived_at' => now()]);
     app(CommercialCatalog::class)->initialize();
@@ -39,7 +39,7 @@ test('restaurant quote separates maintenance and preserves all snapshots after c
     $editor->call('save')->assertHasNoErrors();
     expect($quote->refresh()->items[1]['price_cents'])->toBe(9000)
         ->and($quote->items[1]['name'])->toBe('Page supplémentaire')
-        ->and($quote->items[1]['category'])->toBe('Contenu / Structure')
+        ->and($quote->items[1]['category'])->toBe('Contenu')
         ->and($page->refresh()->amount_cents)->toBe(11000);
     $editor->set('items.2.price', '450')->call('save')->assertHasNoErrors();
     expect($quote->refresh()->totals['initial']['ttc'])->toBe(157000)
@@ -47,7 +47,7 @@ test('restaurant quote separates maintenance and preserves all snapshots after c
 });
 
 test('catalog filters compatibility archive and custom recurring prices work', function () {
-    expect(Service::whereNotNull('catalog_key')->count())->toBe(25);
+    expect(Service::whereNotNull('catalog_key')->count())->toBe(18);
     $crud = Service::where('catalog_key', 'extra_crud')->firstOrFail();
     Livewire::test(CommercialDirectory::class, ['module' => 'catalog'])
         ->set('offerFilter', 'offer_landing')->assertDontSee('Module CRUD supplémentaire')

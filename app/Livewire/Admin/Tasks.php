@@ -43,7 +43,7 @@ class Tasks extends AdminComponent
     public function render(): View
     {
         AdminTask::syncAutomatic();
-        $tasks = AdminTask::orderBy('position')->get();
+        $tasks = AdminTask::with('project')->orderBy('position')->get();
 
         return view('livewire.admin.tasks', [
             'open' => $tasks->reject->isDone()->groupBy('category'),

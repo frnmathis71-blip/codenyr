@@ -1,4 +1,4 @@
-<x-site-layout title="Offres et tarifs de création de sites internet" description="Landing page, site vitrine, site administrable ou sur mesure à Chalon-sur-Saône : offres et tarifs dès 490 €, maintenance facultative.">
+<x-site-layout title="Offres et tarifs de création de sites internet" description="Landing page, site vitrine, site administrable ou sur mesure à Chalon-sur-Saône : offres et tarifs dès 390 €, maintenance facultative.">
 <section class="container page-hero page-hero-center">
     <p class="eyebrow">Offres et tarifs</p>
     <h1>Votre activité. Votre site.<br><span class="muted-heading">Des prix clairs.</span></h1>

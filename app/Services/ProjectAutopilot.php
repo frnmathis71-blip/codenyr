@@ -119,24 +119,19 @@ class ProjectAutopilot
     {
         $project->loadMissing(['client', 'quotes', 'invoices', 'documents']);
         $quote = $this->acceptedQuote($project) ?? throw ValidationException::withMessages(['autopilot' => 'Le devis doit d’abord être accepté.']);
-        $client = $project->client;
-        if (TestMode::enabled() && blank($client->audience)) {
-            $client->update(['audience' => 'professional']);
+        $this->completeDeducible($project);
+        // Reviewed drafts become official only as they were reviewed, and together: changed sources mean a new review.
+        $changed = [];
+        foreach ($project->documents()->whereIn('type', ['terms', 'contract'])->whereNull('original_id')->whereNull('archived_at')->whereNull('finalized_at')->get() as $draft) {
+            $reviewed = $draft->snapshot['draft_content_hash'] ?? null;
+            if ($reviewed && ! hash_equals($reviewed, hash('sha256', (string) app(ProjectLegalDocuments::class)->prepare($draft)['content']))) {
+                $changed[] = Document::TYPES[$draft->type].' : le texte a changé depuis le brouillon relu (fiche client, projet ou devis modifié). Faites préparer de nouveaux brouillons et relisez-les.';
+            }
         }
-        if (! in_array($client->audience, ['professional', 'consumer'], true)) {
-            throw ValidationException::withMessages(['autopilot' => 'Indiquez si le client est un professionnel ou un particulier.']);
+        if ($changed) {
+            return ['done' => [], 'missing' => $changed];
         }
-
-        // Deducible information, filled only where it is empty.
-        $client->fill(array_filter([
-            'country' => blank($client->country) ? 'France' : null,
-            'signatory' => blank($client->signatory) ? ($client->contact ?: $client->name) : null,
-            'signatory_role' => blank($client->signatory_role) && $client->audience === 'professional' ? 'Représentant légal' : null,
-        ]))->save();
-        $type = (string) $project->type;
         $project->fill(array_filter([
-            'starts_on' => $project->starts_on ? null : today(),
-            'due_on' => $project->due_on ? null : today()->addDays(StandardBusinessProfile::delayDays($type)),
             'status' => in_array($project->status, ['prospect', 'quote_to_prepare', 'quote_sent', 'waiting_client', 'quote_accepted'], true) ? 'waiting_deposit' : null,
         ]))->save();
         $terms = $this->ensureTermsVersion();
@@ -172,6 +167,60 @@ class ProjectAutopilot
         return ['done' => $done, 'missing' => array_values(array_unique($missing))];
     }
 
+    /** Fills what can be deduced, only where it is empty: country, signatory, planning. */
+    private function completeDeducible(ClientProject $project): void
+    {
+        $client = $project->client;
+        if (TestMode::enabled() && blank($client->audience)) {
+            $client->update(['audience' => 'professional']);
+        }
+        if (! in_array($client->audience, ['professional', 'consumer'], true)) {
+            throw ValidationException::withMessages(['autopilot' => 'Indiquez si le client est un professionnel ou un particulier.']);
+        }
+        $client->fill(array_filter([
+            'country' => blank($client->country) ? 'France' : null,
+            'signatory' => blank($client->signatory) ? ($client->contact ?: $client->name) : null,
+            'signatory_role' => blank($client->signatory_role) && $client->audience === 'professional' ? 'Représentant légal' : null,
+        ]))->save();
+        $project->fill(array_filter([
+            'starts_on' => $project->starts_on ? null : today(),
+            'due_on' => $project->due_on ? null : today()->addDays(StandardBusinessProfile::delayDays((string) $project->type)),
+        ]))->save();
+    }
+
+    /**
+     * Prepares the CGV and the contract as drafts for review: same sources and checks as
+     * startKit(), but nothing is finalized and no invoice is issued. startKit() later turns
+     * these drafts into the official documents, provided their text has not changed.
+     *
+     * @return list<array{id: int, type: string, name: string, official: bool, errors: list<string>}>
+     */
+    public function draftKit(ClientProject $project): array
+    {
+        $project->loadMissing(['client', 'quotes', 'documents']);
+        $quote = $this->acceptedQuote($project) ?? throw ValidationException::withMessages(['autopilot' => 'Le devis doit d’abord être accepté (dans le Pilote du dossier).']);
+        $this->completeDeducible($project);
+        $terms = $this->ensureTermsVersion();
+        $official = $this->legalDocuments($project->fresh(['documents']));
+
+        $drafts = [];
+        foreach (['terms', 'contract'] as $type) {
+            if ($official[$type]) {
+                $drafts[] = ['id' => $official[$type]->id, 'type' => $type, 'name' => $official[$type]->name, 'official' => true, 'errors' => []];
+
+                continue;
+            }
+            $document = $project->documents()->where('type', $type)->whereNull('original_id')->whereNull('archived_at')->whereNull('finalized_at')->latest('id')->first()
+                ?? $this->createLegalDocument($project->fresh(['client', 'maintenance']), $quote, $type, $terms, false)['document'];
+            $document = app(CommercialPdf::class)->document($document, false);
+            // A new draft text needs a new review.
+            $document->update(['snapshot' => [...array_diff_key($document->snapshot ?? [], ['assistant_review' => true]), 'draft_content_hash' => hash('sha256', (string) $document->content)]]);
+            $drafts[] = ['id' => $document->id, 'type' => $type, 'name' => $document->name, 'official' => false, 'errors' => array_values(app(ProjectLegalDocuments::class)->prepare($document)['errors'])];
+        }
+
+        return $drafts;
+    }
+
     /** Active CGV version, created from the standard profile when none applies yet. */
     public function ensureTermsVersion(): DocumentTemplate
     {
@@ -187,7 +236,7 @@ class ProjectAutopilot
     }
 
     /** @return array{document: Document, missing: list<string>} */
-    private function createLegalDocument(ClientProject $project, Quote $quote, string $type, DocumentTemplate $terms): array
+    private function createLegalDocument(ClientProject $project, Quote $quote, string $type, DocumentTemplate $terms, bool $finalize = true): array
     {
         $settings = CommercialSetting::current();
         // Per-document fallbacks for what an older quote may lack; the quote itself stays untouched.
@@ -212,7 +261,7 @@ class ProjectAutopilot
             return $document;
         });
 
-        if ($legal['errors'] && ! TestMode::enabled()) {
+        if (! $finalize || ($legal['errors'] && ! TestMode::enabled())) {
             return ['document' => $document, 'missing' => array_values($legal['errors'])];
         }
         app(CommercialPdf::class)->document($document);

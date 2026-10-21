@@ -4,6 +4,7 @@ use App\Http\Controllers\CommercialDocumentController;
 use App\Http\Controllers\CustomerDocumentController;
 use App\Http\Controllers\SiteController;
 use App\Livewire\Admin\Accounting;
+use App\Livewire\Admin\Assistant;
 use App\Livewire\Admin\Billing;
 use App\Livewire\Admin\ClientProjects;
 use App\Livewire\Admin\CommercialDirectory;
@@ -61,6 +62,8 @@ Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('adm
         'leads' => Lead::whereNull('archived_at')->latest()->limit(8)->get(['firstname', 'lastname', 'company', 'project_type', 'status', 'created_at']),
     ]))->name('dashboard');
     Route::get('/a-faire', Tasks::class)->name('tasks');
+    Route::get('/assistant', Assistant::class)->name('assistant');
+    Route::get('/assistant/projets', Assistant::class)->defaults('agent', 'projects')->name('assistant.projects');
     Route::get('/prospects', Leads::class)->name('leads');
     Route::get('/archives', Leads::class)->defaults('archived', true)->name('archives');
     Route::get('/realisations', Projects::class)->name('projects');
