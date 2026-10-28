@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Mail\InquiryReceived;
 use App\Models\Lead;
+use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\RateLimiter;
@@ -120,6 +121,11 @@ class InquiryForm extends Component
             Mail::to(config('codenyr.email'))->queue((new InquiryReceived($lead, false))->afterCommit());
             Mail::to($lead->email)->queue((new InquiryReceived($lead, true))->afterCommit());
         });
+        // Shared hosting has no queue worker and its cron runs hourly: send right after the response.
+        // Failed attempts stay queued and the scheduled worker retries them.
+        if (config('queue.default') === 'database') {
+            defer(fn () => Artisan::call('queue:work', ['--stop-when-empty' => true, '--max-time' => 20, '--tries' => 3, '--memory' => 512]));
+        }
         $this->submitted = true;
         $this->reset('firstname', 'lastname', 'company', 'email', 'phone', 'description', 'website', 'features', 'subject');
     }
