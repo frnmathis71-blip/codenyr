@@ -22,7 +22,10 @@
     <meta name="twitter:description" content="{{ $description }}">
     <meta name="twitter:image" content="{{ $image ?? asset('images/social-preview.png') }}">
     <meta name="theme-color" content="#0D1117">
-    <link rel="icon" type="image/png" href="{{ asset('favicon-48.png') }}">
+    <link rel="icon" href="{{ asset('favicon.ico') }}" sizes="any">
+    <link rel="icon" type="image/png" sizes="48x48" href="{{ asset('favicon-48.png') }}">
+    <link rel="icon" type="image/png" sizes="96x96" href="{{ asset('favicon-96.png') }}">
+    <link rel="icon" type="image/png" sizes="192x192" href="{{ asset('favicon-192.png') }}">
     <link rel="apple-touch-icon" sizes="180x180" href="{{ asset('apple-touch-icon.png') }}?v=codenyr">
     <meta name="apple-mobile-web-app-title" content="Codenyr">
     @fonts
@@ -43,6 +46,13 @@
         ]);
     @endphp
     <script type="application/ld+json">{!! json_encode($organization, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}</script>
+    @if(request()->routeIs('home'))
+    @php
+        // Site name shown by Google above the result instead of the bare domain.
+        $website = ['@context' => 'https://schema.org', '@type' => 'WebSite', 'name' => 'Codenyr', 'url' => url('/')];
+    @endphp
+    <script type="application/ld+json">{!! json_encode($website, JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG) !!}</script>
+    @endif
     @stack('head')
 </head>
 <body class="site-body">
