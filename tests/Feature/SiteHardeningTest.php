@@ -47,3 +47,9 @@ test('SQL syntax is treated as text in forms and admin search', function () {
     Livewire::test(Leads::class)->set('search', "' OR 1=1 --")->assertDontSee('test@example.test');
     expect(Lead::count())->toBe(1);
 });
+
+test('the www address redirects permanently to the main domain', function () {
+    config(['app.url' => 'https://codenyr.fr']);
+    $this->get('https://www.codenyr.fr/services?offer=pro')->assertStatus(301)->assertRedirect('https://codenyr.fr/services?offer=pro');
+    $this->get('http://www.codenyr.fr/')->assertStatus(301)->assertRedirect('https://codenyr.fr/');
+});
