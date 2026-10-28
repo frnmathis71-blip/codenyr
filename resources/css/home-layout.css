@@ -2,7 +2,7 @@
 
 /* Split hero: solid blue statement on the left, a mosaic of demo projects on the right. */
 .hero-split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); min-height: calc(100vh - 81px); min-height: calc(100svh - 81px); }
-.hero-split-panel { position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; justify-content: space-between; gap: 56px; padding: 72px clamp(28px, 4vw, 64px) 40px max(48px, calc((100vw - 1280px) / 2)); background: var(--cn-navy-surface); color: white; }
+.hero-split-panel { position: relative; isolation: isolate; overflow: hidden; display: flex; flex-direction: column; justify-content: center; gap: clamp(48px, 9vh, 112px); padding: 64px clamp(28px, 4vw, 64px) 64px max(48px, calc((100vw - 1280px) / 2)); background: var(--cn-navy-surface); color: white; }
 .hero-split-panel::before,
 .hero-split-panel::after { content: ""; position: absolute; z-index: -1; border-radius: 50%; border: 1px solid #ffffff24; pointer-events: none; }
 .hero-split-panel::before { width: 620px; height: 620px; right: -260px; top: -240px; }
@@ -11,14 +11,14 @@
 .hero-split-kicker span { width: 6px; height: 6px; border-radius: 50%; background: white; box-shadow: 0 0 0 5px #ffffff2e; }
 .home-page .hero-split h1 { margin: 28px 0 24px; font-size: clamp(40px, 4vw, 64px); line-height: 1.04; letter-spacing: -.045em; color: white; }
 .hero-split h1 span { color: #c4d2ff; }
-.home-page .hero-split-lead { max-width: 36ch; font-size: 18px; line-height: 1.7; color: #dbe4ff; }
+.home-page .hero-split-lead { max-width: 38ch; font-size: clamp(18px, 2.2vh, 22px); line-height: 1.7; color: #dbe4ff; }
 .hero-split-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 14px 28px; margin-top: 36px; }
 .home-page .hero-split-actions .button { min-height: 54px; padding: 14px 24px; color: #2347b2 !important; background: #f4f6ff; border-color: #f4f6ff; box-shadow: 0 10px 30px #0006; }
 .home-page .hero-split-actions .button:hover { color: #12339c !important; background: white; border-color: white; transform: translateY(-2px); }
 .hero-split-link { display: inline-flex; align-items: center; gap: 10px; font-size: 15px; color: white; text-decoration: underline; text-decoration-color: #ffffff66; text-underline-offset: 6px; }
 .site-body .hero-split-link:hover { color: white; text-decoration-color: white; }
 .hero-split-facts { display: grid; grid-template-columns: repeat(3, auto); justify-content: start; gap: 16px 40px; margin: 0; padding: 24px 0 0; border-top: 1px solid #ffffff33; list-style: none; }
-.hero-split-facts strong { display: block; font-size: 22px; font-weight: 500; letter-spacing: -.02em; color: white; white-space: nowrap; }
+.hero-split-facts strong { display: block; font-size: clamp(22px, 2.6vh, 28px); font-weight: 500; letter-spacing: -.02em; color: white; white-space: nowrap; }
 .hero-split-facts span { font-size: 13px; color: #dbe4ff; }
 
 .hero-split-mosaic { display: grid; grid-template-columns: 1fr 1fr; grid-template-rows: 1.25fr 1fr; gap: 12px; padding: 12px; background: var(--cn-bg); }
