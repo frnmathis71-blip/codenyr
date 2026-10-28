@@ -799,8 +799,39 @@ summary:focus-visible {
     border: 1px solid var(--cn-border);
     border-radius: var(--cn-radius-lg);
 }
-.maintenance-card .text-link {
-    margin-top: auto;
+.maintenance-grid {
+    grid-template-columns: repeat(2, 1fr);
+    max-width: 880px;
+    margin-inline: auto;
+}
+.maintenance-card {
+    position: relative;
+    gap: 6px;
+}
+.maintenance-card.is-featured {
+    border-color: var(--cn-blue);
+    background: linear-gradient(180deg, #2563eb1f, transparent 40%), var(--cn-card);
+    box-shadow:
+        0 0 0 1px var(--cn-blue),
+        var(--cn-shadow);
+}
+.site-body .maintenance-card h3 {
+    margin: 4px 0 0;
+}
+.maintenance-card .price-features {
+    margin-bottom: 24px;
+}
+.maintenance-card .button {
+    width: 100%;
+}
+.maintenance-grid + .fine-print {
+    text-align: center;
+}
+@media (max-width: 700px) {
+    .maintenance-grid {
+        grid-template-columns: 1fr;
+        gap: 28px;
+    }
 }
 .maintenance-price {
     font-size: 15px;

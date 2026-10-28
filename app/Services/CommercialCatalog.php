@@ -19,8 +19,7 @@ class CommercialCatalog
         'offer_pro' => '10 pages, administration et 2 modules CRUD inclus (ex. actualités + réalisations). À proposer dès que le client veut publier lui-même : moins cher que Vitrine + Espace d’administration + modules.',
         'offer_custom' => 'Base des projets avec logique métier (boutique, réservation avancée, espace client, application). Le prix couvre conception, structure et administration ; ajouter les options correspondantes au besoin.',
         'maintenance_essential' => 'Hébergement, HTTPS, sauvegardes et surveillance. Minimum pour tout site hébergé par Codenyr ; ajouter aussi la ligne « Hébergement par Codenyr ». Ne comprend ni modification ni assistance.',
-        'maintenance_pro' => 'Essentiel + mises à jour techniques et assistance. Recommandé pour les sites avec administration (Site Pro).',
-        'maintenance_business' => 'Pro + suivi d’une application Laravel. Pour le Sur mesure (boutique, réservation, espace client). Prix « à partir de » à ajuster selon la taille de l’application.',
+        'maintenance_pro' => 'Formule « Sérénité » : Essentiel + sauvegarde quotidienne, mises à jour de sécurité mensuelles, réponse sous 48 h ouvrées, 30 min de retouches par mois et bilan mensuel. Formule recommandée, indispensable pour les sites avec administration (Site Pro, Sur mesure). Pour une grosse application, ajuster le prix sur devis.',
     ];
 
     public function initialize(): void

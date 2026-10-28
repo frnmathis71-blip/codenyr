@@ -27,7 +27,7 @@ test('the estimator follows the catalogue prices and offer compatibility', funct
         ->and($data['offers']['custom']['included'])->toBeNull()
         ->and($data['options'])->not->toHaveKeys([$page->id, $hourly->id, $quoteOnly->id, $archived->id])
         ->and($data['options'][$booking->id])->toMatchArray(['amount' => 30000, 'starting' => true])
-        ->and($data['maintenance'])->toHaveKeys(['essential', 'pro', 'business']);
+        ->and($data['maintenance'])->toHaveKeys(['essential', 'pro'])->not->toHaveKey('business');
 });
 
 test('the services page offers the estimator and the jump link', function () {
@@ -49,4 +49,11 @@ test('an estimate is ignored on the contact form', function () {
     Livewire::withQueryParams(['estimate' => 'Estimation'])
         ->test(InquiryForm::class, ['mode' => 'contact'])
         ->assertSet('description', '');
+});
+
+test('the services page presents two maintenance plans with their details', function () {
+    $this->get(route('services'))->assertOk()
+        ->assertSee('Essentiel')->assertSee('Sérénité')->assertSee('44,90 €')
+        ->assertSee('Réponse sous 48 h ouvrées')->assertSee('Sans engagement')
+        ->assertDontSee('Business');
 });

@@ -30,7 +30,7 @@ test('restaurant quote separates maintenance and preserves all snapshots after c
         ->call('save')->assertHasNoErrors();
     $quote = Quote::firstOrFail();
     expect($quote->totals['initial']['ttc'])->toBe(142000)
-        ->and($quote->totals['recurring']['monthly']['ttc'])->toBe(3990)
+        ->and($quote->totals['recurring']['monthly']['ttc'])->toBe(4490)
         ->and($quote->items[1]['category'])->toBe('Contenu')
         ->and($quote->items[1]['unit'])->toBe('page');
     $page->update(['amount_cents' => 11000, 'name' => 'Nouveau nom', 'category' => 'Autre', 'active' => false, 'archived_at' => now()]);

@@ -89,7 +89,7 @@ test('maintenance and infrastructure effects are data driven', function (string 
         }
     }
     expect($scope['clauses']['Maintenance'])->not->toBeEmpty();
-})->with(['essential', 'pro', 'business']);
+})->with(['essential', 'pro']);
 
 test('catalog editing and quote line editing preserve explicit removals', function () {
     $offer = Service::where('price_key', 'offer_landing')->firstOrFail();
