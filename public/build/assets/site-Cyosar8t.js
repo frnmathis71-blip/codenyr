@@ -1,0 +1,1 @@
+import{n as e,t}from"./cookie-preferences-Bk2_zrmK.js";e.start(),t(),document.addEventListener(`livewire:navigated`,t);

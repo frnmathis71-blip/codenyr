@@ -11,7 +11,9 @@ export function initCookiePreferences() {
     const valid = preference && ['accepted', 'rejected'].includes(preference.choice)
         && typeof preference.expires === 'number' && preference.expires > Date.now();
     banner.hidden = Boolean(valid);
+    let openedFromSettings = false;
     settings?.addEventListener('click', () => {
+        openedFromSettings = true;
         banner.hidden = false;
         document.querySelector('#cookie-status').textContent = preference && preference.expires > Date.now()
             ? `Choix enregistré : cookies facultatifs ${preference.choice === 'accepted' ? 'acceptés' : 'refusés'}.`
@@ -23,6 +25,8 @@ export function initCookiePreferences() {
         try { localStorage.setItem(key, JSON.stringify(preference)); }
         catch { /* The preference applies to this page even if storage is unavailable. */ }
         banner.hidden = true;
-        settings?.focus();
+        // Hand focus back only when the footer link opened the banner; otherwise the page would jump to the footer.
+        if (openedFromSettings) settings?.focus({ preventScroll: true });
+        openedFromSettings = false;
     }));
 }

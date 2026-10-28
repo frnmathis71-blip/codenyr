@@ -108,5 +108,20 @@
     "login using a recovery code": "se connecter avec un code de récupération",
     "login using an authentication code": "se connecter avec un code d’authentification",
     "or you can": "ou vous pouvez",
-    "or, enter the code manually": "ou saisissez le code manuellement"
+    "or, enter the code manually": "ou saisissez le code manuellement",
+    "Hello!": "Bonjour,",
+    "Whoops!": "Oups !",
+    "Regards,": "À bientôt,",
+    "If you're having trouble clicking the \":actionText\" button, copy and paste the URL below\ninto your web browser:": "Si le bouton « :actionText » ne fonctionne pas, copiez et collez ce lien dans votre navigateur :",
+    "All rights reserved.": "Tous droits réservés.",
+    "Reset your password": "Réinitialisez votre mot de passe",
+    "Reset Password Notification": "Réinitialisation de votre mot de passe",
+    "You are receiving this email because we received a password reset request for your account.": "Vous recevez cet e-mail car une demande de réinitialisation du mot de passe a été faite pour votre compte.",
+    "Reset Password": "Réinitialiser le mot de passe",
+    "This password reset link will expire in :count minutes.": "Ce lien expire dans :count minutes.",
+    "If you did not request a password reset, no further action is required.": "Si vous n’êtes pas à l’origine de cette demande, vous pouvez ignorer cet e-mail.",
+    "Verify your email address": "Confirmez votre adresse e-mail",
+    "Verify Email Address": "Confirmer mon adresse e-mail",
+    "Please click the button below to verify your email address.": "Cliquez sur le bouton ci-dessous pour confirmer votre adresse e-mail.",
+    "If you did not create an account, no further action is required.": "Si vous n’avez pas créé de compte, vous pouvez ignorer cet e-mail."
 }
