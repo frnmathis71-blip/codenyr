@@ -18,8 +18,7 @@ class CommercialCatalog
         'offer_vitrine' => '5 pages incluses avec formulaire et Google Maps. Offre la plus adaptée aux artisans, commerçants et TPE. Sans administration : si le client veut modifier ses contenus lui-même, comparer avec le Site Pro.',
         'offer_pro' => '10 pages, administration et 2 modules CRUD inclus (ex. actualités + réalisations). À proposer dès que le client veut publier lui-même : moins cher que Vitrine + Espace d’administration + modules.',
         'offer_custom' => 'Base des projets avec logique métier (boutique, réservation avancée, espace client, application). Le prix couvre conception, structure et administration ; ajouter les options correspondantes au besoin.',
-        'maintenance_essential' => 'Hébergement, HTTPS, sauvegardes et surveillance. Minimum pour tout site hébergé par Codenyr ; ajouter aussi la ligne « Hébergement par Codenyr ». Ne comprend ni modification ni assistance.',
-        'maintenance_pro' => 'Formule « Sérénité » : Essentiel + sauvegarde quotidienne, mises à jour de sécurité mensuelles, réponse sous 48 h ouvrées, 30 min de retouches par mois et bilan mensuel. Formule recommandée, indispensable pour les sites avec administration (Site Pro, Sur mesure). Pour une grosse application, ajuster le prix sur devis.',
+        'maintenance_essential' => 'Seule formule de maintenance : hébergement, HTTPS, sauvegarde quotidienne conservée 30 jours, mises à jour de sécurité mensuelles et surveillance. Ajouter aussi la ligne « Hébergement par Codenyr ». Ne comprend ni modification ni assistance : les retouches se chiffrent à part.',
     ];
 
     public function initialize(): void

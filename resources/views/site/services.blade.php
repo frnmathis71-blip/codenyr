@@ -35,23 +35,24 @@
         <div class="section-heading"><div><p class="eyebrow"><span>04 /</span> Et après la mise en ligne ?</p><h2 id="maintenance-title">La maintenance. Si vous le souhaitez.</h2></div><p class="section-intro">Vous recevez votre site clé en main et pouvez gérer votre propre hébergement. L’accompagnement Codenyr est facultatif.</p></div>
         <div class="maintenance-grid">
             @foreach(app(\App\Services\PricingCatalog::class)->maintenance() as $key => $plan)
-                <article @class(['maintenance-card', 'is-featured' => $key === 'pro']) aria-labelledby="maintenance-{{ $key }}">
-                    @if($key === 'pro')<span class="price-badge">Recommandé</span>@endif
-                    <span class="price-audience">{{ $plan['audience'] ?? '' }}</span>
-                    <h3 id="maintenance-{{ $key }}">{{ $plan['name'] }}</h3>
-                    <p>{{ $plan['intro'] }}</p>
-                    <p class="maintenance-price"><small class="maintenance-from">{{ $plan['starting_from'] ? 'À partir de' : 'Forfait mensuel' }}</small><strong>{{ $plan['price'] }} €</strong><small>/mois</small></p>
+                <article class="maintenance-card" aria-labelledby="maintenance-{{ $key }}">
+                    <div class="maintenance-summary">
+                        <span class="price-audience">{{ $plan['audience'] ?? '' }}</span>
+                        <h3 id="maintenance-{{ $key }}">{{ $plan['name'] }}</h3>
+                        <p>{{ $plan['intro'] }}</p>
+                        <p class="maintenance-price"><small class="maintenance-from">{{ $plan['starting_from'] ? 'À partir de' : 'Forfait mensuel' }}</small><strong>{{ $plan['price'] }} €</strong><small>/mois</small></p>
+                        <a class="button button-primary" href="{{ route('contact') }}">Choisir la maintenance</a>
+                    </div>
                     <ul class="price-features" aria-label="Inclus dans la maintenance {{ $plan['name'] }}">
                         @foreach($plan['features'] ?? [] as $feature)
                             <li><x-ui-icon name="check" />{{ $feature }}</li>
                         @endforeach
                     </ul>
-                    <a @class(['button', 'button-primary' => $key === 'pro', 'button-secondary' => $key !== 'pro']) href="{{ route('contact') }}">Choisir {{ $plan['name'] }}</a>
                 </article>
             @endforeach
         </div>
         <p class="fine-print">Sans engagement, résiliable chaque mois. {{ config('codenyr.legal.vat') }}.</p>
-        <div class="notice"><strong>Maintenance ≠ modification ≠ nouvelle fonctionnalité.</strong><p>La maintenance concerne le bon fonctionnement du site. Au-delà des petites retouches incluses dans la formule Sérénité, les changements de contenu, de design et les nouvelles fonctionnalités font l’objet d’un chiffrage distinct. Le détail des prestations est défini dans votre contrat.</p></div>
+        <div class="notice"><strong>Maintenance ≠ modification ≠ nouvelle fonctionnalité.</strong><p>La maintenance concerne le bon fonctionnement du site. Les changements de contenu, de design et les nouvelles fonctionnalités font l’objet d’un chiffrage distinct. Le détail des prestations est défini dans votre contrat.</p></div>
     </div>
 </section>
 <x-cta />

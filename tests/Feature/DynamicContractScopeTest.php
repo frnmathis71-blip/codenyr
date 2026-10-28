@@ -89,7 +89,7 @@ test('maintenance and infrastructure effects are data driven', function (string 
         }
     }
     expect($scope['clauses']['Maintenance'])->not->toBeEmpty();
-})->with(['essential', 'pro']);
+})->with(['essential']);
 
 test('catalog editing and quote line editing preserve explicit removals', function () {
     $offer = Service::where('price_key', 'offer_landing')->firstOrFail();
@@ -109,6 +109,11 @@ test('catalog editing and quote line editing preserve explicit removals', functi
 });
 
 test('conflicting maintenance options are reported and unknown page counts are never invented', function () {
+    // Retired plans still exist on old quotes and must keep being checked.
+    $essential = Service::where('price_key', 'maintenance_essential')->firstOrFail();
+    $rules = $essential->contract_rules;
+    $rules['effects']['maintenance_mode'] = 'pro';
+    $essential->replicate()->fill(['price_key' => 'maintenance_pro', 'name' => 'Sérénité', 'contract_rules' => $rules])->save();
     $quote = scopedQuote('offer_vitrine', ['maintenance_essential', 'maintenance_pro']);
     $scope = app(ContractScopeBuilder::class)->build($quote);
     expect($scope['errors'])->toHaveKey('effect_maintenance_mode');

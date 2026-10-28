@@ -27,7 +27,7 @@ test('the estimator follows the catalogue prices and offer compatibility', funct
         ->and($data['offers']['custom']['included'])->toBeNull()
         ->and($data['options'])->not->toHaveKeys([$page->id, $hourly->id, $quoteOnly->id, $archived->id])
         ->and($data['options'][$booking->id])->toMatchArray(['amount' => 30000, 'starting' => true])
-        ->and($data['maintenance'])->toHaveKeys(['essential', 'pro'])->not->toHaveKey('business');
+        ->and(array_keys($data['maintenance']))->toBe(['essential']);
 });
 
 test('the services page offers the estimator and the jump link', function () {
@@ -51,9 +51,9 @@ test('an estimate is ignored on the contact form', function () {
         ->assertSet('description', '');
 });
 
-test('the services page presents two maintenance plans with their details', function () {
+test('the services page presents the single maintenance plan with its details', function () {
     $this->get(route('services'))->assertOk()
-        ->assertSee('Essentiel')->assertSee('Sérénité')->assertSee('44,90 €')
-        ->assertSee('Réponse sous 48 h ouvrées')->assertSee('Sans engagement')
+        ->assertSee('Essentiel')->assertSee('29,99 €')->assertSee('Sauvegarde chaque jour, conservée 30 jours')
+        ->assertSee('Sans engagement')->assertDontSee('Sérénité')
         ->assertDontSee('Business');
 });

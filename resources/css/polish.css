@@ -799,38 +799,53 @@ summary:focus-visible {
     border: 1px solid var(--cn-border);
     border-radius: var(--cn-radius-lg);
 }
+/* A single plan: summary and price on the left, what is included on the right. */
 .maintenance-grid {
-    grid-template-columns: repeat(2, 1fr);
-    max-width: 880px;
+    grid-template-columns: 1fr;
+    max-width: 960px;
     margin-inline: auto;
 }
 .maintenance-card {
-    position: relative;
-    gap: 6px;
-}
-.maintenance-card.is-featured {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 40px;
     border-color: var(--cn-blue);
     background: linear-gradient(180deg, #2563eb1f, transparent 40%), var(--cn-card);
     box-shadow:
         0 0 0 1px var(--cn-blue),
         var(--cn-shadow);
 }
+.maintenance-summary {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
 .site-body .maintenance-card h3 {
     margin: 4px 0 0;
 }
 .maintenance-card .price-features {
-    margin-bottom: 24px;
+    align-content: center;
+    padding-left: 40px;
+    border-left: 1px solid var(--cn-border);
 }
-.maintenance-card .button {
-    width: 100%;
+.maintenance-summary .button {
+    align-self: flex-start;
 }
 .maintenance-grid + .fine-print {
     text-align: center;
 }
-@media (max-width: 700px) {
-    .maintenance-grid {
+@media (max-width: 760px) {
+    .maintenance-card {
         grid-template-columns: 1fr;
-        gap: 28px;
+        gap: 24px;
+    }
+    .maintenance-card .price-features {
+        padding: 24px 0 0;
+        border-left: 0;
+        border-top: 1px solid var(--cn-border);
+    }
+    .maintenance-summary .button {
+        align-self: stretch;
     }
 }
 .maintenance-price {

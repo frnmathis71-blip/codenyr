@@ -26,11 +26,11 @@ test('restaurant quote separates maintenance and preserves all snapshots after c
         ->call('toggleService', $page->id)->set('items.1.quantity', '2')
         ->call('toggleService', $booking->id)
         ->call('toggleService', Service::where('catalog_key', 'language')->firstOrFail()->id)
-        ->call('toggleService', Service::where('price_key', 'maintenance_pro')->firstOrFail()->id)
+        ->call('toggleService', Service::where('price_key', 'maintenance_essential')->firstOrFail()->id)
         ->call('save')->assertHasNoErrors();
     $quote = Quote::firstOrFail();
     expect($quote->totals['initial']['ttc'])->toBe(142000)
-        ->and($quote->totals['recurring']['monthly']['ttc'])->toBe(4490)
+        ->and($quote->totals['recurring']['monthly']['ttc'])->toBe(2999)
         ->and($quote->items[1]['category'])->toBe('Contenu')
         ->and($quote->items[1]['unit'])->toBe('page');
     $page->update(['amount_cents' => 11000, 'name' => 'Nouveau nom', 'category' => 'Autre', 'active' => false, 'archived_at' => now()]);
