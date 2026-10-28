@@ -61,11 +61,6 @@ class InquiryForm extends Component
         if ($this->mode === 'quote' && is_string($design) && trim($design) !== '') {
             $this->description = "J’ai personnalisé une démonstration :\n".mb_substr(strip_tags(trim($design)), 0, 1500)."\n\n";
         }
-        // Summary from the budget estimator, kept editable so the visitor can complete it.
-        $estimate = request()->query('estimate');
-        if ($this->mode === 'quote' && is_string($estimate) && trim($estimate) !== '') {
-            $this->description .= mb_substr(strip_tags(trim($estimate)), 0, 1500)."\n\nMon projet en quelques mots : ";
-        }
     }
 
     public function submit(): void

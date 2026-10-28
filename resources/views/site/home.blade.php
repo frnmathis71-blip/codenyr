@@ -12,7 +12,7 @@
                 <p class="hero-split-lead">Des sites singuliers, des expériences simples. Je transforme vos idées en outils web qui présentent votre activité et vous aident à avancer.</p>
                 <div class="hero-split-actions">
                     <a class="button" href="{{ route('quote') }}">Demander un devis <x-ui-icon name="arrow-up-right" /></a>
-                    <a class="hero-split-link" href="#offres">Voir les tarifs <x-ui-icon name="arrow-down" /></a>
+                    <a class="hero-split-link" href="{{ route('services') }}">Découvrir les offres <x-ui-icon name="arrow-right" /></a>
                 </div>
             </div>
             <ul class="hero-split-facts">
@@ -105,17 +105,9 @@
         </div>
     </section>
 
-    <section id="offres" class="home-offers-section" aria-labelledby="offers-title">
-        <div class="container">
-            <div class="home-section-heading"><div><p class="home-kicker">03 / Un site pour chaque ambition</p><h2 id="offers-title">Des tarifs clairs.<br><span>Dès le départ.</span></h2></div><p>Commencer simplement ou aller plus loin. Quatre points de départ, un périmètre défini ensemble et un devis avant de commencer.</p></div>
-            <x-pricing-cards />
-            <div class="home-offers-footer"><p>Vous hésitez ? <a class="home-quiet-link" href="{{ route('services') }}#estimer">Estimez votre budget en une minute</a></p><a class="home-quiet-link" href="{{ route('services') }}#maintenance">Voir le détail et la maintenance <span aria-hidden="true"><x-ui-icon name="arrow-right" /></span></a></div>
-        </div>
-    </section>
-
     <section id="methode" class="container home-section home-method" aria-labelledby="method-title">
         <div class="home-method-intro">
-            <p class="home-kicker">04 / On avance ensemble</p>
+            <p class="home-kicker">03 / On avance ensemble</p>
             <h2 id="method-title">Un projet web.<br><span>Pas un saut dans l’inconnu.</span></h2>
             <p>Des étapes lisibles, des échanges directs et des décisions prises ensemble. Vous savez où nous allons.</p>
             <a class="button button-primary" href="{{ route('quote') }}">Commencer par un échange <span aria-hidden="true"><x-ui-icon name="arrow-right" /></span></a>

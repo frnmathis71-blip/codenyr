@@ -86,7 +86,7 @@
     @unless(request()->routeIs('quote', 'contact', 'customer.*'))
         {{-- Phones only: the main action always within thumb reach. --}}
         <nav class="mobile-cta" aria-label="Action rapide">
-            <a class="mobile-cta-secondary" href="{{ route('services') }}#estimer">Estimer mon prix</a>
+            <a class="mobile-cta-secondary" href="{{ route('services') }}">Voir les offres</a>
             <a class="button button-primary" href="{{ route('quote') }}">Demander un devis</a>
         </nav>
     @endunless

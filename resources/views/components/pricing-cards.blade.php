@@ -1,9 +1,9 @@
-@props(['featured' => 'vitrine', 'anchors' => false])
+@props(['featured' => 'vitrine', 'anchors' => false, 'maintenance' => false])
 @php
     $audiences = ['landing' => 'Pour lancer une idée', 'vitrine' => 'Pour présenter votre activité', 'pro' => 'Pour garder la main', 'custom' => 'Pour vos besoins métier'];
     $demos = ['landing' => 'demo.landing', 'vitrine' => 'demo.vitrine', 'pro' => 'demo.pro'];
 @endphp
-<div class="price-grid">
+<div @class(['price-grid', 'has-maintenance' => $maintenance])>
     @foreach(app(\App\Services\PricingCatalog::class)->offers() as $key => $offer)
         <article @if($anchors) id="{{ $key }}" @endif @class(['price-card', 'is-featured' => $key === $featured]) aria-labelledby="offer-{{ $key }}">
             @if($key === $featured)<span class="price-badge">Recommandé</span>@endif
@@ -24,6 +24,26 @@
             @endisset
         </article>
     @endforeach
+    @if($maintenance)
+        {{-- Monthly maintenance, kept apart from the one-off site prices by a divider. --}}
+        <span class="price-divider" aria-hidden="true"></span>
+        @foreach(app(\App\Services\PricingCatalog::class)->maintenance() as $key => $plan)
+            <article @if($anchors) id="maintenance" @endif class="price-card is-maintenance" aria-labelledby="maintenance-{{ $key }}">
+                <header>
+                    <span class="price-audience">Après la mise en ligne</span>
+                    <h3 id="maintenance-{{ $key }}">Maintenance</h3>
+                    <p>{{ $plan['intro'] }}</p>
+                </header>
+                <p class="price-amount"><small>Formule {{ $plan['name'] }}</small><strong>{{ $plan['price'] }}<span>€</span></strong><small class="price-period">par mois, sans engagement</small></p>
+                <a class="button button-secondary" href="{{ route('contact') }}">En discuter</a>
+                <ul class="price-features" aria-label="Inclus dans la maintenance {{ $plan['name'] }}">
+                    @foreach($plan['features'] ?? [] as $feature)
+                        <li><x-ui-icon name="check" />{{ $feature }}</li>
+                    @endforeach
+                </ul>
+            </article>
+        @endforeach
+    @endif
 </div>
 <ul class="price-reassurance">
     <li><x-ui-icon name="check" />Devis détaillé et gratuit</li>

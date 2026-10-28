@@ -287,9 +287,6 @@ summary:focus-visible {
 .fine-print {
     font-size: 13px;
 }
-.maintenance-card > p:not(.maintenance-price) {
-    font-size: 15px;
-}
 .notice {
     font-size: 15px;
     border-radius: 0 var(--cn-radius-sm) var(--cn-radius-sm) 0;
@@ -790,82 +787,25 @@ summary:focus-visible {
     margin: 16px auto 0;
 }
 
-/* Maintenance plans as matching cards. */
-.maintenance-card {
-    display: flex;
-    flex-direction: column;
-    padding: 28px;
-    background: var(--cn-card);
-    border: 1px solid var(--cn-border);
-    border-radius: var(--cn-radius-lg);
+/* Monthly maintenance beside the site offers, behind a vertical divider. */
+.price-grid.has-maintenance {
+    grid-template-columns: repeat(4, minmax(0, 1fr)) 17px minmax(0, 1fr);
 }
-/* A single plan: summary and price on the left, what is included on the right. */
-.maintenance-grid {
-    grid-template-columns: 1fr;
-    max-width: 960px;
-    margin-inline: auto;
-}
-.maintenance-card {
+/* Five narrower columns: share the rows so prices and buttons line up across cards. */
+.price-grid.has-maintenance .price-card {
     display: grid;
-    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
-    gap: 40px;
-    border-color: var(--cn-blue);
-    background: linear-gradient(180deg, #2563eb1f, transparent 40%), var(--cn-card);
-    box-shadow:
-        0 0 0 1px var(--cn-blue),
-        var(--cn-shadow);
+    grid-row: span 5;
+    grid-template-rows: subgrid;
+    row-gap: 22px;
+    padding: 28px 22px;
 }
-.maintenance-summary {
-    display: flex;
-    flex-direction: column;
-    gap: 6px;
+.price-divider {
+    grid-row: span 5;
+    margin-inline: 8px;
+    background: var(--cn-border);
 }
-.site-body .maintenance-card h3 {
-    margin: 4px 0 0;
-}
-.maintenance-card .price-features {
-    align-content: center;
-    padding-left: 40px;
-    border-left: 1px solid var(--cn-border);
-}
-.maintenance-summary .button {
-    align-self: flex-start;
-}
-.maintenance-grid + .fine-print {
-    text-align: center;
-}
-@media (max-width: 760px) {
-    .maintenance-card {
-        grid-template-columns: 1fr;
-        gap: 24px;
-    }
-    .maintenance-card .price-features {
-        padding: 24px 0 0;
-        border-left: 0;
-        border-top: 1px solid var(--cn-border);
-    }
-    .maintenance-summary .button {
-        align-self: stretch;
-    }
-}
-.maintenance-price {
-    font-size: 15px;
-}
-.maintenance-price strong {
-    font-size: 32px;
-    font-weight: 600;
-    letter-spacing: -0.03em;
-    color: var(--cn-white);
-    font-variant-numeric: tabular-nums;
-}
-.maintenance-price small {
-    font-size: 14px;
-    margin-left: 4px;
-}
-.maintenance-price .maintenance-from {
-    display: block;
-    margin: 0 0 4px;
-    font-size: 13px;
+.price-amount .price-period {
+    margin: 8px 0 0;
 }
 .notice {
     border-radius: var(--cn-radius);
@@ -874,9 +814,21 @@ summary:focus-visible {
 }
 
 @media (max-width: 1150px) {
-    .price-grid {
+    .price-grid,
+    .price-grid.has-maintenance {
         grid-template-columns: repeat(2, minmax(0, 1fr));
         gap: 28px 16px;
+    }
+    .price-grid.has-maintenance .price-card {
+        display: flex;
+        grid-row: auto;
+    }
+    /* Below four columns, the divider becomes a horizontal rule above the maintenance card. */
+    .price-divider {
+        grid-column: 1 / -1;
+        grid-row: auto;
+        height: 1px;
+        margin: 4px 0;
     }
 }
 
@@ -913,6 +865,7 @@ summary:focus-visible {
         font-size: 15px;
     }
     .price-grid,
+    .price-grid.has-maintenance,
     .offer-guide {
         grid-template-columns: 1fr;
     }
@@ -929,9 +882,6 @@ summary:focus-visible {
     .pricing-section .fine-print,
     .page-hero-center {
         text-align: left;
-    }
-    .maintenance-card {
-        padding: 22px;
     }
 }
 

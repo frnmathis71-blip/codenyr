@@ -7,7 +7,6 @@
 @import './polish.css';
 @import './home-layout.css';
 @import './cookie-banner.css';
-@import './estimator.css';
 
 @source '../views';
 @source '../../vendor/laravel/framework/src/Illuminate/Pagination/resources/views/*.blade.php';

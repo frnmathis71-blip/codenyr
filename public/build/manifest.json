@@ -1,6 +1,6 @@
 {
-  "_cookie-preferences-BVz5YgH1.js": {
-    "file": "assets/cookie-preferences-BVz5YgH1.js",
+  "_cookie-preferences-D3EIEgk_.js": {
+    "file": "assets/cookie-preferences-D3EIEgk_.js",
     "name": "cookie-preferences"
   },
   "_demo-studio-48C49sIb.js": {
@@ -35,7 +35,7 @@
     "src": "public/images/icons/check.svg"
   },
   "resources/css/app.css": {
-    "file": "assets/app-Dyc4ZPqN.css",
+    "file": "assets/app-sBbjtKVr.css",
     "name": "app",
     "names": [
       "app.css"
@@ -47,7 +47,7 @@
     ]
   },
   "resources/css/site.css": {
-    "file": "assets/site-B28lrtF3.css",
+    "file": "assets/site-DqqrJTK3.css",
     "name": "site",
     "names": [
       "site.css"
@@ -59,12 +59,12 @@
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-D2CmDgMp.js",
+    "file": "assets/app-rK6dOQ8k.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "imports": [
-      "_cookie-preferences-BVz5YgH1.js"
+      "_cookie-preferences-D3EIEgk_.js"
     ]
   },
   "resources/js/demo-landing.js": {
@@ -111,12 +111,12 @@
     "isEntry": true
   },
   "resources/js/site.js": {
-    "file": "assets/site-Blcn40nk.js",
+    "file": "assets/site-BvE2jUe0.js",
     "name": "site",
     "src": "resources/js/site.js",
     "isEntry": true,
     "imports": [
-      "_cookie-preferences-BVz5YgH1.js"
+      "_cookie-preferences-D3EIEgk_.js"
     ]
   }
 }
