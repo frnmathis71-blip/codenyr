@@ -1303,6 +1303,28 @@ summary:focus-visible {
 .outreach-stats .stat-card.is-active {
     border-color: #a3bff0;
 }
+/* Status pill that doubles as a dropdown; overrides the full-width admin select. */
+.admin-body select.outreach-status {
+    appearance: none;
+    width: auto;
+    min-height: 0;
+    border: 1px solid #526078;
+    border-radius: 4px;
+    background: transparent url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='8' height='5'%3E%3Cpath d='M0 0l4 5 4-5z' fill='%2394a3b8'/%3E%3C/svg%3E") no-repeat right 7px center;
+    padding: 3px 22px 3px 8px;
+    color: #e4ebf4;
+    font-size: 11px;
+    line-height: 1.4;
+    cursor: pointer;
+}
+.admin-body select.outreach-status:hover,
+.admin-body select.outreach-status:focus {
+    border-color: #a3bff0;
+}
+.outreach-status option {
+    background: var(--cn-card);
+    color: #f8fafc;
+}
 .outreach-phone {
     white-space: nowrap;
 }

@@ -56,7 +56,7 @@
                         <td>{{ $item->name }}<small>{{ $item->activity }}</small><small>{{ $item->address }}</small></td>
                         <td>@if($item->phone)<a class="text-link outreach-phone" href="tel:{{ preg_replace('/[^0-9+]/', '', $item->phone) }}">{{ $item->phone }}</a>@else<small>{{ $item->channel ? \App\Models\Outreach::CHANNELS[$item->channel] : '—' }}</small>@endif</td>
                         <td>{{ $item->offerLabel() ?? '—' }}</td>
-                        <td><span class="status-pill">{{ \App\Models\Outreach::STATUSES[$item->status] }}</span>@if($item->last_contact_on)<small>Contacté le {{ $item->last_contact_on->format('d/m/Y') }}</small>@endif</td>
+                        <td><select class="status-pill outreach-status" aria-label="Statut de {{ $item->name }}" wire:change="setStatus({{ $item->id }}, $event.target.value)">@foreach(\App\Models\Outreach::STATUSES as $value => $label)<option value="{{ $value }}" @selected($item->status === $value)>{{ $label }}</option>@endforeach</select>@if($item->last_contact_on)<small>Contacté le {{ $item->last_contact_on->format('d/m/Y') }}</small>@endif</td>
                         <td>
                             {{ $item->next_action ?? '—' }}
                             @if($item->next_action_on)<small @class(['outreach-due' => $item->isDue()])>{{ $item->isDue() ? ($item->next_action_on->isToday() ? 'Aujourd’hui' : 'En retard depuis le '.$item->next_action_on->format('d/m/Y')) : 'Le '.$item->next_action_on->format('d/m/Y') }}</small>@endif

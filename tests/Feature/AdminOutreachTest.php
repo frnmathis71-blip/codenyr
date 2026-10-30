@@ -31,6 +31,17 @@ test('businesses can be added, updated and deleted', function () {
     expect(Outreach::find($outreach->id))->toBeNull();
 });
 
+test('the status can be changed straight from the list', function () {
+    $this->actingAs(User::factory()->create(['is_admin' => true]));
+    $outreach = Outreach::create(['name' => 'Fleuriste Test', 'status' => 'todo']);
+
+    Livewire::test(Outreaches::class)->call('setStatus', $outreach->id, 'meeting');
+    expect($outreach->refresh()->status)->toBe('meeting')->and($outreach->last_contact_on->isToday())->toBeTrue();
+
+    Livewire::test(Outreaches::class)->call('setStatus', $outreach->id, 'nope')->assertStatus(422);
+    expect($outreach->refresh()->status)->toBe('meeting');
+});
+
 test('invalid offers and statuses are rejected', function () {
     $this->actingAs(User::factory()->create(['is_admin' => true]));
     Livewire::test(Outreaches::class)->call('create')->set('name', 'X')->set('offer', 'nope')->set('status', 'nope')

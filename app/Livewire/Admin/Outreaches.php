@@ -101,6 +101,21 @@ class Outreaches extends AdminComponent
         $this->close();
     }
 
+    /** Quick status change from the list, without opening the form. */
+    public function setStatus(int $id, string $status): void
+    {
+        abort_unless(array_key_exists($status, Outreach::STATUSES), 422);
+        $outreach = Outreach::findOrFail($id);
+        if ($outreach->status === $status) {
+            return;
+        }
+        $outreach->update(['status' => $status] + ($status === 'todo' ? [] : ['last_contact_on' => today()]));
+        if ($this->editing === $id) {
+            $this->status = $status;
+            $this->last_contact_on = $outreach->last_contact_on?->format('Y-m-d') ?? '';
+        }
+    }
+
     public function delete(int $id): void
     {
         Outreach::findOrFail($id)->delete();
