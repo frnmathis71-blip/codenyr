@@ -1295,6 +1295,21 @@ summary:focus-visible {
 }
 
 /* ---------- Admin: to-do list ---------- */
+.outreach-stats .stat-card {
+    width: 100%;
+    text-align: left;
+    cursor: pointer;
+}
+.outreach-stats .stat-card.is-active {
+    border-color: #a3bff0;
+}
+.outreach-phone {
+    white-space: nowrap;
+}
+.admin-table small.outreach-due {
+    color: #efaaaa;
+    font-weight: 600;
+}
 .tasks-progress {
     display: block;
     width: 100%;

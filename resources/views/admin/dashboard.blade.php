@@ -4,6 +4,7 @@
     // One prioritised to-do list: [count, label, detail, route, action label].
     $todo = array_filter([
         [$counts['new'], 'nouveau(x) prospect(s) à contacter', 'Reçus via le formulaire du site.', route('admin.leads'), 'Voir les prospects'],
+        [\App\Models\Outreach::due()->count(), 'relance(s) de démarchage', 'Prévues aujourd’hui ou en retard.', route('admin.outreaches', ['filter' => 'due']), 'Voir le démarchage'],
         [$commercial['unpaid'], 'facture(s) impayée(s)', 'Finalisées, avec un reste à encaisser.', route('admin.billing.invoices.index'), 'Voir les factures'],
         [$commercial['pending_quotes'], 'devis en attente de réponse', 'Envoyés, ni acceptés ni refusés.', route('admin.billing.quotes.index'), 'Voir les devis'],
         [$pendingReviewCount, 'avis client(s) à modérer', 'En attente avant publication sur le site.', route('admin.testimonials'), 'Modérer'],

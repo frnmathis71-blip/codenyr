@@ -11,6 +11,7 @@ use App\Livewire\Admin\CommercialDirectory;
 use App\Livewire\Admin\CommercialDocuments;
 use App\Livewire\Admin\CommercialSearch;
 use App\Livewire\Admin\Leads;
+use App\Livewire\Admin\Outreaches;
 use App\Livewire\Admin\Pricing;
 use App\Livewire\Admin\PrivacyRequests;
 use App\Livewire\Admin\ProjectDossier;
@@ -66,6 +67,7 @@ Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('adm
     Route::get('/assistant/projets', Assistant::class)->defaults('agent', 'projects')->name('assistant.projects');
     Route::get('/prospects', Leads::class)->name('leads');
     Route::get('/archives', Leads::class)->defaults('archived', true)->name('archives');
+    Route::get('/demarchage', Outreaches::class)->name('outreaches');
     Route::get('/realisations', Projects::class)->name('projects');
     Route::get('/temoignages', Testimonials::class)->name('testimonials');
     Route::get('/tarifs', Pricing::class)->name('pricing');

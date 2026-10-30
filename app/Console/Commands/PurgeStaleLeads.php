@@ -3,6 +3,7 @@
 namespace App\Console\Commands;
 
 use App\Models\Lead;
+use App\Models\Outreach;
 use Illuminate\Console\Command;
 
 class PurgeStaleLeads extends Command
@@ -21,13 +22,18 @@ class PurgeStaleLeads extends Command
             ->whereNull('user_id')
             ->whereNotExists(fn ($projects) => $projects->selectRaw('1')->from('client_projects')->whereColumn('client_projects.lead_id', 'leads.id'));
 
+        // Canvassed businesses that never became clients follow the same rule.
+        $outreaches = Outreach::where('updated_at', '<', now()->subYears(self::RETENTION_YEARS))->where('status', '!=', 'won');
+
         if ($this->option('dry-run')) {
             $this->info($query->count().' demande(s) à supprimer.');
+            $this->info($outreaches->count().' fiche(s) de démarchage à supprimer.');
 
             return self::SUCCESS;
         }
 
         $this->info($query->delete().' demande(s) supprimée(s).');
+        $this->info($outreaches->delete().' fiche(s) de démarchage supprimée(s).');
 
         return self::SUCCESS;
     }

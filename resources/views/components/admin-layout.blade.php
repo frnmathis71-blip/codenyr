@@ -8,6 +8,7 @@
     ];
     \App\Models\AdminTask::syncAutomatic();
     $badges['tasks'] = \App\Models\AdminTask::open()->count();
+    $badges['outreaches'] = \App\Models\Outreach::due()->count();
     $navigation = [
         null => [
             ['Tableau de bord', 'admin.dashboard', [], 0],
@@ -16,6 +17,7 @@
         ],
         'Activité' => [
             ['Prospects', 'admin.leads', ['admin.archives'], $badges['leads']],
+            ['Démarchage', 'admin.outreaches', [], $badges['outreaches']],
             ['Clients', 'admin.clients', [], 0],
             ['Projets', 'admin.client-projects.index', ['admin.client-projects.*'], 0],
         ],
