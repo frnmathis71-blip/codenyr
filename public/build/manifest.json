@@ -3,16 +3,16 @@
     "file": "assets/cookie-preferences-Bk2_zrmK.js",
     "name": "cookie-preferences"
   },
-  "_demo-header-B2x3fOq0.js": {
-    "file": "assets/demo-header-B2x3fOq0.js",
+  "_demo-header-BF4thiAu.js": {
+    "file": "assets/demo-header-BF4thiAu.js",
     "name": "demo-header",
     "css": [
-      "assets/demo-header-DceWzt9I.css"
+      "assets/demo-header-CtyDuKqP.css"
     ]
   },
-  "_demo-header-DceWzt9I.css": {
-    "file": "assets/demo-header-DceWzt9I.css",
-    "src": "_demo-header-DceWzt9I.css"
+  "_demo-header-CtyDuKqP.css": {
+    "file": "assets/demo-header-CtyDuKqP.css",
+    "src": "_demo-header-CtyDuKqP.css"
   },
   "_fonts-DhA1vfI8.css": {
     "file": "assets/fonts-DhA1vfI8.css",
@@ -68,31 +68,31 @@
     ]
   },
   "resources/js/demo-atelier.js": {
-    "file": "assets/demo-atelier-BKkfjpyV.js",
+    "file": "assets/demo-atelier-C_o8Rztc.js",
     "name": "demo-atelier",
     "src": "resources/js/demo-atelier.js",
     "isEntry": true,
     "imports": [
-      "_demo-header-B2x3fOq0.js"
+      "_demo-header-BF4thiAu.js"
     ],
     "css": [
-      "assets/demo-atelier-DHqx9jF_.css"
+      "assets/demo-atelier-BPqdq99M.css"
     ]
   },
   "resources/js/demo-landing.js": {
-    "file": "assets/demo-landing-C_7NXyMk.js",
+    "file": "assets/demo-landing-syOWHq0N.js",
     "name": "demo-landing",
     "src": "resources/js/demo-landing.js",
     "isEntry": true,
     "imports": [
-      "_demo-header-B2x3fOq0.js"
+      "_demo-header-BF4thiAu.js"
     ],
     "css": [
-      "assets/demo-landing-DVmhqQlV.css"
+      "assets/demo-landing-DWgCzCVm.css"
     ]
   },
   "resources/js/demo-pro.js": {
-    "file": "assets/demo-pro-BCe0qr0I.js",
+    "file": "assets/demo-pro-CDQQnB-1.js",
     "name": "demo-pro",
     "src": "resources/js/demo-pro.js",
     "isEntry": true,

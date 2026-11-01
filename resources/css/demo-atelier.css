@@ -306,7 +306,7 @@ html.js:not([data-decor=flat]) [data-reveal]{transition:opacity 1s var(--ease),t
     .header-cta,.brand span{display:none}
     .burger-label{display:none}
     .hero{min-height:520px}
-    .hero-content{padding-bottom:84px}
+    .hero-content{padding-bottom:104px}
     .hero-bottom{align-items:stretch}
     .hero-cta{flex:1;width:auto;gap:16px;padding:16px 18px;font-size:16px}
     .scroll-cue span{display:none}

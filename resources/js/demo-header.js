@@ -1,3 +1,5 @@
+import '../css/demo-tabbar.css';
+
 // Shared by the demos: a menu button that slides the links out beside it,
 // and a header that turns solid once the page leaves the hero.
 export function initHeader(header) {

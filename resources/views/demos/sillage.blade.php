@@ -44,6 +44,7 @@
     </main>
     <footer class="wrap"><a class="wordmark" href="#"><b data-brand>sillage</b><span>®</span></a><p>Du café, du caractère.<br>Un concept de landing page signé Codenyr.</p><a href="{{ route('quote', ['offer' => 'Landing Page']) }}">Une page comme celle-ci pour votre activité ? <span class="mobile-decoration" aria-hidden="true"><x-ui-icon name="arrow-up-right" /></span></a><div class="footer-bottom"><span>Marque et collection fictives · Démonstration uniquement</span><a href="{{ route('services') }}#landing">Retour à Codenyr <span class="mobile-decoration" aria-hidden="true"><x-ui-icon name="arrow-up-right" /></span></a></div></footer>
     
+    <x-demo-tabbar :tabs="[['#contenu', 'Accueil', 'home', false], ['#univers', 'Univers', 'sparkle', false], ['#cafes', 'Cafés', 'coffee', false], ['#rituel', 'Rituel', 'clock', false], ['#questions', 'Questions', 'chat', false]]" />
     @include('demos.studio', ['studio' => [
         'key' => 'codenyr-sillage-preview-v3',
         'product' => 'Landing Page',

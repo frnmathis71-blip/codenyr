@@ -122,14 +122,16 @@ export function initStudio() {
     state = { ...blank(), ...load() };
     apply();
 
-    // Panel open / close.
+    // Panel open / close: the floating button, or the "Personnaliser" tab of the phone tab bar.
+    const openers = [toggle, ...document.querySelectorAll('[data-cz-open]')];
+    let opener = toggle;
     toggle.hidden = false;
     function setOpen(open) {
         panel.hidden = !open;
-        toggle.setAttribute('aria-expanded', String(open));
-        (open ? form.querySelector('#cz-brand') : toggle).focus({ preventScroll: true });
+        openers.forEach((button) => button.setAttribute('aria-expanded', String(open)));
+        (open ? form.querySelector('#cz-brand') : opener).focus({ preventScroll: true });
     }
-    toggle.addEventListener('click', () => setOpen(panel.hidden));
+    openers.forEach((button) => button.addEventListener('click', () => { opener = button; setOpen(panel.hidden); }));
     panel.querySelector('#cz-close').addEventListener('click', () => setOpen(false));
     document.addEventListener('keydown', (event) => { if (event.key === 'Escape' && !panel.hidden) setOpen(false); });
 

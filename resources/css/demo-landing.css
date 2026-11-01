@@ -193,7 +193,7 @@ html:not(.js) .sl-menu ol{display:flex;flex-wrap:wrap;justify-content:center;gap
 }
 @media (max-width:600px){
     .sl-cta,.burger-label{display:none}
-    .sl-hero-content{padding-bottom:84px}
+    .sl-hero-content{padding-bottom:104px}
     .sl-hero-bottom{align-items:stretch}
     .sl-hero-cta{flex:1;width:auto;gap:16px;padding:16px 18px;font-size:16px}
     .sl-scroll span{display:none}
