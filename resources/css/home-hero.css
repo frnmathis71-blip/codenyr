@@ -319,7 +319,7 @@
     .home-header-actions, .home-burger-label, .home-hero-offers, .home-scroll span { display: none; }
     .home-menu-account { display: block; }
     .home-header .brand { width: 132px; }
-    .home-hero { padding-bottom: 100px; }
+    .home-hero { padding-bottom: 104px; }
     .home-hero-facts { gap: 16px 28px; margin-top: 28px; }
     .home-hero-facts strong { font-size: 18px; }
     .home-hero-bottom { align-items: stretch; gap: 14px; }
