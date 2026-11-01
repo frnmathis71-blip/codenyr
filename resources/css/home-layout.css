@@ -1,7 +1,7 @@
 /* Homepage layout: demo tiles, bento grid, asymmetric work grid, sticky method timeline. */
 
-/* Demo tiles: the three concept sites, one per offer. */
-.home-demos { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 16px; }
+/* Demo tiles: the four concept sites, one per offer. */
+.home-demos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
 .home-demos .hero-tile { aspect-ratio: 4 / 5; }
 .hero-tile { position: relative; display: block; min-height: 0; overflow: hidden; border-radius: 14px; background: var(--cn-surface); }
 .hero-tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .7s var(--cn-ease); }
@@ -93,6 +93,9 @@
 .home-page .home-timeline h3 { font-size: 21px; margin-bottom: 8px; }
 .home-page .home-timeline p { font-size: 15px; line-height: 1.7; }
 
+@media (max-width: 1100px) {
+    .home-demos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 @media (max-width: 1000px) {
     .bento-design { grid-column: span 6; grid-row: auto; }
     .bento-devices, .bento-admin { grid-column: span 3; }

@@ -35,7 +35,7 @@
     "src": "public/images/icons/check.svg"
   },
   "resources/css/app.css": {
-    "file": "assets/app-D7kA8TpD.css",
+    "file": "assets/app-D8g6WCxr.css",
     "name": "app",
     "names": [
       "app.css"
@@ -47,7 +47,7 @@
     ]
   },
   "resources/css/site.css": {
-    "file": "assets/site-C6zOPLks.css",
+    "file": "assets/site-DPeUAyke.css",
     "name": "site",
     "names": [
       "site.css"
@@ -77,6 +77,19 @@
     ],
     "css": [
       "assets/demo-atelier-BPqdq99M.css"
+    ]
+  },
+  "resources/js/demo-immo.js": {
+    "file": "assets/demo-immo-D70MYXc7.js",
+    "name": "demo-immo",
+    "src": "resources/js/demo-immo.js",
+    "isEntry": true,
+    "imports": [
+      "resources/js/demo-atelier.js",
+      "resources/js/demo-atelier.js"
+    ],
+    "css": [
+      "assets/demo-immo-BRwfNApE.css"
     ]
   },
   "resources/js/demo-landing.js": {

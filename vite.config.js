@@ -15,6 +15,7 @@ export default defineConfig({
                 'resources/js/demo-landing.js',
                 'resources/js/demo-atelier.js',
                 'resources/js/demo-pro.js',
+                'resources/js/demo-immo.js',
             ],
             refresh: true,
             fonts: [

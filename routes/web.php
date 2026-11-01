@@ -40,6 +40,11 @@ Route::get('/demonstrations/canopee/{page?}', function (string $page = 'accueil'
 
     return view('demos.canopee', ['page' => $page]);
 })->name('demo.pro');
+Route::get('/demonstrations/seuil/{page?}', function (string $page = 'accueil') {
+    abort_unless(in_array($page, ['accueil', 'biens', 'bien', 'visite', 'estimation', 'espace', 'agence']), 404);
+
+    return view('demos.seuil', ['page' => $page]);
+})->name('demo.custom');
 Route::permanentRedirect('/tarifs', '/services#tarifs')->name('pricing');
 Route::get('/realisations', [SiteController::class, 'projects'])->name('projects');
 Route::get('/avis', [SiteController::class, 'reviews'])->name('reviews');

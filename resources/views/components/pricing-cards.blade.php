@@ -1,7 +1,7 @@
 @props(['featured' => 'vitrine', 'anchors' => false, 'maintenance' => false])
 @php
     $audiences = ['landing' => 'Pour lancer une idée', 'vitrine' => 'Pour présenter votre activité', 'pro' => 'Pour garder la main', 'custom' => 'Pour vos besoins métier'];
-    $demos = ['landing' => 'demo.landing', 'vitrine' => 'demo.vitrine', 'pro' => 'demo.pro'];
+    $demos = ['landing' => 'demo.landing', 'vitrine' => 'demo.vitrine', 'pro' => 'demo.pro', 'custom' => 'demo.custom'];
 @endphp
 <div @class(['price-grid', 'has-maintenance' => $maintenance])>
     @foreach(app(\App\Services\PricingCatalog::class)->offers() as $key => $offer)
