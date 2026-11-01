@@ -1893,9 +1893,10 @@ details.admin-panel > summary small {
         bottom: max(12px, env(safe-area-inset-bottom));
         z-index: 45;
         display: grid;
-        grid-template-columns: repeat(5, minmax(0, 1fr));
+        grid-auto-flow: column;
+        grid-auto-columns: minmax(0, 1fr);
         align-items: center;
-        width: min(420px, calc(100% - 24px));
+        width: min(460px, calc(100% - 20px));
         padding: 6px;
         translate: -50% 0;
         border: 1px solid #ffffff14;
@@ -1913,7 +1914,7 @@ details.admin-panel > summary small {
         min-width: 0;
         padding: 6px 2px;
         border-radius: 16px;
-        font-size: 11px;
+        font-size: 10.5px;
         font-weight: 500;
         color: var(--cn-muted);
         white-space: nowrap;
@@ -1954,5 +1955,16 @@ details.admin-panel > summary small {
     }
     .site-body .cookie-banner {
         bottom: 90px;
+    }
+}
+
+/* Phones: the floating tab bar replaces the menu button and the header account link. */
+@media (max-width: 760px) {
+    .site-header .menu-toggle,
+    .site-header .mobile-nav,
+    .site-header .header-account-actions,
+    .home-burger,
+    .home-menu {
+        display: none !important;
     }
 }

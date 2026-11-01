@@ -115,14 +115,7 @@
         </div>
         <div class="container footer-bottom"><span>© {{ date('Y') }} Codenyr. Tous droits réservés.</span><div><a href="{{ route('legal') }}">Mentions légales</a><a href="{{ route('privacy') }}">Confidentialité</a><a href="{{ route('terms') }}">CGU</a><button type="button" class="cookie-settings" id="cookie-settings">Gérer les cookies</button></div><span>Conçu avec soin. Développé sur mesure.</span></div>
     </footer>
-    @unless(request()->routeIs('quote', 'contact', 'customer.*'))
-        {{-- Phones only: a floating tab bar, with the quote request in the middle within thumb reach. --}}
-        <nav class="mobile-cta" aria-label="Navigation rapide">
-            @foreach(['home' => ['Accueil', 'home'], 'services' => ['Offres', 'tag'], 'quote' => ['Devis', 'document'], 'projects' => ['Réalisations', 'grid'], 'contact' => ['Contact', 'chat']] as $route => [$label, $icon])
-                <a @class(['mobile-cta-quote' => $route === 'quote']) href="{{ route($route) }}" @if(request()->routeIs($route)) aria-current="page" @endif><span class="mobile-cta-icon"><x-ui-icon :name="$icon" /></span>{{ $label }}</a>
-            @endforeach
-        </nav>
-    @endunless
+    <x-mobile-tabbar />
     <x-cookie-banner />
     @livewireScriptConfig
 </body>
