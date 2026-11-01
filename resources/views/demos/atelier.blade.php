@@ -23,7 +23,7 @@
             ],
             'Mise en page' => [
                 'layout' => ['Présentation d’accueil', ['full' => 'Photo plein écran', 'framed' => 'Photo encadrée', 'split' => 'Deux colonnes']],
-                'nav' => ['Navigation', ['burger' => 'Menu plein écran', 'bar' => 'Barre horizontale']],
+                'nav' => ['Navigation', ['burger' => 'Menu déroulant', 'bar' => 'Barre horizontale']],
                 'cards' => ['Présentation des projets', ['grid' => 'Grille', 'list' => 'Liste éditoriale', 'mosaic' => 'Mosaïque']],
                 'width' => ['Largeur du contenu', ['large' => 'Large', 'narrow' => 'Resserrée']],
                 'density' => ['Espacement', ['airy' => 'Généreux', 'compact' => 'Compact']],
@@ -36,7 +36,7 @@
             ],
         ],
         'presets' => [
-            'signature' => ['Signature', 'Grande photo et menu plein écran', ['palette' => 'mineral', 'type' => 'signature', 'scale' => 'normal', 'layout' => 'full', 'nav' => 'burger', 'cards' => 'grid', 'corners' => 'square', 'buttons' => 'solid', 'photos' => 'natural']],
+            'signature' => ['Signature', 'Grande photo et menu discret', ['palette' => 'mineral', 'type' => 'signature', 'scale' => 'normal', 'layout' => 'full', 'nav' => 'burger', 'cards' => 'grid', 'corners' => 'square', 'buttons' => 'solid', 'photos' => 'natural']],
             'gallery' => ['Galerie', 'Les images au premier plan', ['palette' => 'mineral', 'type' => 'classic', 'scale' => 'large', 'layout' => 'framed', 'nav' => 'bar', 'cards' => 'mosaic', 'corners' => 'square', 'buttons' => 'outline', 'photos' => 'natural']],
             'soft' => ['Douceur', 'Arrondi, clair et chaleureux', ['palette' => 'rose', 'type' => 'signature', 'scale' => 'normal', 'layout' => 'split', 'nav' => 'bar', 'cards' => 'grid', 'corners' => 'rounded', 'buttons' => 'pill', 'photos' => 'warm']],
             'nocturne' => ['Nocturne', 'Sombre et haut de gamme', ['palette' => 'dark', 'type' => 'classic', 'scale' => 'large', 'layout' => 'full', 'nav' => 'burger', 'cards' => 'list', 'corners' => 'square', 'buttons' => 'outline', 'photos' => 'mono']],
@@ -52,8 +52,7 @@
     <a class="brand" href="{{ route('demo.vitrine') }}"><b data-brand>atelier rive</b><span>Architecture & intérieurs</span></a>
     <a class="header-cta" href="{{ route('demo.vitrine', ['page' => 'contact']) }}">Prendre rendez-vous</a>
     <nav id="navigation" class="menu" aria-label="Navigation principale">
-        <ol>@foreach($pages as $slug => $label)<li><a href="{{ route('demo.vitrine', ['page' => $slug]) }}" @if($page === $slug) aria-current="page" @endif><small>0{{ $loop->iteration }}</small>{{ $label }}</a></li>@endforeach</ol>
-        <div class="menu-aside"><p class="eyebrow">L’atelier</p><p>Architecture intérieure, rénovation et aménagement de lieux de vie.</p><p class="eyebrow">Rencontres</p><p>Sur rendez-vous, à l’atelier ou chez vous.</p><a class="button" href="{{ route('demo.vitrine', ['page' => 'contact']) }}">Parler de votre projet</a></div>
+        <ol>@foreach($pages as $slug => $label)<li><a href="{{ route('demo.vitrine', ['page' => $slug]) }}" @if($page === $slug) aria-current="page" @endif>{{ $label }}</a></li>@endforeach</ol>
     </nav>
 </header>
 <main id="main">
@@ -73,7 +72,6 @@
     <p class="eyebrow" data-reveal>Une vision sensible de l’habitat</p>
     <div data-reveal><h2 class="statement">Nous imaginons l’architecture à partir de ceux qui l’habitent. Les usages donnent le rythme, la lumière trace les lignes, <em>les matières installent la douceur.</em></h2><a class="text-link" href="{{ route('demo.vitrine', ['page' => 'atelier']) }}">Rencontrer l’univers de l’atelier <x-ui-icon name="arrow-right" /></a></div>
 </section>
-<div class="marquee" aria-hidden="true"><div>@for($i = 0; $i < 2; $i++)<span>Architecture intérieure</span><span>Rénovation</span><span>Aménagement</span><span>Lumière</span><span>Matières</span>@endfor</div></div>
 <section class="wrap section">
     <div class="section-head" data-reveal><div><p class="eyebrow">Sélection</p><h2>Fragments <em>de lieux.</em></h2></div><a class="text-link" href="{{ route('demo.vitrine', ['page' => 'realisations']) }}">Tous les projets <x-ui-icon name="arrow-right" /></a></div>
     <div class="projects">@foreach($projects as $project)<a class="project" data-reveal href="{{ route('demo.vitrine', ['page' => 'realisations']) }}#projet-{{ $loop->index }}"><div class="project-media"><img src="{{ asset('images/atelier/'.$project[2]) }}" alt="{{ $project[0] }}, inspiration d’intérieur" loading="lazy" width="1000" height="750"></div><div class="project-body"><span class="eyebrow">{{ $project[1] }}</span><h3>{{ $project[0] }}</h3><p>{{ $project[3] }}</p></div></a>@endforeach</div>

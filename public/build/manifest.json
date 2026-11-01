@@ -68,7 +68,7 @@
     ]
   },
   "resources/js/demo-atelier.js": {
-    "file": "assets/demo-atelier-D_HCjEhq.js",
+    "file": "assets/demo-atelier-CI5SSc2M.js",
     "name": "demo-atelier",
     "src": "resources/js/demo-atelier.js",
     "isEntry": true,
@@ -76,7 +76,7 @@
       "_demo-studio-48C49sIb.js"
     ],
     "css": [
-      "assets/demo-atelier-DXdXFRjR.css"
+      "assets/demo-atelier-CHuzCrZe.css"
     ]
   },
   "resources/js/demo-landing.js": {

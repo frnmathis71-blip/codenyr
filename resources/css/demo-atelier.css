@@ -1,4 +1,4 @@
-/* Atelier Rive — vitrine demo. Full-bleed hero, full-screen menu, editorial sections.
+/* Atelier Rive — vitrine demo. Full-bleed hero, slide-out menu, editorial sections.
    Every data-* attribute on <html> is driven by the shared studio panel (demo-studio.js). */
 :root{
     --paper:#f5f2eb;--ink:#302f29;--muted:#706d63;--accent:#805743;--surface:#e9e3d8;--line:#302f2926;
@@ -25,7 +25,6 @@ h1,h2,h3{font-weight:500;letter-spacing:-.045em}
 em{font-family:var(--serif);font-style:italic;font-weight:400;letter-spacing:-.03em;color:var(--accent)}
 svg{flex:none}
 [hidden]{display:none!important}
-html.no-scroll{overflow:hidden}
 a:focus-visible,button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,summary:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
 .skip{position:fixed;left:15px;top:-100px;padding:15px;background:var(--paper);z-index:100}
 .skip:focus{top:10px}
@@ -84,41 +83,34 @@ h2{font-size:var(--h2);line-height:1.04}
 :root[data-layout=full] .page-accueil .header{margin-bottom:calc(-1 * var(--header-h));background:transparent;color:#fff}
 :root[data-layout=full] .page-accueil .header.is-scrolled{background:var(--paper);color:var(--ink)}
 :root[data-layout=full] .page-accueil .header:not(.is-scrolled) .header-cta:hover{background:#fff;border-color:#fff;color:#1d1c19}
-.header.menu-open{background:transparent!important;color:var(--paper)!important;box-shadow:none}
-.header.menu-open .header-cta{opacity:0;pointer-events:none}
 
-/* ---------- Menu: inline without JS, full-screen panel with JS ---------- */
+/* ---------- Menu: inline without JS, links sliding out beside the button with JS ---------- */
 .menu{grid-column:1/-1}
 .menu ol{list-style:none;margin:0;padding:0}
 html:not(.js) .header{height:auto;padding-block:20px}
 html:not(.js) .menu ol{display:flex;flex-wrap:wrap;justify-content:center;gap:8px 24px;font-size:14px}
-html:not(.js) .menu small,html:not(.js) .menu-aside{display:none}
-.js .menu{position:fixed;inset:0;z-index:-1;display:grid;grid-template-columns:1.5fr 1fr;align-items:end;gap:var(--gutter);padding:calc(var(--header-h) + 40px) var(--gutter) clamp(32px,6vh,64px);background:var(--ink);color:var(--paper);clip-path:inset(0 0 100% 0);visibility:hidden;overflow-y:auto;transition:clip-path .8s cubic-bezier(.7,0,.2,1),visibility 0s .8s}
-.js .menu-open .menu{clip-path:inset(0);visibility:visible;transition:clip-path .8s cubic-bezier(.7,0,.2,1)}
-.js .menu li{overflow:hidden}
-.js .menu li a{display:inline-flex;align-items:baseline;gap:20px;padding-block:4px;font-size:clamp(40px,6.6vw,96px);font-weight:500;line-height:1.05;letter-spacing:-.045em;transform:translateY(105%);transition:transform .7s var(--ease),color .3s}
-.js .menu-open .menu li a{transform:none}
-.js .menu-open .menu li:nth-child(2) a{transition-delay:.06s}
-.js .menu-open .menu li:nth-child(3) a{transition-delay:.12s}
-.js .menu-open .menu li:nth-child(4) a{transition-delay:.18s}
-.js .menu-open .menu li:nth-child(5) a{transition-delay:.24s}
-.js .menu li a small{font-size:12px;font-weight:500;letter-spacing:.12em;opacity:.55}
-.js .menu li a:hover,.js .menu li a[aria-current]{color:color-mix(in srgb,var(--accent) 55%,var(--paper))}
-.js .menu li a[aria-current]{font-family:var(--serif);font-style:italic;font-weight:400}
-.menu-aside{display:grid;gap:10px;max-width:340px;justify-self:end;font-size:15px;line-height:1.6;color:color-mix(in srgb,var(--paper) 72%,transparent)}
-.menu-aside .eyebrow{margin-top:18px;color:inherit}
-.menu-aside .eyebrow:first-child{margin-top:0}
-.menu-aside .button{margin-top:24px;justify-self:start;background:var(--paper);border-color:var(--paper);color:var(--ink)}
+/* With JS the links slide out next to the menu button. */
+.js .menu{grid-row:1;justify-self:start;margin-left:140px;visibility:hidden;pointer-events:none;transition:visibility 0s .45s}
+.js .menu-open .menu{visibility:visible;pointer-events:auto;transition:none}
+.js .menu ol{display:flex;align-items:center;gap:clamp(18px,2vw,32px)}
+.js .menu li a{display:block;padding-block:8px;border-bottom:1px solid transparent;font-size:14px;font-weight:500;white-space:nowrap;opacity:0;transform:translateX(-16px);transition:opacity .45s var(--ease),transform .45s var(--ease),border-color .3s}
+.js .menu-open .menu li a{opacity:1;transform:none}
+.js .menu-open .menu li:nth-child(2) a{transition-delay:.05s}
+.js .menu-open .menu li:nth-child(3) a{transition-delay:.1s}
+.js .menu-open .menu li:nth-child(4) a{transition-delay:.15s}
+.js .menu-open .menu li:nth-child(5) a{transition-delay:.2s}
+.js .menu li a:hover,.js .menu li a[aria-current]{border-color:currentColor}
+.brand{transition:opacity .3s}
+@media (min-width:901px) and (max-width:1500px){.js .menu-open .brand{opacity:0;pointer-events:none}}
 
 @media (min-width:901px){
     :root[data-nav=bar] .burger{display:none}
     :root[data-nav=bar] .header{grid-template-columns:auto 1fr auto}
     :root[data-nav=bar] .brand{grid-column:1;text-align:left}
-    :root[data-nav=bar] .menu{position:static;grid-column:2;grid-row:1;display:block;z-index:auto;padding:0;background:none;color:inherit;clip-path:none;visibility:visible;overflow:visible}
+    :root[data-nav=bar] .menu{position:static;grid-column:2;grid-row:1;display:block;justify-self:center;margin:0;pointer-events:auto;opacity:1;transform:none;box-shadow:none;z-index:auto;padding:0;background:none;color:inherit;clip-path:none;visibility:visible;overflow:visible}
     :root[data-nav=bar] .menu ol{display:flex;justify-content:center;gap:32px}
-    :root[data-nav=bar] .menu li a{transform:none;font:500 14px/1 var(--sans);letter-spacing:0;padding-block:8px;border-bottom:1px solid transparent}
+    :root[data-nav=bar] .menu li a{transform:none;opacity:1;font:500 14px/1 var(--sans);letter-spacing:0;padding-block:8px;border-bottom:1px solid transparent}
     :root[data-nav=bar] .menu li a[aria-current],:root[data-nav=bar] .menu li a:hover{color:inherit;font-style:normal;border-color:currentColor}
-    :root[data-nav=bar] .menu small,:root[data-nav=bar] .menu-aside{display:none}
 }
 
 /* ---------- Hero ---------- */
@@ -159,12 +151,6 @@ html:not(.js) .menu small,html:not(.js) .menu-aside{display:none}
 /* ---------- Home sections ---------- */
 .intro{display:grid;grid-template-columns:1fr 3fr;gap:clamp(24px,5vw,80px)}
 .statement{font-size:clamp(28px,3.3vw,50px);font-weight:400;line-height:1.18;letter-spacing:-.03em}
-.marquee{overflow:hidden;border-block:1px solid var(--line);padding-block:clamp(18px,3vw,32px)}
-.marquee div{display:flex;width:max-content}
-.marquee span{display:flex;align-items:center;gap:clamp(24px,3vw,48px);padding-right:clamp(24px,3vw,48px);font-size:clamp(36px,5.6vw,84px);font-weight:500;letter-spacing:-.045em;line-height:1;white-space:nowrap}
-.marquee span:nth-child(even){font-family:var(--serif);font-style:italic;font-weight:400;color:var(--accent)}
-.marquee span::after{content:"";width:12px;height:12px;border-radius:50%;background:var(--accent)}
-:root[data-type=modern] .marquee span:nth-child(even){font-family:var(--sans);font-style:normal;font-weight:500}
 .section-head{display:flex;align-items:flex-end;justify-content:space-between;gap:24px;margin-bottom:clamp(40px,5vw,72px)}
 .section-head h2{margin-top:18px}
 .section-head .text-link{margin-top:0}
@@ -281,7 +267,6 @@ html:not(.js) .menu small,html:not(.js) .menu-aside{display:none}
 :root:not([data-decor=flat]) .hero-content>h1{animation-delay:.12s}
 :root:not([data-decor=flat]) .hero-content>.hero-bottom{animation-delay:.3s}
 :root:not([data-decor=flat]) .scroll-cue svg{animation:bob 2.4s ease-in-out infinite}
-:root:not([data-decor=flat]) .marquee div{animation:marquee 38s linear infinite}
 :root:not([data-decor=flat]) .projects .project:nth-child(3n+2){margin-top:clamp(0px,6vw,96px)}
 :root:not([data-decor=flat]):is([data-cards=list],[data-cards=mosaic]) .projects .project:nth-child(3n+2){margin-top:0}
 html.js:not([data-decor=flat]) [data-reveal]:not(.is-visible){opacity:0;transform:translateY(36px)}
@@ -289,15 +274,17 @@ html.js:not([data-decor=flat]) [data-reveal]{transition:opacity 1s var(--ease),t
 @keyframes hero-zoom{from{transform:scale(1.12)}}
 @keyframes rise{from{opacity:0;transform:translateY(40px)}}
 @keyframes bob{50%{transform:translateY(6px)}}
-@keyframes marquee{to{transform:translateX(-50%)}}
 
 /* ---------- Responsive ---------- */
 @media (max-width:900px){
+    .js .menu{position:absolute;top:calc(100% - 6px);left:var(--gutter);margin:0;min-width:230px;padding:6px 22px;border-radius:max(var(--radius),8px);background:var(--paper);color:var(--ink);box-shadow:0 22px 44px -20px #0007;opacity:0;transform:translateY(-10px);transition:opacity .35s var(--ease),transform .35s var(--ease),visibility 0s .35s}
+    .js .menu-open .menu{opacity:1;transform:none;transition:opacity .35s var(--ease),transform .35s var(--ease)}
+    .js .menu ol{flex-direction:column;align-items:stretch;gap:0}
+    .js .menu li a{padding-block:13px;font-size:16px;border-bottom-color:var(--line)}
+    .js .menu li:last-child a{border-bottom-color:transparent}
+    .js .menu li a:hover,.js .menu li a[aria-current]{border-bottom-color:var(--line);color:var(--accent)}
     :root{--header-h:72px}
     .brand b{font-size:25px}
-    .js .menu{grid-template-columns:1fr;align-content:end;gap:48px}
-    .menu-aside{justify-self:start}
-    .js .menu li a{font-size:clamp(38px,10vw,64px)}
     .intro,.editorial,.page-head,.contact-grid,.footer-grid{grid-template-columns:1fr}
     .projects,:root[data-cards=mosaic] .projects{grid-template-columns:1fr}
     :root[data-cards=list] .project{grid-template-columns:1fr;gap:0}

@@ -9,12 +9,13 @@ const menu = document.querySelector('#navigation');
 burger.hidden = false;
 const setMenu = (open) => {
     burger.setAttribute('aria-expanded', String(open));
-    burger.querySelector('.burger-label').textContent = open ? 'Fermer' : 'Menu';
     header.classList.toggle('menu-open', open);
-    document.documentElement.classList.toggle('no-scroll', open);
     if (open) menu.querySelector('a')?.focus({ preventScroll: true });
 };
 burger.addEventListener('click', () => setMenu(burger.getAttribute('aria-expanded') !== 'true'));
+document.addEventListener('click', (event) => {
+    if (header.classList.contains('menu-open') && !menu.contains(event.target) && !burger.contains(event.target)) setMenu(false);
+});
 document.addEventListener('keydown', (event) => {
     if (event.key === 'Escape' && header.classList.contains('menu-open')) { setMenu(false); burger.focus(); }
 });
