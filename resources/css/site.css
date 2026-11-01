@@ -6,6 +6,7 @@
 @import './mobile-presentation.css';
 @import './polish.css';
 @import './home-layout.css';
+@import './home-hero.css';
 @import './cookie-banner.css';
 
 @source '../views';

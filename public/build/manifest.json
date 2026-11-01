@@ -35,7 +35,7 @@
     "src": "public/images/icons/check.svg"
   },
   "resources/css/app.css": {
-    "file": "assets/app-PoWswk44.css",
+    "file": "assets/app-C4D5Qj9B.css",
     "name": "app",
     "names": [
       "app.css"
@@ -47,7 +47,7 @@
     ]
   },
   "resources/css/site.css": {
-    "file": "assets/site-Du90Kq06.css",
+    "file": "assets/site-B8uunM37.css",
     "name": "site",
     "names": [
       "site.css"
@@ -111,7 +111,7 @@
     "isEntry": true
   },
   "resources/js/site.js": {
-    "file": "assets/site-Cyosar8t.js",
+    "file": "assets/site-MZDv7sW7.js",
     "name": "site",
     "src": "resources/js/site.js",
     "isEntry": true,
