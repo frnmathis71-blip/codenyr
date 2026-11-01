@@ -60,6 +60,8 @@
 /* Links slide out to the right of the button. */
 .home-menu { grid-column: 1 / -1; grid-row: 1; justify-self: start; margin-left: 140px; visibility: hidden; pointer-events: none; transition: visibility 0s .45s; }
 .menu-open .home-menu { visibility: visible; pointer-events: auto; transition: none; }
+/* Menu reopened on page load: show it at once, without the slide-in. */
+.home-header.is-restoring, .home-header.is-restoring * { transition: none !important; }
 .home-menu ol { display: flex; align-items: center; gap: clamp(16px, 1.8vw, 30px); margin: 0; padding: 0; list-style: none; }
 .home-menu a {
     display: block;

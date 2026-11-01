@@ -57,8 +57,8 @@
 </head>
 <body class="site-body">
     <a class="skip-link" href="#main">Aller au contenu</a>
-    {{-- Every page: the links slide out beside the menu button; on the homepage the header is transparent over the hero. --}}
-    <header @class(['site-header', 'home-header', 'is-overlay' => request()->routeIs('home')]) x-data="{ open: false, scrolled: window.scrollY > 40 }" @scroll.window="scrolled = window.scrollY > 40" :class="{ 'menu-open': open, 'is-scrolled': scrolled }" @click.outside="open = false" @keydown.escape.window="if (open) { open = false; $refs.menuButton.focus() }">
+    {{-- Every page: the links slide out beside the menu button and stay open from page to page until closed (site-header.js); on the homepage the header is transparent over the hero. --}}
+    <header @class(['site-header', 'home-header', 'is-overlay' => request()->routeIs('home')]) x-data="siteHeader" @scroll.window="scrolled = window.scrollY > 40" :class="{ 'menu-open': open, 'is-scrolled': scrolled }" @keydown.escape.window="if (open) { open = false; $refs.menuButton.focus() }">
         <button type="button" x-ref="menuButton" class="home-burger" @click="open = !open" :aria-expanded="open" aria-expanded="false" aria-controls="home-menu"><span class="home-burger-lines" aria-hidden="true"><i></i><i></i><i></i></span><span class="home-burger-label">Menu</span></button>
         <a href="{{ route('home') }}" aria-label="Codenyr, accueil" class="brand"><img src="{{ asset('images/codenyr-logo.webp') }}" width="660" height="220" alt="Codenyr"></a>
         <div class="home-header-actions">
@@ -69,7 +69,7 @@
             @endauth
             <a class="home-header-cta" href="{{ route('quote') }}">Demander un devis</a>
         </div>
-        <nav id="home-menu" class="home-menu" aria-label="Navigation principale" @click="if ($event.target.closest('a')) open = false">
+        <nav id="home-menu" class="home-menu" aria-label="Navigation principale">
             <ol>
                 @foreach(['home' => 'Accueil', 'services' => 'Offres et tarifs', 'projects' => 'Réalisations', 'reviews' => 'Avis clients', 'about' => 'À propos', 'contact' => 'Contact'] as $route => $label)<li><a href="{{ route($route) }}" @if(request()->routeIs($route)) aria-current="page" @endif>{{ $label }}</a></li>@endforeach
                 @auth<li class="home-menu-account"><a href="{{ route('dashboard') }}">{{ auth()->user()->is_admin ? 'Administration' : 'Mon espace client' }}</a></li>@else<li class="home-menu-account"><a href="{{ route('login') }}">Connexion</a></li>@endauth

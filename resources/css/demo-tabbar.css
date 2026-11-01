@@ -1,6 +1,8 @@
 /* Phones: floating tab bar shared by the three demos (same pattern as the Codenyr site).
    It replaces the menu button and the floating "Personnaliser ce site" button. */
 .demo-tabbar { display: none; }
+/* Menu reopened on page load (demo-header.js): shown at once, without the slide-in. */
+.is-restoring, .is-restoring * { transition: none !important; }
 @media (max-width: 760px) {
     .demo-tabbar {
         --tab-accent: var(--accent, var(--demo-accent));
