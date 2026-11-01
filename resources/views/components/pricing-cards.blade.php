@@ -19,9 +19,9 @@
                     <li><x-ui-icon name="check" />{{ $feature }}</li>
                 @endforeach
             </ul>
-            @isset($demos[$key])
+            @if(isset($demos[$key]) && Route::has($demos[$key]))
                 <a class="price-demo" href="{{ route($demos[$key]) }}">Voir un exemple <x-ui-icon name="arrow-up-right" /></a>
-            @endisset
+            @endif
         </article>
     @endforeach
     @if($maintenance)
