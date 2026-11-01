@@ -3,16 +3,16 @@
     "file": "assets/cookie-preferences-NuLKEisn.js",
     "name": "cookie-preferences"
   },
-  "_demo-header-BWudkDDR.js": {
-    "file": "assets/demo-header-BWudkDDR.js",
+  "_demo-header-DYJi5DBK.css": {
+    "file": "assets/demo-header-DYJi5DBK.css",
+    "src": "_demo-header-DYJi5DBK.css"
+  },
+  "_demo-header-DicdLKDp.js": {
+    "file": "assets/demo-header-DicdLKDp.js",
     "name": "demo-header",
     "css": [
-      "assets/demo-header-CQ43mwQM.css"
+      "assets/demo-header-DYJi5DBK.css"
     ]
-  },
-  "_demo-header-CQ43mwQM.css": {
-    "file": "assets/demo-header-CQ43mwQM.css",
-    "src": "_demo-header-CQ43mwQM.css"
   },
   "_fonts-DhA1vfI8.css": {
     "file": "assets/fonts-DhA1vfI8.css",
@@ -47,7 +47,7 @@
     ]
   },
   "resources/css/site.css": {
-    "file": "assets/site-j11keQub.css",
+    "file": "assets/site-C6zOPLks.css",
     "name": "site",
     "names": [
       "site.css"
@@ -68,31 +68,31 @@
     ]
   },
   "resources/js/demo-atelier.js": {
-    "file": "assets/demo-atelier-DfGcDIsX.js",
+    "file": "assets/demo-atelier-BIBihsIj.js",
     "name": "demo-atelier",
     "src": "resources/js/demo-atelier.js",
     "isEntry": true,
     "imports": [
-      "_demo-header-BWudkDDR.js"
+      "_demo-header-DicdLKDp.js"
     ],
     "css": [
       "assets/demo-atelier-BPqdq99M.css"
     ]
   },
   "resources/js/demo-landing.js": {
-    "file": "assets/demo-landing-DbxUe39_.js",
+    "file": "assets/demo-landing-CCnsxeLp.js",
     "name": "demo-landing",
     "src": "resources/js/demo-landing.js",
     "isEntry": true,
     "imports": [
-      "_demo-header-BWudkDDR.js"
+      "_demo-header-DicdLKDp.js"
     ],
     "css": [
       "assets/demo-landing-DWgCzCVm.css"
     ]
   },
   "resources/js/demo-pro.js": {
-    "file": "assets/demo-pro-Df1G67pW.js",
+    "file": "assets/demo-pro-CiYNSde7.js",
     "name": "demo-pro",
     "src": "resources/js/demo-pro.js",
     "isEntry": true,

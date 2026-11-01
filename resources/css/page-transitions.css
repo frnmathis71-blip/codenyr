@@ -1,0 +1,27 @@
+/* Fade between pages (cross-document view transitions). Browsers without support simply change page as before.
+   The header and the phone tab bar keep their own name so they stay in place while the page fades. */
+@view-transition {
+    navigation: auto;
+}
+::view-transition-old(root) {
+    animation: page-fade-out .22s cubic-bezier(.4, 0, 1, 1) both;
+}
+::view-transition-new(root) {
+    animation: page-fade-in .38s cubic-bezier(.2, .7, .2, 1) .06s both;
+}
+@keyframes page-fade-out {
+    to { opacity: 0; }
+}
+@keyframes page-fade-in {
+    from { opacity: 0; transform: translateY(10px); }
+}
+.site-header, .header, .sl-header { view-transition-name: page-header; }
+.mobile-cta, .demo-tabbar { view-transition-name: page-tabbar; }
+.cz-toggle { view-transition-name: page-studio-toggle; }
+@media (prefers-reduced-motion: reduce) {
+    ::view-transition-group(*),
+    ::view-transition-old(*),
+    ::view-transition-new(*) {
+        animation: none !important;
+    }
+}
