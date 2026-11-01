@@ -57,9 +57,8 @@
 </head>
 <body class="site-body">
     <a class="skip-link" href="#main">Aller au contenu</a>
-    @if(request()->routeIs('home'))
-    {{-- Homepage: transparent over the hero, links slide out beside the menu button. --}}
-    <header class="site-header home-header" x-data="{ open: false, scrolled: window.scrollY > 40 }" @scroll.window="scrolled = window.scrollY > 40" :class="{ 'menu-open': open, 'is-scrolled': scrolled }" @click.outside="open = false" @keydown.escape.window="if (open) { open = false; $refs.menuButton.focus() }">
+    {{-- Every page: the links slide out beside the menu button; on the homepage the header is transparent over the hero. --}}
+    <header @class(['site-header', 'home-header', 'is-overlay' => request()->routeIs('home')]) x-data="{ open: false, scrolled: window.scrollY > 40 }" @scroll.window="scrolled = window.scrollY > 40" :class="{ 'menu-open': open, 'is-scrolled': scrolled }" @click.outside="open = false" @keydown.escape.window="if (open) { open = false; $refs.menuButton.focus() }">
         <button type="button" x-ref="menuButton" class="home-burger" @click="open = !open" :aria-expanded="open" aria-expanded="false" aria-controls="home-menu"><span class="home-burger-lines" aria-hidden="true"><i></i><i></i><i></i></span><span class="home-burger-label">Menu</span></button>
         <a href="{{ route('home') }}" aria-label="Codenyr, accueil" class="brand"><img src="{{ asset('images/codenyr-logo.webp') }}" width="660" height="220" alt="Codenyr"></a>
         <div class="home-header-actions">
@@ -77,35 +76,6 @@
             </ol>
         </nav>
     </header>
-    @else
-    <header class="site-header" x-data="{ open: false }" @keydown.escape.window="if (open) { open = false; $refs.menuButton.focus() }">
-        <div class="container header-inner">
-            <a href="{{ route('home') }}" aria-label="Codenyr, accueil" class="brand"><img src="{{ asset('images/codenyr-logo.webp') }}" width="660" height="220" alt="Codenyr"></a>
-            <nav class="desktop-nav" aria-label="Navigation principale">
-                @foreach(['home' => 'Accueil', 'services' => 'Offres et tarifs', 'projects' => 'Réalisations', 'reviews' => 'Avis clients', 'about' => 'À propos', 'contact' => 'Contact'] as $route => $label)
-                    <a href="{{ route($route) }}" @class(['active' => request()->routeIs($route)]) @if(request()->routeIs($route)) aria-current="page" @endif>{{ $label }}</a>
-                @endforeach
-            </nav>
-            <div class="header-account-actions">
-                @auth
-                    <a class="account-link" href="{{ route('dashboard') }}">{{ auth()->user()->is_admin ? 'Administration' : 'Mon espace' }}</a>
-                @else
-                    <a class="account-link" href="{{ route('login') }}">Connexion</a>
-                @endauth
-                <a @class(['header-cta', 'account-link' => request()->routeIs('home'), 'button button-primary' => !request()->routeIs('home')]) href="{{ route('quote') }}">Demander un devis <span aria-hidden="true"><span class="mobile-decoration" aria-hidden="true"><x-ui-icon name="arrow-up-right" /></span></span></a>
-            </div>
-            <button type="button" x-ref="menuButton" class="menu-toggle" @click="open = !open" :aria-expanded="open" aria-controls="mobile-menu" :aria-label="open ? 'Fermer le menu' : 'Ouvrir le menu'" aria-label="Ouvrir le menu"><span x-text="open ? 'Fermer' : 'Menu'">Menu</span> <span aria-hidden="true"><x-ui-icon name="menu" /></span></button>
-        </div>
-        <nav id="mobile-menu" class="mobile-nav" x-show="open" x-cloak @click="if ($event.target.closest('a')) open = false" aria-label="Navigation mobile">
-            @foreach(['home' => 'Accueil', 'services' => 'Offres et tarifs', 'projects' => 'Réalisations', 'reviews' => 'Avis clients', 'about' => 'À propos', 'contact' => 'Contact', 'quote' => 'Demander un devis'] as $route => $label)<a href="{{ route($route) }}" @if(request()->routeIs($route)) aria-current="page" @endif>{{ $label }}</a>@endforeach
-            @auth
-                <a href="{{ route('dashboard') }}">{{ auth()->user()->is_admin ? 'Administration' : 'Mon espace client' }}</a>
-            @else
-                <a href="{{ route('login') }}">Connexion</a><a href="{{ route('register') }}">Inscription</a>
-            @endauth
-        </nav>
-    </header>
-    @endif
     <main id="main">{{ $slot }}</main>
     <footer class="site-footer">
         <div class="container footer-top">

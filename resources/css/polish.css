@@ -1958,11 +1958,8 @@ details.admin-panel > summary small {
     }
 }
 
-/* Phones: the floating tab bar replaces the menu button and the header account link. */
+/* Phones: the floating tab bar replaces the menu button. */
 @media (max-width: 760px) {
-    .site-header .menu-toggle,
-    .site-header .mobile-nav,
-    .site-header .header-account-actions,
     .home-burger,
     .home-menu {
         display: none !important;

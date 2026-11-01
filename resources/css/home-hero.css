@@ -1,5 +1,5 @@
-/* Homepage opening: header over a full-screen hero, menu sliding out beside its button,
-   and a CSS 3D laptop (rotated by home-laptop.js) whose screen scrolls through code. */
+/* Site header (every page): menu sliding out beside its button. Homepage opening: the header
+   sits over a full-screen hero, with a CSS 3D laptop (rotated by home-laptop.js) whose screen scrolls through code. */
 
 /* ---------- Header ---------- */
 .site-header.home-header {
@@ -8,18 +8,16 @@
     align-items: center;
     gap: 20px;
     height: 88px;
-    margin-bottom: -88px;
     padding-inline: clamp(20px, 4vw, 48px);
+    transition: background .4s var(--cn-ease), border-color .4s var(--cn-ease);
+}
+/* Homepage: transparent over the hero until the visitor scrolls. */
+.site-header.home-header.is-overlay:not(.is-scrolled) {
     background: transparent;
     border-bottom-color: transparent;
     backdrop-filter: none;
-    transition: background .4s var(--cn-ease), border-color .4s var(--cn-ease);
 }
-.site-header.home-header.is-scrolled {
-    background: #0d1117ef;
-    border-bottom-color: #252b33;
-    backdrop-filter: blur(16px);
-}
+.site-header.home-header.is-overlay { margin-bottom: -88px; }
 .home-header .brand { grid-column: 2; grid-row: 1; transition: opacity .3s var(--cn-ease); }
 .home-burger {
     grid-column: 1;
@@ -289,7 +287,8 @@
     .home-laptop-stage { --lw: min(76vw, 520px); }
 }
 @media (max-width: 900px) {
-    .site-header.home-header { height: 72px; margin-bottom: -72px; }
+    .site-header.home-header { height: 72px; }
+    .site-header.home-header.is-overlay { margin-bottom: -72px; }
     .home-hero { padding-top: calc(72px + 32px); }
 }
 /* Six links no longer fit beside the button: they drop down beneath it instead. */
