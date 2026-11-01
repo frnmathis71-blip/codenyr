@@ -47,7 +47,7 @@
     ]
   },
   "resources/css/site.css": {
-    "file": "assets/site-B-H3p2d2.css",
+    "file": "assets/site-Du90Kq06.css",
     "name": "site",
     "names": [
       "site.css"
@@ -65,6 +65,18 @@
     "isEntry": true,
     "imports": [
       "_cookie-preferences-Bk2_zrmK.js"
+    ]
+  },
+  "resources/js/demo-atelier.js": {
+    "file": "assets/demo-atelier-D_HCjEhq.js",
+    "name": "demo-atelier",
+    "src": "resources/js/demo-atelier.js",
+    "isEntry": true,
+    "imports": [
+      "_demo-studio-48C49sIb.js"
+    ],
+    "css": [
+      "assets/demo-atelier-DXdXFRjR.css"
     ]
   },
   "resources/js/demo-landing.js": {

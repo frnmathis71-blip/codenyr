@@ -15,7 +15,7 @@ test('each product demo ships the shared customisation panel with its own identi
     }
 })->with([
     'landing' => ['demo.landing', 'Landing Page', ''],
-    'vitrine' => ['demo.vitrine', 'Site Vitrine', 'split'],
+    'vitrine' => ['demo.vitrine', 'Site Vitrine', 'full'],
     'pro' => ['demo.pro', 'Site Pro', 'immersive'],
 ]);
 
