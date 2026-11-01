@@ -1,29 +1,9 @@
 import '../css/demo-atelier.css';
 import { initStudio } from './demo-studio.js';
+import { initHeader } from './demo-header.js';
 initStudio();
 document.documentElement.classList.add('js');
-
-const header = document.querySelector('.header');
-const burger = document.querySelector('.burger');
-const menu = document.querySelector('#navigation');
-burger.hidden = false;
-const setMenu = (open) => {
-    burger.setAttribute('aria-expanded', String(open));
-    header.classList.toggle('menu-open', open);
-    if (open) menu.querySelector('a')?.focus({ preventScroll: true });
-};
-burger.addEventListener('click', () => setMenu(burger.getAttribute('aria-expanded') !== 'true'));
-document.addEventListener('click', (event) => {
-    if (header.classList.contains('menu-open') && !menu.contains(event.target) && !burger.contains(event.target)) setMenu(false);
-});
-document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && header.classList.contains('menu-open')) { setMenu(false); burger.focus(); }
-});
-
-// The header turns solid once the page leaves the hero.
-const onScroll = () => header.classList.toggle('is-scrolled', window.scrollY > 40);
-onScroll();
-window.addEventListener('scroll', onScroll, { passive: true });
+initHeader(document.querySelector('.header'));
 
 // Sections fade in as they enter the viewport.
 const revealed = document.querySelectorAll('[data-reveal]');

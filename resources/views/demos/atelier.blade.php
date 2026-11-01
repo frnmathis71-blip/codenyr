@@ -44,7 +44,7 @@
         'defaults' => ['decor' => 'rich', 'palette' => 'mineral', 'type' => 'signature', 'scale' => 'normal', 'layout' => 'full', 'nav' => 'burger', 'cards' => 'grid', 'width' => 'large', 'density' => 'airy', 'corners' => 'square', 'buttons' => 'solid', 'photos' => 'natural'],
     ];
 @endphp
-<!DOCTYPE html><html lang="fr" @foreach($studio['defaults'] as $setting => $value) data-{{ $setting }}="{{ $value }}" @endforeach><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>{{ $pages[$page] }} — Atelier Rive · Démonstration Codenyr</title>@fonts @vite('resources/js/demo-atelier.js')</head><body class="page-{{ $page }}">
+<!DOCTYPE html><html lang="fr" @foreach($studio['defaults'] as $setting => $value) data-{{ $setting }}="{{ $value }}" @endforeach><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>{{ $pages[$page] }} — Atelier Rive · Démonstration Codenyr</title><script>document.documentElement.classList.add('js')</script>@fonts @vite('resources/js/demo-atelier.js')</head><body class="page-{{ $page }}">
 <a class="skip" href="#main">Aller au contenu</a>
 <div class="demo-banner"><span>ATELIER RIVE · Concept fictif par Codenyr</span><a href="{{ route('services') }}#vitrine">Retour aux services <x-ui-icon name="arrow-up-right" /></a></div>
 <header class="header">

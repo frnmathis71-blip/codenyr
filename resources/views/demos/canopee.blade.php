@@ -1,7 +1,8 @@
 @php
     $pages = ['accueil'=>'Accueil', 'studio'=>'Le studio', 'realisations'=>'Réalisations', 'journal'=>'Journal', 'gestion'=>'Administration'];
+    $services = [['Conception paysagère', 'Un plan d’ensemble qui relie les circulations, les usages et les ambiances du jardin.'], ['Terrasses', 'Prolonger la maison dehors avec des matières naturelles et une composition végétale structurée.'], ['Jardins de ville', 'Tirer parti de chaque mètre carré pour créer un extérieur intime et vivant.']];
     $studio = [
-        'key' => 'codenyr-canopee-preview-v2',
+        'key' => 'codenyr-canopee-preview-v3',
         'product' => 'Site Pro',
         'demo' => 'Canopée (site Pro)',
         'brand' => 'canopée',
@@ -19,42 +20,71 @@
                 'scale' => ['Taille des titres', ['normal' => 'Équilibrée', 'large' => 'Affirmée', 'small' => 'Discrète']],
             ],
             'Mise en page' => [
-                'layout' => ['Présentation d’accueil', ['immersive' => 'Immersive — photo plein écran', 'split' => 'Deux colonnes', 'reverse' => 'Image à gauche', 'wide' => 'Panorama']],
-                'nav' => ['Navigation', ['sticky' => 'Fixe au défilement', 'standard' => 'Horizontale', 'center' => 'Centrée']],
+                'layout' => ['Présentation d’accueil', ['immersive' => 'Immersive — photo plein écran', 'framed' => 'Photo encadrée', 'split' => 'Deux colonnes']],
+                'nav' => ['Navigation', ['burger' => 'Menu déroulant', 'bar' => 'Barre horizontale']],
                 'cards' => ['Présentation des contenus', ['tiles' => 'Cartes', 'grid' => 'Grille', 'list' => 'Liste éditoriale', 'mosaic' => 'Mosaïque']],
                 'width' => ['Largeur du contenu', ['large' => 'Large', 'narrow' => 'Resserrée']],
                 'density' => ['Espacement', ['airy' => 'Généreux', 'compact' => 'Compact']],
             ],
             'Détails' => [
-                'decor' => ['Décor', ['rich' => 'Riche — formes et profondeur', 'flat' => 'Sobre — à plat']],
+                'decor' => ['Décor', ['rich' => 'Vivant — animations et grain', 'flat' => 'Sobre — sans effet']],
                 'corners' => ['Formes', ['rounded' => 'Arrondis', 'square' => 'Angles droits']],
                 'buttons' => ['Boutons', ['pill' => 'Arrondis', 'solid' => 'Pleins', 'outline' => 'Contours']],
                 'photos' => ['Traitement des photos', ['natural' => 'Naturel', 'warm' => 'Chaleureux', 'mono' => 'Noir et blanc']],
             ],
         ],
         'presets' => [
-            'studio' => ['Studio', 'Le design d’origine', ['palette' => 'mineral', 'type' => 'modern', 'scale' => 'normal', 'layout' => 'immersive', 'nav' => 'sticky', 'cards' => 'tiles', 'corners' => 'rounded', 'buttons' => 'pill', 'photos' => 'natural']],
-            'editorial' => ['Éditorial', 'Classique, aéré, typographique', ['palette' => 'olive', 'type' => 'signature', 'scale' => 'large', 'layout' => 'split', 'nav' => 'standard', 'cards' => 'list', 'corners' => 'square', 'buttons' => 'solid', 'photos' => 'natural']],
-            'atelier' => ['Atelier', 'Bleu, net et structuré', ['palette' => 'blue', 'type' => 'modern', 'scale' => 'small', 'layout' => 'wide', 'nav' => 'center', 'cards' => 'grid', 'corners' => 'square', 'buttons' => 'outline', 'photos' => 'natural']],
-            'nuit' => ['Nuit', 'Sombre et immersif', ['palette' => 'dark', 'type' => 'classic', 'scale' => 'large', 'layout' => 'immersive', 'nav' => 'sticky', 'cards' => 'mosaic', 'corners' => 'rounded', 'buttons' => 'outline', 'photos' => 'warm']],
+            'studio' => ['Studio', 'Grande photo et menu discret', ['palette' => 'mineral', 'type' => 'modern', 'scale' => 'normal', 'layout' => 'immersive', 'nav' => 'burger', 'cards' => 'tiles', 'corners' => 'rounded', 'buttons' => 'pill', 'photos' => 'natural']],
+            'editorial' => ['Éditorial', 'Classique, aéré, typographique', ['palette' => 'olive', 'type' => 'signature', 'scale' => 'large', 'layout' => 'split', 'nav' => 'bar', 'cards' => 'list', 'corners' => 'square', 'buttons' => 'solid', 'photos' => 'natural']],
+            'atelier' => ['Atelier', 'Bleu, net et structuré', ['palette' => 'blue', 'type' => 'modern', 'scale' => 'small', 'layout' => 'framed', 'nav' => 'bar', 'cards' => 'grid', 'corners' => 'square', 'buttons' => 'outline', 'photos' => 'natural']],
+            'nuit' => ['Nuit', 'Sombre et immersif', ['palette' => 'dark', 'type' => 'classic', 'scale' => 'large', 'layout' => 'immersive', 'nav' => 'burger', 'cards' => 'mosaic', 'corners' => 'rounded', 'buttons' => 'outline', 'photos' => 'warm']],
         ],
-        'defaults' => ['decor' => 'rich', 'palette' => 'mineral', 'type' => 'modern', 'scale' => 'normal', 'layout' => 'immersive', 'nav' => 'sticky', 'cards' => 'tiles', 'width' => 'large', 'density' => 'airy', 'corners' => 'rounded', 'buttons' => 'pill', 'photos' => 'natural'],
+        'defaults' => ['decor' => 'rich', 'palette' => 'mineral', 'type' => 'modern', 'scale' => 'normal', 'layout' => 'immersive', 'nav' => 'burger', 'cards' => 'tiles', 'width' => 'large', 'density' => 'airy', 'corners' => 'rounded', 'buttons' => 'pill', 'photos' => 'natural'],
     ];
 @endphp
-<!DOCTYPE html><html lang="fr" @foreach($studio['defaults'] as $setting => $value) data-{{ $setting }}="{{ $value }}" @endforeach><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>{{ $pages[$page] ?? "Connexion" }} — Canopée · Démonstration Codenyr</title>@fonts @vite('resources/js/demo-pro.js')</head><body>
+<!DOCTYPE html><html lang="fr" @foreach($studio['defaults'] as $setting => $value) data-{{ $setting }}="{{ $value }}" @endforeach><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1"><meta name="robots" content="noindex,nofollow"><title>{{ $pages[$page] ?? "Connexion" }} — Canopée · Démonstration Codenyr</title><script>document.documentElement.classList.add('js')</script>@fonts @vite('resources/js/demo-pro.js')</head><body class="page-{{ $page }}">
 <a class="skip" href="#main">Aller au contenu</a>
-<div class="demo-banner"><span>CANOPÉE · Concept fictif par Codenyr</span><a href="{{ route('services') }}#pro">Retour aux services <span class="mobile-decoration" aria-hidden="true"><x-ui-icon name="arrow-up-right" /></span></a></div>
-<header class="header"><a class="brand" href="{{ route('demo.pro') }}"><b data-brand>canopée</b><span>STUDIO DE PAYSAGE</span></a><button class="menu-toggle" type="button" aria-controls="navigation" aria-expanded="false" hidden>Menu</button><nav id="navigation" aria-label="Navigation principale">@foreach($pages as $slug => $label)<a href="{{ route('demo.pro', ['page' => $slug]) }}" @if($page === $slug) aria-current="page" @endif>{{ $label }}</a>@endforeach</nav></header>
+<div class="demo-banner"><span>CANOPÉE · Concept fictif par Codenyr</span><a href="{{ route('services') }}#pro">Retour aux services <x-ui-icon name="arrow-up-right" /></a></div>
+<header class="header">
+    <button class="burger" type="button" aria-controls="navigation" aria-expanded="false" hidden><span class="burger-lines" aria-hidden="true"><i></i><i></i><i></i></span><span class="burger-label">Menu</span></button>
+    <a class="brand" href="{{ route('demo.pro') }}"><b data-brand>canopée</b><span>Studio de paysage</span></a>
+    <a class="header-cta" href="{{ route('demo.pro', ['page' => 'gestion']) }}">Espace pro</a>
+    <nav id="navigation" class="menu" aria-label="Navigation principale"><ol>@foreach($pages as $slug => $label)<li><a href="{{ route('demo.pro', ['page' => $slug]) }}" @if($page === $slug) aria-current="page" @endif>{{ $label }}</a></li>@endforeach</ol></nav>
+</header>
 
 <main id="main">
 @if($page === 'accueil')
-<section class="hero wrap"><div class="hero-copy"><p class="eyebrow">Studio de paysage · Jardins vivants</p><h1>Faire place<br><em>au vivant.</em></h1><p class="lead">Des jardins qui suivent les saisons. Des espaces extérieurs pensés pour se retrouver, respirer et laisser la nature prendre sa place.</p><a class="button" href="{{ route('demo.pro', ['page'=>'realisations']) }}">Découvrir les jardins <span class="mobile-decoration" aria-hidden="true"><x-ui-icon name="arrow-up-right" /></span></a><p class="hero-foot">Conception paysagère · Terrasses · Jardins de ville</p></div><figure class="hero-image"><img src="{{ asset('images/canopee/jardin.webp') }}" alt="Outils de jardinage et terreau sur une table" width="1400" height="1000" fetchpriority="high"><figcaption>Le paysage comme espace de vie.</figcaption></figure></section>
-<section class="wrap intro section"><p class="eyebrow">Un site qui vit avec vous</p><div><h2>De nouvelles idées.<br><em>Au fil des saisons.</em></h2><p>Publiez vos contenus, suivez les demandes et devis, gérez vos clients et planifiez vos rendez-vous. Explorez un espace professionnel complet avec des données fictives modifiables.</p><a class="text-link" href="{{ route('demo.pro', ['page'=>'gestion']) }}">Essayer la gestion des contenus <span class="mobile-decoration" aria-hidden="true"><x-ui-icon name="arrow-up-right" /></span></a></div></section>
-<section class="wrap section"><div class="section-head"><h2>Les derniers <em>jardins.</em></h2><a class="text-link" href="{{ route('demo.pro', ['page'=>'realisations']) }}">Toutes les réalisations <span class="mobile-decoration" aria-hidden="true"><x-ui-icon name="arrow-up-right" /></span></a></div><div class="projects" data-collection="projects" data-limit="2"></div></section>
+<section class="hero">
+    <figure class="hero-media"><img src="{{ asset('images/canopee/jardin.webp') }}" alt="Outils de jardinage et terreau sur une table" width="1400" height="1000" fetchpriority="high"></figure>
+    <div class="hero-content">
+        <p class="eyebrow">Studio de paysage · Jardins vivants</p>
+        <h1>Faire place<br><em>au vivant.</em></h1>
+        <div class="hero-bottom">
+            <a class="hero-cta" href="{{ route('demo.pro', ['page' => 'realisations']) }}"><span><small>Réalisations</small>Découvrir les jardins</span><x-ui-icon name="arrow-right" /></a>
+            <a class="scroll-cue" href="#suite"><span>Découvrir</span><x-ui-icon name="arrow-down" /></a>
+        </div>
+    </div>
+</section>
+<section id="suite" class="wrap intro section">
+    <p class="eyebrow" data-reveal>Un site qui vit avec vous</p>
+    <div data-reveal><h2 class="statement">Publiez vos contenus, suivez les demandes et devis, gérez vos clients et planifiez vos rendez-vous. <em>Un espace professionnel complet, au fil des saisons.</em></h2><a class="text-link" href="{{ route('demo.pro', ['page' => 'gestion']) }}">Essayer la gestion des contenus <x-ui-icon name="arrow-right" /></a></div>
+</section>
+<section class="wrap section">
+    <div class="section-head" data-reveal><div><p class="eyebrow">Sélection</p><h2>Les derniers <em>jardins.</em></h2></div><a class="text-link" href="{{ route('demo.pro', ['page' => 'realisations']) }}">Toutes les réalisations <x-ui-icon name="arrow-right" /></a></div>
+    <div class="projects" data-collection="projects" data-limit="3"></div>
+</section>
+<section class="wrap section expertise-list">
+    <div class="section-head" data-reveal><div><p class="eyebrow">Savoir-faire</p><h2>Trois façons <em>de cultiver.</em></h2></div></div>
+    @foreach($services as $service)<a class="expertise-row" data-reveal href="{{ route('demo.pro', ['page' => 'studio']) }}"><span class="num">0{{ $loop->iteration }}</span><h3>{{ $service[0] }}</h3><p>{{ $service[1] }}</p><x-ui-icon name="arrow-up-right" /></a>@endforeach
+</section>
 @elseif($page === 'studio')
-<section class="wrap page-title"><p class="eyebrow">Le studio / Notre approche</p><h1>Penser les lieux.<br><em>Respecter leur nature.</em></h1><p class="lead">Canopée est un studio fictif imaginé autour d’une conviction : un jardin se conçoit autant pour ce qu’il est aujourd’hui que pour ce qu’il deviendra.</p></section><section class="wrap editorial section"><img src="{{ asset('images/canopee/jardin.webp') }}" alt="Terreau et outils pour préparer des plantations" width="1400" height="1000"><div><h2>Observer avant<br><em>de dessiner.</em></h2><p>Les usages, la lumière et les changements de saison donnent le point de départ. Le dessin relie ensuite les espaces, ménage les perspectives et compose avec le végétal.</p><p>Du petit extérieur urbain au jardin familial, chaque projet cherche un équilibre entre lieux de vie, matières naturelles et plantations.</p></div></section><section class="wrap section pillars"><article><span>01 / CONCEVOIR</span><h3>Un plan d’ensemble.</h3><p>Relier les circulations, les usages et les différentes ambiances.</p></article><article><span>02 / COMPOSER</span><h3>Une palette vivante.</h3><p>Associer les textures, les volumes et les couleurs au fil des saisons.</p></article><article><span>03 / ACCOMPAGNER</span><h3>Un lieu qui évolue.</h3><p>Imaginer la place de chaque espace dans le quotidien de ses habitants.</p></article></section>
+<section class="wrap page-head"><p class="eyebrow">Le studio / Notre approche</p><h1>Penser les lieux.<br><em>Respecter leur nature.</em></h1><p class="lead">Canopée est un studio fictif imaginé autour d’une conviction : un jardin se conçoit autant pour ce qu’il est aujourd’hui que pour ce qu’il deviendra.</p></section>
+<figure class="wrap page-banner"><img src="{{ asset('images/canopee/jardin.webp') }}" alt="Terreau et outils pour préparer des plantations" width="1400" height="1000"></figure>
+<section class="wrap editorial section"><p class="eyebrow" data-reveal>Notre méthode</p><div data-reveal><h2>Observer avant<br><em>de dessiner.</em></h2><p>Les usages, la lumière et les changements de saison donnent le point de départ. Le dessin relie ensuite les espaces, ménage les perspectives et compose avec le végétal.</p><p>Du petit extérieur urbain au jardin familial, chaque projet cherche un équilibre entre lieux de vie, matières naturelles et plantations.</p></div></section>
+<section class="wrap section pillars"><article data-reveal><span>01 / Concevoir</span><h3>Un plan d’ensemble.</h3><p>Relier les circulations, les usages et les différentes ambiances.</p></article><article data-reveal><span>02 / Composer</span><h3>Une palette vivante.</h3><p>Associer les textures, les volumes et les couleurs au fil des saisons.</p></article><article data-reveal><span>03 / Accompagner</span><h3>Un lieu qui évolue.</h3><p>Imaginer la place de chaque espace dans le quotidien de ses habitants.</p></article></section>
 @elseif($page === 'realisations' || $page === 'journal')
-<section class="wrap page-title"><p class="eyebrow">{{ $page === 'journal' ? 'Journal / Regards sur le paysage' : 'Réalisations / Inspirations paysagères' }}</p><h1>{{ $page === 'journal' ? 'Les idées prennent' : 'Des jardins pour' }}<br><em>{{ $page === 'journal' ? 'racine ici.' : 'les jours heureux.' }}</em></h1><p class="lead">{{ $page === 'journal' ? 'Conseils, inspirations et nouvelles du studio. Une collection que vous pouvez enrichir depuis la gestion de démonstration.' : 'Une sélection de projets fictifs, illustrés par des photographies d’ambiance. Découvrez leurs intentions ou ajoutez votre propre exemple.' }}</p></section><section class="wrap section"><label class="search-label" for="collection-search">Rechercher {{ $page === 'journal' ? 'un article' : 'une réalisation' }}</label><input class="collection-search" id="collection-search" type="search" placeholder="Un titre, une catégorie…"><div class="projects" data-collection="{{ $page === 'journal' ? 'articles' : 'projects' }}"></div><p class="collection-status" role="status"></p></section>
+<section class="wrap page-head"><p class="eyebrow">{{ $page === 'journal' ? 'Journal / Regards sur le paysage' : 'Réalisations / Inspirations paysagères' }}</p><h1>{{ $page === 'journal' ? 'Les idées prennent' : 'Des jardins pour' }}<br><em>{{ $page === 'journal' ? 'racine ici.' : 'les jours heureux.' }}</em></h1><p class="lead">{{ $page === 'journal' ? 'Conseils, inspirations et nouvelles du studio. Une collection que vous pouvez enrichir depuis la gestion de démonstration.' : 'Une sélection de projets fictifs, illustrés par des photographies d’ambiance. Découvrez leurs intentions ou ajoutez votre propre exemple.' }}</p></section>
+<section class="wrap section"><label class="search-label" for="collection-search">Rechercher {{ $page === 'journal' ? 'un article' : 'une réalisation' }}</label><input class="collection-search" id="collection-search" type="search" placeholder="Un titre, une catégorie…"><div class="projects" data-collection="{{ $page === 'journal' ? 'articles' : 'projects' }}"></div><p class="collection-status" role="status"></p></section>
 @elseif($page === 'connexion')
 <section class="wrap section demo-login"><div><p class="eyebrow">CANOPÉE / ESPACE PROFESSIONNEL</p><h1>Bienvenue<br><em>au studio.</em></h1><p class="lead">Un espace pour piloter votre activité et accompagner vos clients.</p><div class="contact-note"><strong>Accès de démonstration</strong><p>Identifiants fictifs préremplis. Ce parcours simule une connexion ; les données restent dans votre navigateur.</p><p>admin@canopee.demo · Canopee2026!</p></div></div><form id="demo-login" data-admin-url="{{ route('demo.pro', ['page'=>'gestion']) }}"><h2>Se connecter</h2><label for="demo-email">Adresse e-mail</label><input id="demo-email" type="email" value="admin@canopee.demo" required autocomplete="off"><label for="demo-password">Mot de passe</label><div class="password-field"><input id="demo-password" type="password" value="Canopee2026!" required autocomplete="off"><button type="button" id="show-password">Afficher</button></div><button class="button" type="submit">Accéder à l’administration <x-ui-icon name="arrow-up-right" /></button><p id="login-feedback" role="status"></p><small>Simulation locale · Aucun compte réel créé</small></form></section>
 @else
@@ -69,6 +99,8 @@
 <dialog id="editor" aria-labelledby="editor-title"><form id="entry-form"><div class="editor-head"><h2 id="editor-title">Ajouter un contenu</h2><button type="button" id="close-editor" aria-label="Fermer l’éditeur"><x-ui-icon name="close" /></button></div><input type="hidden" id="entry-id"><label for="entry-title">Titre</label><input id="entry-title" required maxlength="100"><label for="entry-category">Catégorie</label><input id="entry-category" required maxlength="50"><label for="entry-text">Présentation</label><textarea id="entry-text" rows="5" required maxlength="2000"></textarea><label for="entry-image">Photographie d’ambiance</label><select id="entry-image"><option value="garden">Jardin</option><option value="interior">Espace de vie</option><option value="material">Matières naturelles</option></select><label for="entry-state">Visibilité</label><select id="entry-state"><option value="published">Publié</option><option value="draft">Brouillon</option></select><button class="button" type="submit">Enregistrer</button></form></dialog>
 @endif
 <noscript><p class="wrap section">Activez JavaScript pour découvrir les collections interactives et la gestion de démonstration.</p></noscript>
-</main><footer class="wrap"><div class="footer-top"><a class="brand" href="{{ route('demo.pro') }}"><b data-brand>canopée</b><span>DES LIEUX QUI ONT DU SENS.</span></a><p id="studio-public-contact">Paysage & jardins vivants.<br>Un site pro imaginé par Codenyr.</p></div><div class="footer-bottom"><span>Marque et projets fictifs · Photos d’ambiance Unsplash</span><a href="{{ route('services') }}#pro">Retour à Codenyr <span class="mobile-decoration" aria-hidden="true"><x-ui-icon name="arrow-up-right" /></span></a></div></footer>
+@if(in_array($page, ['accueil', 'studio', 'realisations', 'journal']))<section class="invitation"><img src="{{ asset('images/atelier/matiere.webp') }}" alt="" width="1000" height="750" loading="lazy"><div class="wrap" data-reveal><p class="eyebrow">Votre site, vos contenus</p><h2>Et si votre site<br><em>vivait avec vous ?</em></h2><a class="button" href="{{ route('demo.pro', ['page' => 'gestion']) }}">Essayer l’administration <x-ui-icon name="arrow-right" /></a></div></section>@endif
+</main>
+<footer class="footer"><div class="wrap"><div class="footer-grid"><p class="footer-claim">Des lieux qui ont du sens.</p><div><p class="eyebrow">Pages</p><ul>@foreach($pages as $slug => $label)<li><a href="{{ route('demo.pro', ['page' => $slug]) }}">{{ $label }}</a></li>@endforeach</ul></div><div><p class="eyebrow">Le studio</p><p id="studio-public-contact">Paysage & jardins vivants.<br>Un site pro imaginé par Codenyr.</p></div></div><p class="footer-word" aria-hidden="true" data-brand>canopée</p><div class="footer-bottom"><span>Marque et projets fictifs · Photos d’ambiance Unsplash</span><a href="{{ route('services') }}#pro">Retour à Codenyr <x-ui-icon name="arrow-up-right" /></a></div></div></footer>
 @include('demos.studio')
 </body></html>

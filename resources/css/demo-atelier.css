@@ -80,9 +80,9 @@ h2{font-size:var(--h2);line-height:1.04}
 .header-cta:hover{background:var(--ink);border-color:var(--ink);color:var(--paper)}
 
 /* Over the full-screen photo the header is transparent until the visitor scrolls. */
-:root[data-layout=full] .page-accueil .header{margin-bottom:calc(-1 * var(--header-h));background:transparent;color:#fff}
-:root[data-layout=full] .page-accueil .header.is-scrolled{background:var(--paper);color:var(--ink)}
-:root[data-layout=full] .page-accueil .header:not(.is-scrolled) .header-cta:hover{background:#fff;border-color:#fff;color:#1d1c19}
+:root:not([data-layout=split]):not([data-layout=framed]) .page-accueil .header{margin-bottom:calc(-1 * var(--header-h));background:transparent;color:#fff}
+:root:not([data-layout=split]):not([data-layout=framed]) .page-accueil .header.is-scrolled{background:var(--paper);color:var(--ink)}
+:root:not([data-layout=split]):not([data-layout=framed]) .page-accueil .header:not(.is-scrolled) .header-cta:hover{background:#fff;border-color:#fff;color:#1d1c19}
 
 /* ---------- Menu: inline without JS, links sliding out beside the button with JS ---------- */
 .menu{grid-column:1/-1}

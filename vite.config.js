@@ -13,7 +13,6 @@ export default defineConfig({
                 'resources/js/site.js',
                 'resources/js/passkeys.js',
                 'resources/js/demo-landing.js',
-                'resources/js/demo-vitrine.js',
                 'resources/js/demo-atelier.js',
                 'resources/js/demo-pro.js',
             ],

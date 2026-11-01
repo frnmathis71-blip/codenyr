@@ -3,16 +3,16 @@
     "file": "assets/cookie-preferences-Bk2_zrmK.js",
     "name": "cookie-preferences"
   },
-  "_demo-studio-48C49sIb.js": {
-    "file": "assets/demo-studio-48C49sIb.js",
-    "name": "demo-studio",
+  "_demo-header-B2x3fOq0.js": {
+    "file": "assets/demo-header-B2x3fOq0.js",
+    "name": "demo-header",
     "css": [
-      "assets/demo-studio-DceWzt9I.css"
+      "assets/demo-header-DceWzt9I.css"
     ]
   },
-  "_demo-studio-DceWzt9I.css": {
-    "file": "assets/demo-studio-DceWzt9I.css",
-    "src": "_demo-studio-DceWzt9I.css"
+  "_demo-header-DceWzt9I.css": {
+    "file": "assets/demo-header-DceWzt9I.css",
+    "src": "_demo-header-DceWzt9I.css"
   },
   "_fonts-DhA1vfI8.css": {
     "file": "assets/fonts-DhA1vfI8.css",
@@ -68,52 +68,40 @@
     ]
   },
   "resources/js/demo-atelier.js": {
-    "file": "assets/demo-atelier-CI5SSc2M.js",
+    "file": "assets/demo-atelier-BKkfjpyV.js",
     "name": "demo-atelier",
     "src": "resources/js/demo-atelier.js",
     "isEntry": true,
     "imports": [
-      "_demo-studio-48C49sIb.js"
+      "_demo-header-B2x3fOq0.js"
     ],
     "css": [
-      "assets/demo-atelier-CHuzCrZe.css"
+      "assets/demo-atelier-DHqx9jF_.css"
     ]
   },
   "resources/js/demo-landing.js": {
-    "file": "assets/demo-landing-fxRY3CiD.js",
+    "file": "assets/demo-landing-C_7NXyMk.js",
     "name": "demo-landing",
     "src": "resources/js/demo-landing.js",
     "isEntry": true,
     "imports": [
-      "_demo-studio-48C49sIb.js"
+      "_demo-header-B2x3fOq0.js"
     ],
     "css": [
-      "assets/demo-landing-DpSi5Stl.css"
+      "assets/demo-landing-DVmhqQlV.css"
     ]
   },
   "resources/js/demo-pro.js": {
-    "file": "assets/demo-pro-DAA6SfyZ.js",
+    "file": "assets/demo-pro-BCe0qr0I.js",
     "name": "demo-pro",
     "src": "resources/js/demo-pro.js",
     "isEntry": true,
     "imports": [
-      "resources/js/demo-vitrine.js",
-      "resources/js/demo-vitrine.js"
+      "resources/js/demo-atelier.js",
+      "resources/js/demo-atelier.js"
     ],
     "css": [
-      "assets/demo-pro-B3UW61n3.css"
-    ]
-  },
-  "resources/js/demo-vitrine.js": {
-    "file": "assets/demo-vitrine-DE3uE1Jh.js",
-    "name": "demo-vitrine",
-    "src": "resources/js/demo-vitrine.js",
-    "isEntry": true,
-    "imports": [
-      "_demo-studio-48C49sIb.js"
-    ],
-    "css": [
-      "assets/demo-vitrine-CUnLqcZi.css"
+      "assets/demo-pro-BfSx2bNL.css"
     ]
   },
   "resources/js/passkeys.js": {

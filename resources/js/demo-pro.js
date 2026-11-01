@@ -1,4 +1,4 @@
-import './demo-vitrine.js';
+import './demo-atelier.js';
 import '../css/demo-pro.css';
 const storageKey = 'codenyr-canopee-content-v1';
 const defaults = {
@@ -27,9 +27,9 @@ function renderPublic() {
         let entries = data[container.dataset.collection].filter(item => item.state === 'published' && `${item.title} ${item.category} ${item.text}`.toLocaleLowerCase('fr').includes(query));
         if (container.dataset.limit) entries = entries.slice(0, Number(container.dataset.limit));
         container.replaceChildren(...entries.map(item => {
-            const article = element('article', undefined, 'project');
-            const image = element('img'); image.src = images[item.image]; image.alt = `Illustration d’ambiance : ${item.title}`; image.loading = 'lazy'; image.width = 1000; image.height = 750;
-            const copy = element('div'); copy.append(element('span', item.category, 'eyebrow'),element('h2',item.title),element('p',item.text)); article.append(image,copy); return article;
+            const article = element('article', undefined, 'project'); const media = element('div', undefined, 'project-media');
+            const image = element('img'); image.src = images[item.image]; image.alt = `Illustration d’ambiance : ${item.title}`; image.loading = 'lazy'; image.width = 1000; image.height = 750; media.append(image);
+            const copy = element('div', undefined, 'project-body'); copy.append(element('span', item.category, 'eyebrow'),element('h2',item.title),element('p',item.text)); article.append(media,copy); return article;
         }));
         if (!entries.length) container.append(element('p','Aucun contenu publié ne correspond à votre recherche.'));
         const status = document.querySelector('.collection-status');

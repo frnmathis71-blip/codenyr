@@ -1,5 +1,6 @@
 import '../css/demo-landing.css';
 import { initStudio } from './demo-studio.js';
+import { initHeader } from './demo-header.js';
 
 const coffees = {
     soleil: { name: 'Le Soleil', origin: 'Brésil · Doux & généreux', description: 'Un café rond et réconfortant. Des notes de noisette et de chocolat au lait, pour commencer la journée du bon pied.', notes: ['Noisette', 'Chocolat au lait', 'Tout en rondeur'], tasting: 'Une texture enveloppante, une douceur familière et une finale gourmande. Le Soleil évoque les matins tranquilles et les grandes tablées.', number: '01' },
@@ -25,3 +26,4 @@ document.querySelectorAll('[data-coffee]').forEach((button) => {
 
 
 initStudio();
+initHeader(document.querySelector('.sl-header'));

@@ -8,19 +8,30 @@
     <title>Sillage — Du café, du caractère. Démonstration Codenyr</title>
     <meta name="description" content="Une landing page de démonstration imaginée par Codenyr pour une marque fictive de café de spécialité.">
     @fonts
+    <script>document.documentElement.classList.add('js')</script>
     @vite('resources/js/demo-landing.js')
 </head>
 <body>
     <a class="skip-link" href="#contenu">Aller au contenu</a>
     <aside class="demo-bar" aria-label="À propos de cette démonstration"><span>Un concept imaginé par <strong>Codenyr</strong> · Marque fictive</span><a href="{{ route('services') }}#landing">Retour aux services <x-ui-icon name="arrow-up-right" /></a></aside>
-    <header class="site-header wrap"><a href="#" class="wordmark" aria-label="Accueil"><b data-brand>sillage</b><span>®</span></a><nav aria-label="Navigation principale"><a href="#univers">Notre univers</a><a href="#cafes">Nos cafés</a><a href="#rituel">Le rituel</a><a href="#questions">Les réponses</a></nav><a class="small-cta" href="#cafes">Découvrir Sillage <span><x-ui-icon name="arrow-up-right" /></span></a></header>
+    <header class="sl-header">
+        <button class="sl-burger" type="button" aria-controls="sl-navigation" aria-expanded="false" hidden><span class="burger-lines" aria-hidden="true"><i></i><i></i><i></i></span><span class="burger-label">Menu</span></button>
+        <a href="#" class="wordmark" aria-label="Accueil"><b data-brand>sillage</b><span>®</span></a>
+        <a class="sl-cta" href="#cafes">Découvrir Sillage</a>
+        <nav id="sl-navigation" class="sl-menu" aria-label="Navigation principale"><ol><li><a href="#univers">Notre univers</a></li><li><a href="#cafes">Nos cafés</a></li><li><a href="#rituel">Le rituel</a></li><li><a href="#questions">Les réponses</a></li></ol></nav>
+    </header>
     <main id="contenu">
-        <section class="hero wrap">
-            <div class="hero-copy"><p class="eyebrow"><span class="status-dot"></span> Café de spécialité · Esprit libre</p><h1>Du café.<br>Du caractère.<br><em>Du bon côté.</em></h1><p class="intro">Les grands départs commencent par une petite tasse. Découvrez un café qui réveille les sens et donne envie de prendre son temps.</p><a class="button dark" href="#cafes">Découvrez votre prochain rituel <span><span class="mobile-decoration" aria-hidden="true"><x-ui-icon name="arrow-up-right" /></span></span></a><div class="hero-note">Du premier arôme à la dernière gorgée.</div></div>
-            <figure class="hero-photo"><img src="{{ asset('images/sillage/coffee-moment.webp') }}" width="1200" height="800" alt="Préparation attentive d’un café filtre dans une carafe en verre" fetchpriority="high"><figcaption><span>LE GOÛT DES CHOSES BIEN FAITES</span><strong>Un geste simple.<br>Un moment à part.</strong></figcaption></figure>
-            <span class="hero-badge" aria-hidden="true"><svg viewBox="0 0 120 120" focusable="false"><defs><path id="hero-badge-circle" d="M60 60m-45 0a45 45 0 1 1 90 0a45 45 0 1 1-90 0"/></defs><text><textPath href="#hero-badge-circle">CAFÉ DE SPÉCIALITÉ · TORRÉFIÉ AVEC SOIN · </textPath></text></svg><b>S</b></span>
+        <section class="sl-hero">
+            <figure class="sl-hero-media"><img src="{{ asset('images/sillage/coffee-moment.webp') }}" width="1200" height="800" alt="Préparation attentive d’un café filtre dans une carafe en verre" fetchpriority="high"></figure>
+            <div class="sl-hero-content">
+                <p class="eyebrow"><span class="status-dot"></span> Café de spécialité · Esprit libre</p>
+                <h1>Du café.<br>Du caractère.<br><em>Du bon côté.</em></h1>
+                <div class="sl-hero-bottom">
+                    <a class="sl-hero-cta" href="#cafes"><span><small>Nos cafés</small>Découvrez votre prochain rituel</span><x-ui-icon name="arrow-right" /></a>
+                    <a class="sl-scroll" href="#univers"><span>Découvrir</span><x-ui-icon name="arrow-down" /></a>
+                </div>
+            </div>
         </section>
-        <div class="values-strip"><div class="wrap"><span>Du grain à la tasse</span><span>Le goût avant tout</span><span>Les petits rituels font les grands jours</span></div></div>
         <section class="section wrap brand-story" id="univers"><div class="section-heading"><div><p class="eyebrow">Une certaine idée du café</p><h2>Bien plus qu’une tasse.<br><em>Une façon de vivre le quotidien.</em></h2></div><p>Sillage explore ce que le café laisse derrière lui :<br>un parfum, une conversation, un souvenir.</p></div><div class="story-columns"><article><span class="eyebrow">La curiosité</span><h3>Découvrir les nuances.</h3><p>Un café peut évoquer le cacao, les fruits ou les épices. Prendre le temps de sentir, puis de goûter, c’est découvrir une palette qui change selon les grains et leur préparation.</p></article><article><span class="eyebrow">Le geste</span><h3>Faire place à l’essentiel.</h3><p>Le bruit du moulin, l’eau qui frémit, les premiers arômes. La préparation devient un rituel simple, attentif, qui donne une autre saveur aux premières minutes de la journée.</p></article><article><span class="eyebrow">Le partage</span><h3>Créer des moments.</h3><p>Un café pris seul avant de partir ou partagé autour d’une table. Sillage raconte ces instants ordinaires auxquels on tient, et qui restent longtemps après la dernière gorgée.</p></article></div></section>
         <section class="selection wrap section" id="cafes">
             <div class="section-heading"><div><p class="eyebrow">01 — À chacun son caractère</p><h2>Trois expressions.<br><em>Une même passion.</em></h2></div><p>Trois personnalités. Une même passion.<br>Découvrez les nuances qui font leur singularité.</p></div>
@@ -34,7 +45,7 @@
     <footer class="wrap"><a class="wordmark" href="#"><b data-brand>sillage</b><span>®</span></a><p>Du café, du caractère.<br>Un concept de landing page signé Codenyr.</p><a href="{{ route('quote', ['offer' => 'Landing Page']) }}">Une page comme celle-ci pour votre activité ? <span class="mobile-decoration" aria-hidden="true"><x-ui-icon name="arrow-up-right" /></span></a><div class="footer-bottom"><span>Marque et collection fictives · Démonstration uniquement</span><a href="{{ route('services') }}#landing">Retour à Codenyr <span class="mobile-decoration" aria-hidden="true"><x-ui-icon name="arrow-up-right" /></span></a></div></footer>
     
     @include('demos.studio', ['studio' => [
-        'key' => 'codenyr-sillage-preview-v2',
+        'key' => 'codenyr-sillage-preview-v3',
         'product' => 'Landing Page',
         'demo' => 'Sillage (landing page)',
         'brand' => 'sillage',
@@ -52,8 +63,8 @@
                 'scale' => ['Taille des titres', ['original' => 'Équilibrée', 'large' => 'Affirmée', 'small' => 'Discrète']],
             ],
             'Mise en page' => [
-                'layout' => ['Ouverture de la page', ['original' => 'Texte et photo côte à côte', 'reverse' => 'Photo à gauche', 'centered' => 'Grand visuel, texte centré']],
-                'nav' => ['En-tête', ['original' => 'Classique', 'sticky' => 'Fixe au défilement']],
+                'layout' => ['Ouverture de la page', ['original' => 'Photo plein écran', 'framed' => 'Photo encadrée']],
+                'nav' => ['Navigation', ['original' => 'Menu déroulant', 'bar' => 'Barre horizontale']],
                 'width' => ['Largeur du contenu', ['original' => 'Large', 'narrow' => 'Resserrée']],
                 'density' => ['Espacement des sections', ['original' => 'Aéré', 'compact' => 'Compact']],
             ],
@@ -66,9 +77,9 @@
         ],
         'presets' => [
             'original' => ['Signature', 'Le design d’origine', ['palette' => 'original', 'type' => 'original', 'scale' => 'original', 'layout' => 'original', 'nav' => 'original', 'corners' => 'original', 'buttons' => 'original', 'photos' => 'original']],
-            'nature' => ['Naturel', 'Végétal, doux et chaleureux', ['palette' => 'forest', 'type' => 'editorial', 'scale' => 'original', 'layout' => 'reverse', 'nav' => 'original', 'corners' => 'soft', 'buttons' => 'pill', 'photos' => 'warm']],
-            'minimal' => ['Minimal', 'Épuré, centré, contemporain', ['palette' => 'ocean', 'type' => 'modern', 'scale' => 'small', 'layout' => 'centered', 'nav' => 'sticky', 'corners' => 'original', 'buttons' => 'outline', 'photos' => 'original']],
-            'premium' => ['Premium', 'Sombre, élégant, affirmé', ['palette' => 'night', 'type' => 'editorial', 'scale' => 'large', 'layout' => 'original', 'nav' => 'sticky', 'corners' => 'original', 'buttons' => 'original', 'photos' => 'mono']],
+            'nature' => ['Naturel', 'Végétal, doux et chaleureux', ['palette' => 'forest', 'type' => 'editorial', 'scale' => 'original', 'layout' => 'framed', 'nav' => 'original', 'corners' => 'soft', 'buttons' => 'pill', 'photos' => 'warm']],
+            'minimal' => ['Minimal', 'Épuré, encadré, contemporain', ['palette' => 'ocean', 'type' => 'modern', 'scale' => 'small', 'layout' => 'framed', 'nav' => 'bar', 'corners' => 'original', 'buttons' => 'outline', 'photos' => 'original']],
+            'premium' => ['Premium', 'Sombre, élégant, affirmé', ['palette' => 'night', 'type' => 'editorial', 'scale' => 'large', 'layout' => 'original', 'nav' => 'bar', 'corners' => 'original', 'buttons' => 'original', 'photos' => 'mono']],
         ],
         'defaults' => ['decor' => 'rich', 'palette' => 'original', 'type' => 'original', 'scale' => 'original', 'layout' => 'original', 'nav' => 'original', 'width' => 'original', 'density' => 'original', 'corners' => 'original', 'buttons' => 'original', 'photos' => 'original'],
     ]])
