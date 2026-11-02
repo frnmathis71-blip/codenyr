@@ -56,7 +56,7 @@
 <main id="main">
 @if($page === 'accueil')
 <section class="hero">
-    <figure class="hero-media"><img src="{{ asset('images/atelier/maison.webp') }}" alt="Pièce de vie lumineuse d’une maison" width="1000" height="750" fetchpriority="high"></figure>
+    <figure class="hero-media"><img src="{{ asset('images/atelier/interieur.webp') }}" alt="Salon lumineux aux matières naturelles" width="1400" height="934" fetchpriority="high"></figure>
     <div class="hero-content">
         <p class="eyebrow">Agence immobilière · Achat, vente, location</p>
         <h1>Trouver le lieu.<br><em>Y entrer sereinement.</em></h1>
@@ -109,9 +109,12 @@
     <form class="booking" id="booking-form" novalidate>
         <fieldset class="booking-step"><legend><span>01</span> Le bien</legend><label for="booking-property">Bien à visiter</label><select id="booking-property" name="property" required></select><div class="booking-property-card" data-booking-property></div></fieldset>
         <fieldset class="booking-step"><legend><span>02</span> Le créneau</legend>
-            <div class="slot-toolbar"><button type="button" class="slot-nav" data-week="-1" aria-label="Semaine précédente"><x-ui-icon name="arrow-left" /></button><p data-week-label role="status" aria-live="polite"></p><button type="button" class="slot-nav" data-week="1" aria-label="Semaine suivante"><x-ui-icon name="arrow-right" /></button></div>
-            <div class="slot-week" data-slot-week></div>
-            <p class="slot-choice" data-slot-choice>Aucun créneau choisi.</p>
+            <div class="slot-picker">
+                <div class="slot-toolbar"><p data-month-label></p><div><button type="button" class="slot-nav" data-week="-1" aria-label="Jours précédents"><x-ui-icon name="arrow-left" /></button><button type="button" class="slot-nav" data-week="1" aria-label="Jours suivants"><x-ui-icon name="arrow-right" /></button></div></div>
+                <div class="date-strip" data-date-strip role="group" aria-label="Jour de la visite"></div>
+                <div class="slot-periods" data-slot-periods role="group" aria-label="Horaire de la visite"></div>
+            </div>
+            <div class="slot-summary" data-slot-choice aria-live="polite"></div>
         </fieldset>
         <fieldset class="booking-step"><legend><span>03</span> Vos coordonnées</legend>
             <div class="form-grid">
@@ -171,13 +174,36 @@
         <p class="demo-note">Identifiants fictifs préremplis. Simulation locale : rien n’est envoyé.</p>
     </form>
     <div class="agency" id="agency" hidden>
-        <aside class="agency-nav"><p class="eyebrow">Seuil / Agence</p><nav aria-label="Modules de l’agence">@foreach(['overview' => 'Vue d’ensemble', 'agenda' => 'Agenda des visites', 'clients' => 'Dossiers clients', 'listings' => 'Annonces', 'slots' => 'Créneaux d’ouverture'] as $key => $label)<button type="button" data-agency-tab="{{ $key }}" aria-pressed="{{ $loop->first ? 'true' : 'false' }}">{{ $label }}</button>@endforeach</nav><button type="button" class="text-link" data-agency-reset>Restaurer les données de démonstration</button><button type="button" class="text-link" data-agency-logout>Se déconnecter</button></aside>
-        <div class="agency-panel"><p class="agency-feedback" role="status" aria-live="polite"></p><div data-agency-content></div></div>
+        <aside class="agency-nav">
+            <div class="agency-brand"><b data-brand>seuil</b><span>Espace agence</span></div>
+            <nav aria-label="Modules de l’agence">
+                @foreach(['overview' => ['Tableau de bord', 'grid'], 'agenda' => ['Agenda des visites', 'calendar'], 'clients' => ['Dossiers clients', 'user'], 'listings' => ['Annonces', 'home'], 'slots' => ['Créneaux d’ouverture', 'clock']] as $key => [$label, $icon])
+                    <button type="button" data-agency-tab="{{ $key }}" aria-pressed="{{ $loop->first ? 'true' : 'false' }}"><x-ui-icon :name="$icon" /><span>{{ $label }}</span><em data-count="{{ $key }}"></em></button>
+                @endforeach
+            </nav>
+            <div class="agency-user"><span class="avatar">AD</span><div><strong>Agence démo</strong><small>agence@seuil.demo</small></div></div>
+            <div class="agency-nav-actions"><button type="button" data-agency-reset>Restaurer la démo</button><button type="button" data-agency-logout>Se déconnecter</button></div>
+        </aside>
+        <div class="agency-main">
+            <header class="agency-top">
+                <div><p class="agency-date" data-agency-date></p><h2 data-agency-title>Tableau de bord</h2></div>
+                <div class="agency-top-actions">
+                    <label class="agency-search"><span class="sr-only">Rechercher un client ou un bien</span><input type="search" placeholder="Rechercher un client, un bien…" data-agency-search></label>
+                    <button type="button" class="button" data-agency-new hidden></button>
+                </div>
+            </header>
+            <p class="agency-feedback" role="status" aria-live="polite"></p>
+            <div data-agency-content></div>
+        </div>
+        <div class="agency-drawer" data-drawer hidden>
+            <div class="drawer-backdrop" data-close-drawer></div>
+            <div class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="drawer-title" tabindex="-1"><button type="button" class="drawer-close" data-close-drawer aria-label="Fermer le panneau"><x-ui-icon name="close" /></button><div data-drawer-content></div></div>
+        </div>
     </div>
 </section>
 @endif
 <noscript><p class="wrap section">Activez JavaScript pour découvrir les biens, la réservation et les espaces de démonstration.</p></noscript>
-@if(in_array($page, ['accueil', 'biens', 'bien']))<section class="invitation"><img src="{{ asset('images/atelier/interieur.webp') }}" alt="" width="1000" height="750" loading="lazy"><div class="wrap" data-reveal><p class="eyebrow">Vous vendez ?</p><h2>Estimez votre bien<br><em>en deux minutes.</em></h2><a class="button" href="{{ $url('estimation') }}">Lancer l’estimation <x-ui-icon name="arrow-right" /></a></div></section>@endif
+@if(in_array($page, ['accueil', 'biens', 'bien']))<section class="invitation"><img src="{{ asset('images/atelier/maison.webp') }}" alt="" width="1000" height="750" loading="lazy"><div class="wrap" data-reveal><p class="eyebrow">Vous vendez ?</p><h2>Estimez votre bien<br><em>en deux minutes.</em></h2><a class="button" href="{{ $url('estimation') }}">Lancer l’estimation <x-ui-icon name="arrow-right" /></a></div></section>@endif
 </main>
 <footer class="footer"><div class="wrap"><div class="footer-grid"><p class="footer-claim">Trouver le lieu. Y entrer sereinement.</p><div><p class="eyebrow">Pages</p><ul>@foreach($pages as $slug => $label)<li><a href="{{ $url($slug) }}">{{ $label }}</a></li>@endforeach</ul></div><div><p class="eyebrow">L’agence</p><p>Achat, vente, location et gestion.<br>Un site sur mesure imaginé par Codenyr.</p></div></div><p class="footer-word" aria-hidden="true" data-brand>seuil</p><div class="footer-bottom"><span>Agence, biens et clients fictifs · Photos d’ambiance Unsplash</span><a href="{{ route('services') }}#custom">Retour à Codenyr <x-ui-icon name="arrow-up-right" /></a></div></div></footer>
 <x-demo-tabbar :tabs="collect(['accueil' => ['Accueil', 'home'], 'biens' => ['Biens', 'grid'], 'visite' => ['Visite', 'clock'], 'estimation' => ['Estimer', 'tag'], 'espace' => ['Mon espace', 'user']])->map(fn ($tab, $slug) => [$url($slug), $tab[0], $tab[1], $page === $slug || ($slug === 'biens' && $page === 'bien')])->values()->all()" />

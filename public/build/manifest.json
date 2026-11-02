@@ -80,7 +80,7 @@
     ]
   },
   "resources/js/demo-immo.js": {
-    "file": "assets/demo-immo-D70MYXc7.js",
+    "file": "assets/demo-immo-Donrz__0.js",
     "name": "demo-immo",
     "src": "resources/js/demo-immo.js",
     "isEntry": true,
@@ -89,7 +89,7 @@
       "resources/js/demo-atelier.js"
     ],
     "css": [
-      "assets/demo-immo-BRwfNApE.css"
+      "assets/demo-immo-DQuW8BFW.css"
     ]
   },
   "resources/js/demo-landing.js": {
