@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Mail\InquiryReceived;
 use App\Models\Lead;
+use App\Support\SpamGuard;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Mail;
@@ -50,8 +51,12 @@ class InquiryForm extends Component
 
     public bool $consent = false;
 
+    #[Locked]
+    public int $startedAt = 0;
+
     public function mount(string $mode = 'quote'): void
     {
+        $this->startedAt = now()->timestamp;
         $this->mode = $mode === 'contact' ? 'contact' : 'quote';
         $offer = request()->query('offer');
         if (is_string($offer) && in_array($offer, array_column(config('codenyr.offers'), 'name'), true)) {
@@ -76,6 +81,14 @@ class InquiryForm extends Component
             return;
         }
         RateLimiter::hit($key, 600);
+        // Same visitor, all day long: at most 15 requests, whatever the pace.
+        $dailyKey = 'inquiry-day:'.request()->ip();
+        if (RateLimiter::tooManyAttempts($dailyKey, 15)) {
+            $this->addError('submit', 'Trop de demandes envoyées aujourd’hui. Écrivez-nous directement à '.config('codenyr.email').'.');
+
+            return;
+        }
+        RateLimiter::hit($dailyKey, 86400);
         if ($this->fax !== '') {
             $this->addError('submit', 'La demande n’a pas pu être envoyée.');
 
@@ -83,6 +96,29 @@ class InquiryForm extends Component
         }
         foreach (['firstname', 'lastname', 'company', 'email', 'phone', 'description', 'desired_date', 'website', 'subject'] as $field) {
             $this->{$field} = trim($this->{$field});
+        }
+        if (SpamGuard::tooFast($this->startedAt)) {
+            $this->addError('submit', 'Votre demande a été envoyée très rapidement. Vérifiez vos informations puis renvoyez-la.');
+            // A real visitor who was just quick only has to click again.
+            $this->startedAt = now()->timestamp - (int) config('codenyr.spam.min_seconds');
+
+            return;
+        }
+        if (SpamGuard::suspiciousName($this->firstname) || SpamGuard::suspiciousName($this->lastname)) {
+            $this->addError('submit', 'La demande n’a pas pu être envoyée.');
+
+            return;
+        }
+        if (SpamGuard::disposableEmail($this->email)) {
+            $this->addError('email', 'Merci d’utiliser une adresse e-mail durable : nous devons pouvoir vous répondre.');
+
+            return;
+        }
+        $emailKey = 'inquiry-email:'.mb_strtolower($this->email);
+        if (RateLimiter::tooManyAttempts($emailKey, 3)) {
+            $this->addError('submit', 'Nous avons déjà bien reçu vos demandes. Nous vous répondons très vite.');
+
+            return;
         }
         if (preg_match_all('~https?://~i', $this->description) > 5) {
             $this->addError('description', 'Votre message contient trop de liens. Décrivez votre projet en quelques mots.');
@@ -116,6 +152,7 @@ class InquiryForm extends Component
             $data['project_type'] = 'Contact';
             $data['description'] = 'Sujet : '.$this->subject."\n\n".$this->description;
         }
+        RateLimiter::hit($emailKey, 3600);
         DB::transaction(function () use ($data): void {
             $lead = Lead::create($data);
             Mail::to(config('codenyr.email'))->queue((new InquiryReceived($lead, false))->afterCommit());

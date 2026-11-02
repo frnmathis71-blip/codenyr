@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Middleware\BlockBadBots;
 use App\Http\Middleware\EnsureEmailVerificationIfEnabled;
 use App\Http\Middleware\ForceHttps;
 use App\Http\Middleware\SecurityHeaders;
@@ -17,6 +18,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware): void {
         $middleware->alias(['verified' => EnsureEmailVerificationIfEnabled::class]);
         $middleware->prepend(ForceHttps::class);
+        $middleware->prepend(BlockBadBots::class);
         $middleware->append(SecurityHeaders::class);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

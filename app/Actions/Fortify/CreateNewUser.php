@@ -5,6 +5,7 @@ namespace App\Actions\Fortify;
 use App\Concerns\PasswordValidationRules;
 use App\Concerns\ProfileValidationRules;
 use App\Models\User;
+use App\Support\SpamGuard;
 use Illuminate\Support\Facades\RateLimiter;
 use Illuminate\Support\Facades\Validator;
 use Illuminate\Validation\ValidationException;
@@ -26,7 +27,13 @@ class CreateNewUser implements CreatesNewUsers
             throw ValidationException::withMessages(['email' => 'Trop de tentatives d’inscription. Réessayez dans quelques minutes.']);
         }
         RateLimiter::hit($key, 600);
+        if (($input['fax'] ?? '') !== '' || SpamGuard::tooFast($input['started'] ?? null) || SpamGuard::suspiciousName($input['name'] ?? '')) {
+            throw ValidationException::withMessages(['email' => 'L’inscription n’a pas pu aboutir. Vérifiez vos informations puis réessayez.']);
+        }
         $input['email'] = mb_strtolower(trim($input['email'] ?? ''));
+        if (SpamGuard::disposableEmail($input['email'])) {
+            throw ValidationException::withMessages(['email' => 'Merci d’utiliser une adresse e-mail durable.']);
+        }
         Validator::make($input, [
             ...$this->profileRules(),
             'password' => $this->passwordRules(),

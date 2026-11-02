@@ -4,6 +4,12 @@ return [
     'landing_demo_url' => env('CODENYR_LANDING_DEMO_URL', 'http://demo-vitrine.test/demo/landing-page'),
     'vitrine_demo_url' => env('CODENYR_VITRINE_DEMO_URL', 'http://demo-vitrine.test/demo/site-vitrine'),
     'email' => env('CODENYR_EMAIL', 'contact@codenyr.fr'),
+    // Anti-spam for public forms (see App\Support\SpamGuard).
+    'spam' => [
+        // A person needs a few seconds to fill a form; scripts send it instantly.
+        'min_seconds' => (int) env('CODENYR_SPAM_MIN_SECONDS', 4),
+        'disposable_domains' => ['yopmail.com', 'yopmail.fr', 'mailinator.com', 'guerrillamail.com', 'guerrillamail.info', 'sharklasers.com', '10minutemail.com', 'temp-mail.org', 'tempmail.com', 'trashmail.com', 'trashmail.fr', 'jetable.org', 'getnada.com', 'maildrop.cc', 'dispostable.com', 'throwawaymail.com', 'mohmal.com', 'emailondeck.com', 'mailnesia.com', 'spamgourmet.com', 'fakeinbox.com', 'tempail.com', 'mintemail.com', 'moakt.com', 'tmpmail.org', 'burnermail.io'],
+    ],
     // Test mode (on by default in local only): documents can be issued even when legal
     // information is missing, and every PDF is stamped "MODE TEST — sans valeur".
     'test_mode' => (bool) env('CODENYR_TEST_MODE', env('APP_ENV') === 'local'),

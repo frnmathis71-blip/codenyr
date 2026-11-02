@@ -7,6 +7,8 @@
 
         <form method="POST" action="{{ route('register.store') }}" class="flex flex-col gap-6">
             @csrf
+            <input type="hidden" name="started" value="{{ \App\Support\SpamGuard::startToken() }}">
+            <div aria-hidden="true" style="position:absolute;left:-10000px;width:1px;height:1px;overflow:hidden"><label for="fax">Laisser ce champ vide</label><input id="fax" name="fax" type="text" tabindex="-1" autocomplete="off"></div>
             <!-- Name -->
             <flux:input
                 name="name"

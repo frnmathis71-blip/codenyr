@@ -3,6 +3,7 @@
 use App\Http\Controllers\CommercialDocumentController;
 use App\Http\Controllers\CustomerDocumentController;
 use App\Http\Controllers\SiteController;
+use App\Http\Middleware\BlockBadBots;
 use App\Livewire\Admin\Accounting;
 use App\Livewire\Admin\Assistant;
 use App\Livewire\Admin\Billing;
@@ -56,7 +57,10 @@ Route::view('/mentions-legales', 'site.legal')->name('legal');
 Route::view('/politique-confidentialite', 'site.privacy')->name('privacy');
 Route::view('/cgu', 'site.terms')->name('terms');
 Route::get('/sitemap.xml', [SiteController::class, 'sitemap'])->name('sitemap');
-Route::get('/robots.txt', fn () => response("User-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /settings\nSitemap: ".url('/sitemap.xml'))->header('Content-Type', 'text/plain'));
+Route::get('/robots.txt', fn () => response(
+    collect(BlockBadBots::AI_TRAINING_BOTS)->map(fn (string $bot) => "User-agent: $bot\nDisallow: /\n")->implode("\n")
+    ."\nUser-agent: *\nAllow: /\nDisallow: /admin\nDisallow: /settings\nDisallow: /espace-client\nDisallow: /livewire\nSitemap: ".url('/sitemap.xml')."\n"
+)->header('Content-Type', 'text/plain'));
 
 Route::middleware(['auth', 'verified', 'can:admin'])->prefix('admin')->name('admin.')->group(function () {
     Route::get('/', fn () => view('admin.dashboard', [
