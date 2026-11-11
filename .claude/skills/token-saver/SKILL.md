@@ -45,6 +45,12 @@ Objectif : supprimer les dépenses de tokens qui n'apportent rien. Jamais au pri
 - Réponse concise par défaut, proportionnée à la difficulté et aux préférences de l'utilisateur. Garde toujours : ce qui a changé, où, les limites, ce qui n'a pas été vérifié, les problèmes éventuels.
 - Montre un extrait ou un lien `fichier:ligne` plutôt que le fichier entier.
 - Ne recopie pas dans la réponse ce que l'outil a déjà affiché à l'utilisateur.
+- Écris toujours dans la langue de l'utilisateur (le français s'il écrit en français), y compris dans les messages intermédiaires entre deux appels d'outils, même après une longue suite d'appels. Ne bascule jamais en anglais.
+- Message intermédiaire : une phrase au plus, et seulement pour une découverte ou un changement de plan (cause trouvée, test en échec, décision prise). Pas de « Now a test », « Let me check », « Implementing: » ni d'annonce de l'étape suivante.
+
+## Durée
+
+Ces règles valent du premier au dernier message de la tâche, et après une reprise (« reprend », « continue ») comme au début. Ne les relâche pas au fil des appels d'outils.
 
 ## Exemples
 
