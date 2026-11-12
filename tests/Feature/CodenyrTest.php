@@ -86,11 +86,11 @@ test('contact stores its subject and does not require an offer', function () {
 
 test('spam and excessive submissions are rejected', function () {
     Mail::fake();
-    Livewire::test(InquiryForm::class)->set('fax', 'spam')->call('submit')->assertHasErrors('submit');
+    Livewire::test(InquiryForm::class)->set('fax', 'spam')->call('submit')->assertHasNoErrors()->assertSet('submitted', true);
     for ($i = 0; $i < 5; $i++) {
         RateLimiter::hit('inquiry:127.0.0.1', 600);
     }
-    Livewire::test(InquiryForm::class)->call('submit')->assertHasErrors('submit');
+    Livewire::test(InquiryForm::class)->call('submit')->assertStatus(429);
     expect(Lead::count())->toBe(0);
     Mail::assertNothingQueued();
 });

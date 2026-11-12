@@ -1,5 +1,6 @@
 
-// No optional trackers are loaded by this site. This records the visitor's choice.
+// Records the visitor's choice. The only optional service is Google reCAPTCHA on the forms, when it is configured
+// (resources/js/recaptcha.js reads this choice and is told when it changes).
 export function initCookiePreferences() {
     const banner = document.querySelector('#cookie-banner');
     const settings = document.querySelector('#cookie-settings');
@@ -25,6 +26,7 @@ export function initCookiePreferences() {
         try { localStorage.setItem(key, JSON.stringify(preference)); }
         catch { /* The preference applies to this page even if storage is unavailable. */ }
         banner.hidden = true;
+        document.dispatchEvent(new CustomEvent('codenyr:cookie-choice', { detail: preference.choice }));
         // Hand focus back only when the footer link opened the banner; otherwise the page would jump to the footer.
         if (openedFromSettings) settings?.focus({ preventScroll: true });
         openedFromSettings = false;

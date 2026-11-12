@@ -1,6 +1,6 @@
 {
-  "_cookie-preferences-NuLKEisn.js": {
-    "file": "assets/cookie-preferences-NuLKEisn.js",
+  "_cookie-preferences-Butv98ly.js": {
+    "file": "assets/cookie-preferences-Butv98ly.js",
     "name": "cookie-preferences"
   },
   "_demo-header-DYJi5DBK.css": {
@@ -31,11 +31,11 @@
     "src": "_instrument-sans-600-normal-B7fBEWYG.woff2"
   },
   "public/images/icons/check.svg": {
-    "file": "assets/check-ijvdUcxr.svg",
+    "file": "assets/check-DkjQDo0r.svg",
     "src": "public/images/icons/check.svg"
   },
   "resources/css/app.css": {
-    "file": "assets/app-D8g6WCxr.css",
+    "file": "assets/app-6CpO5qWZ.css",
     "name": "app",
     "names": [
       "app.css"
@@ -43,11 +43,11 @@
     "src": "resources/css/app.css",
     "isEntry": true,
     "assets": [
-      "assets/check-ijvdUcxr.svg"
+      "assets/check-DkjQDo0r.svg"
     ]
   },
   "resources/css/site.css": {
-    "file": "assets/site-DPeUAyke.css",
+    "file": "assets/site-CqFyaZ-R.css",
     "name": "site",
     "names": [
       "site.css"
@@ -55,16 +55,16 @@
     "src": "resources/css/site.css",
     "isEntry": true,
     "assets": [
-      "assets/check-ijvdUcxr.svg"
+      "assets/check-DkjQDo0r.svg"
     ]
   },
   "resources/js/app.js": {
-    "file": "assets/app-Cla417qj.js",
+    "file": "assets/app-C7gfuwEL.js",
     "name": "app",
     "src": "resources/js/app.js",
     "isEntry": true,
     "imports": [
-      "_cookie-preferences-NuLKEisn.js"
+      "_cookie-preferences-Butv98ly.js"
     ]
   },
   "resources/js/demo-atelier.js": {
@@ -123,13 +123,19 @@
     "src": "resources/js/passkeys.js",
     "isEntry": true
   },
+  "resources/js/recaptcha.js": {
+    "file": "assets/recaptcha-D_Po2TrG.js",
+    "name": "recaptcha",
+    "src": "resources/js/recaptcha.js",
+    "isEntry": true
+  },
   "resources/js/site.js": {
-    "file": "assets/site-DiRRnh-3.js",
+    "file": "assets/site-Cir4Kgel.js",
     "name": "site",
     "src": "resources/js/site.js",
     "isEntry": true,
     "imports": [
-      "_cookie-preferences-NuLKEisn.js"
+      "_cookie-preferences-Butv98ly.js"
     ]
   }
 }

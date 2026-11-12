@@ -28,6 +28,17 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    // Google reCAPTCHA on public forms (see App\Support\Recaptcha). Without the v3 keys the check is off;
+    // without the v2 keys a doubtful score is refused instead of getting a checkbox challenge.
+    'recaptcha' => [
+        'site_key' => env('RECAPTCHA_SITE_KEY'),
+        'secret_key' => env('RECAPTCHA_SECRET_KEY'),
+        'v2_site_key' => env('RECAPTCHA_V2_SITE_KEY'),
+        'v2_secret_key' => env('RECAPTCHA_V2_SECRET_KEY'),
+        // Score from 0 (bot) to 1 (human): accepted from `threshold`, checkbox challenge from `challenge_threshold`.
+        'threshold' => (float) env('RECAPTCHA_THRESHOLD', 0.5),
+        'challenge_threshold' => (float) env('RECAPTCHA_CHALLENGE_THRESHOLD', 0.3),
+    ],
     // Admin assistants: "anthropic" (Claude, paid API) or "gemini" (Google, free tier available).
     'assistant' => [
         'provider' => env('CODENYR_ASSISTANT_PROVIDER', 'anthropic'),

@@ -7,6 +7,15 @@ import { siteHeader } from './site-header.js';
 Alpine.data('siteHeader', siteHeader);
 Livewire.start();
 
+// Rate limit reached (HTTP 429): show the form's own notice instead of Livewire's error overlay.
+Livewire.interceptRequest(({ onError }) => onError(({ response, preventDefault }) => {
+    const notice = document.querySelector('[data-rate-limit]');
+    if (response.status !== 429 || !notice) return;
+    preventDefault();
+    notice.hidden = false;
+    notice.focus();
+}));
+
 initCookiePreferences();
 initLaptop();
 document.addEventListener('livewire:navigated', initCookiePreferences);

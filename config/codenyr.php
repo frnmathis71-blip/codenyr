@@ -7,7 +7,15 @@ return [
     // Anti-spam for public forms (see App\Support\SpamGuard).
     'spam' => [
         // A person needs a few seconds to fill a form; scripts send it instantly.
-        'min_seconds' => (int) env('CODENYR_SPAM_MIN_SECONDS', 4),
+        'min_seconds' => (int) env('CODENYR_SPAM_MIN_SECONDS', 3),
+        // Submissions allowed per IP address on each public form, per 10 minutes (HTTP 429 beyond).
+        'max_attempts' => (int) env('CODENYR_SPAM_MAX_ATTEMPTS', 5),
+        // Links allowed in a message.
+        'max_links' => (int) env('CODENYR_SPAM_MAX_LINKS', 2),
+        // Phrases that only spam contains (case-insensitive). CODENYR_SPAM_KEYWORDS, comma-separated, replaces the list.
+        'keywords' => env('CODENYR_SPAM_KEYWORDS') !== null
+            ? array_values(array_filter(array_map('trim', explode(',', (string) env('CODENYR_SPAM_KEYWORDS')))))
+            : ['viagra', 'cialis', 'online casino', 'casino en ligne', 'porn', 'backlinks', 'seo services', 'guest post', 'payday loan', 'crypto investment', 'bitcoin investment', 'forex trading', 'make money online', 'replica watches', 'buy followers', 'whatsapp me', 't.me/'],
         'disposable_domains' => ['yopmail.com', 'yopmail.fr', 'mailinator.com', 'guerrillamail.com', 'guerrillamail.info', 'sharklasers.com', '10minutemail.com', 'temp-mail.org', 'tempmail.com', 'trashmail.com', 'trashmail.fr', 'jetable.org', 'getnada.com', 'maildrop.cc', 'dispostable.com', 'throwawaymail.com', 'mohmal.com', 'emailondeck.com', 'mailnesia.com', 'spamgourmet.com', 'fakeinbox.com', 'tempail.com', 'mintemail.com', 'moakt.com', 'tmpmail.org', 'burnermail.io'],
     ],
     // Test mode (on by default in local only): documents can be issued even when legal

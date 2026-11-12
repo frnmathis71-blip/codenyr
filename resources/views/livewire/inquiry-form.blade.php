@@ -36,6 +36,8 @@
 @if($mode === 'quote')<div class="field full"><label for="website">Votre site actuel (facultatif)</label><input id="website" type="url" wire:model="website" placeholder="https://" maxlength="255">@error('website')<span class="error">{{ $message }}</span>@enderror</div>@endif
 </div></fieldset>
 <label class="consent"><input type="checkbox" wire:model="consent" required><span>J’ai pris connaissance de la <a href="{{ route('privacy') }}" target="_blank" rel="noopener">politique de confidentialité</a> et comprends que mes données seront utilisées pour répondre à ma demande. *</span></label>@error('consent')<p class="error">{{ $message }}</p>@enderror
+<x-recaptcha :action="$captchaAction" livewire />
+<div class="form-alert" data-rate-limit role="alert" tabindex="-1" wire:ignore hidden>Trop de tentatives en peu de temps. Merci de patienter quelques minutes avant de réessayer, ou écrivez-nous à <a href="mailto:{{ config('codenyr.email') }}">{{ config('codenyr.email') }}</a>.</div>
 <button class="button button-primary" type="submit" wire:loading.attr="disabled"><span wire:loading.remove wire:target="submit">{{ $mode === 'quote' ? 'Envoyer ma demande' : 'Envoyer mon message' }} <x-ui-icon name="arrow-up-right" /></span><span wire:loading wire:target="submit">Envoi en cours…</span></button><p class="form-footer">* Champs obligatoires · Votre demande ne vous engage à rien.</p>
 </form></section>
 @endif

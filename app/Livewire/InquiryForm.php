@@ -4,6 +4,7 @@ namespace App\Livewire;
 
 use App\Mail\InquiryReceived;
 use App\Models\Lead;
+use App\Support\Recaptcha;
 use App\Support\SpamGuard;
 use Illuminate\Support\Facades\Artisan;
 use Illuminate\Support\Facades\DB;
@@ -51,6 +52,12 @@ class InquiryForm extends Component
 
     public bool $consent = false;
 
+    /** reCAPTCHA v3 token, requested by resources/js/recaptcha.js right before each submission. */
+    public string $captcha = '';
+
+    /** reCAPTCHA v2 token, once the visitor ticked the fallback checkbox. */
+    public string $captchaChallenge = '';
+
     #[Locked]
     public int $startedAt = 0;
 
@@ -74,54 +81,59 @@ class InquiryForm extends Component
         if ($this->submitted) {
             return;
         }
-        $key = 'inquiry:'.request()->ip();
-        if (RateLimiter::tooManyAttempts($key, 5)) {
-            $this->addError('submit', 'Trop de tentatives. Merci de réessayer dans quelques minutes.');
-
-            return;
+        $form = $this->formName();
+        if (SpamGuard::throttled('inquiry')) {
+            SpamGuard::tooManyRequests($form);
         }
-        RateLimiter::hit($key, 600);
         // Same visitor, all day long: at most 15 requests, whatever the pace.
         $dailyKey = 'inquiry-day:'.request()->ip();
         if (RateLimiter::tooManyAttempts($dailyKey, 15)) {
-            $this->addError('submit', 'Trop de demandes envoyées aujourd’hui. Écrivez-nous directement à '.config('codenyr.email').'.');
-
-            return;
+            SpamGuard::tooManyRequests($form, 'daily_limit');
         }
         RateLimiter::hit($dailyKey, 86400);
         if ($this->fax !== '') {
-            $this->addError('submit', 'La demande n’a pas pu être envoyée.');
+            // Silent refusal: the bot sees the same confirmation as a visitor, nothing is stored or sent.
+            SpamGuard::reject($form, 'honeypot');
+            $this->submitted = true;
 
             return;
         }
-        foreach (['firstname', 'lastname', 'company', 'email', 'phone', 'description', 'desired_date', 'website', 'subject'] as $field) {
-            $this->{$field} = trim($this->{$field});
+        foreach (['firstname', 'lastname', 'company', 'email', 'phone', 'desired_date', 'website', 'subject'] as $field) {
+            $this->{$field} = SpamGuard::cleanLine($this->{$field});
         }
+        $this->description = SpamGuard::cleanText($this->description);
         if (SpamGuard::tooFast($this->startedAt)) {
-            $this->addError('submit', 'Votre demande a été envoyée très rapidement. Vérifiez vos informations puis renvoyez-la.');
+            $this->refuse('too_fast');
             // A real visitor who was just quick only has to click again.
             $this->startedAt = now()->timestamp - (int) config('codenyr.spam.min_seconds');
 
             return;
         }
         if (SpamGuard::suspiciousName($this->firstname) || SpamGuard::suspiciousName($this->lastname)) {
-            $this->addError('submit', 'La demande n’a pas pu être envoyée.');
+            $this->refuse('suspicious_name');
 
             return;
         }
         if (SpamGuard::disposableEmail($this->email)) {
+            SpamGuard::reject($form, 'disposable_email');
             $this->addError('email', 'Merci d’utiliser une adresse e-mail durable : nous devons pouvoir vous répondre.');
 
             return;
         }
         $emailKey = 'inquiry-email:'.mb_strtolower($this->email);
         if (RateLimiter::tooManyAttempts($emailKey, 3)) {
+            SpamGuard::reject($form, 'email_limit');
             $this->addError('submit', 'Nous avons déjà bien reçu vos demandes. Nous vous répondons très vite.');
 
             return;
         }
-        if (preg_match_all('~https?://~i', $this->description) > 5) {
-            $this->addError('description', 'Votre message contient trop de liens. Décrivez votre projet en quelques mots.');
+        if (SpamGuard::tooManyLinks($this->description)) {
+            $this->refuse('too_many_links');
+
+            return;
+        }
+        if (SpamGuard::spamKeyword($this->subject, $this->description, $this->company)) {
+            $this->refuse('spam_keyword');
 
             return;
         }
@@ -130,7 +142,7 @@ class InquiryForm extends Component
             'lastname' => 'required|string|max:100',
             'company' => 'nullable|string|max:200',
             'email' => 'required|email:rfc|max:254',
-            'phone' => 'nullable|string|max:30',
+            'phone' => ['nullable', 'string', 'max:30', 'regex:/^\+?[0-9][0-9 .()\-]{5,}$/'],
             'project_type' => $this->mode === 'quote' ? ['required', Rule::in([...array_column(config('codenyr.offers'), 'name'), 'Je ne sais pas'])] : ['nullable'],
             // Older open forms may still submit these fields; never persist them.
             'budget' => 'exclude',
@@ -144,9 +156,26 @@ class InquiryForm extends Component
             'required' => 'Ce champ est obligatoire.', 'email' => 'Saisissez une adresse e-mail valide.',
             'description.min' => 'Décrivez votre demande en au moins 20 caractères.',
             'consent.accepted' => 'Merci de prendre connaissance de la politique de confidentialité.',
+            'phone.regex' => 'Saisissez un numéro de téléphone valide.',
             'website.url' => 'Saisissez une adresse commençant par https:// ou http://.',
             'max' => 'Ce champ dépasse la longueur autorisée.', 'in' => 'Sélectionnez une valeur proposée.',
         ]);
+        // Last check, so the single-use reCAPTCHA token is only spent on an otherwise valid request.
+        $captcha = Recaptcha::assess($form, $this->captcha, $this->captchaChallenge);
+        $this->reset('captcha', 'captchaChallenge');
+        if ($captcha['verdict'] === Recaptcha::CHALLENGE) {
+            SpamGuard::reject($form, (string) $captcha['reason'], $captcha['score']);
+            $this->addError('submit', 'Une dernière vérification : cochez la case « Je ne suis pas un robot », puis renvoyez votre demande.');
+            $this->dispatch('recaptcha-challenge');
+
+            return;
+        }
+        if ($captcha['verdict'] === Recaptcha::REJECT) {
+            $this->refuse((string) $captcha['reason'], $captcha['score']);
+            $this->dispatch('recaptcha-reset');
+
+            return;
+        }
         unset($data['consent'], $data['subject']);
         if ($this->mode === 'contact') {
             $data['project_type'] = 'Contact';
@@ -167,9 +196,21 @@ class InquiryForm extends Component
         $this->reset('firstname', 'lastname', 'company', 'email', 'phone', 'description', 'website', 'features', 'subject');
     }
 
+    /** Also the reCAPTCHA action of the form. */
+    private function formName(): string
+    {
+        return $this->mode === 'contact' ? 'contact' : 'devis';
+    }
+
+    private function refuse(string $reason, ?float $score = null): void
+    {
+        SpamGuard::reject($this->formName(), $reason, $score);
+        $this->addError('submit', SpamGuard::message());
+    }
+
     public function render(): View
     {
-        return view('livewire.inquiry-form')->layout('components.site-layout', [
+        return view('livewire.inquiry-form', ['captchaAction' => $this->formName()])->layout('components.site-layout', [
             'title' => $this->mode === 'contact' ? 'Contactez Codenyr' : 'Demander un devis pour votre site internet',
             'description' => 'Parlez de votre projet web à Codenyr. Une demande simple, un devis personnalisé et un échange sans engagement.',
         ]);

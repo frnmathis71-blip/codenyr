@@ -29,6 +29,10 @@
         <env name="DB_URL" value=""/>
         <env name="MAIL_MAILER" value="array"/>
         <env name="CODENYR_SPAM_MIN_SECONDS" value="0"/>
+        <env name="RECAPTCHA_SITE_KEY" value="" force="true"/>
+        <env name="RECAPTCHA_SECRET_KEY" value="" force="true"/>
+        <env name="RECAPTCHA_V2_SITE_KEY" value="" force="true"/>
+        <env name="RECAPTCHA_V2_SECRET_KEY" value="" force="true"/>
         <env name="QUEUE_CONNECTION" value="sync"/>
         <env name="SESSION_DRIVER" value="array"/>
         <env name="PULSE_ENABLED" value="false"/>

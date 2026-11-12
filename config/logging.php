@@ -65,6 +65,14 @@ return [
             'replace_placeholders' => true,
         ],
 
+        // Refused form submissions (date, anonymised IP, reason, reCAPTCHA score), kept 30 days.
+        'spam' => [
+            'driver' => 'daily',
+            'path' => storage_path('logs/spam.log'),
+            'level' => 'info',
+            'max_files' => 30,
+        ],
+
         'daily' => [
             'driver' => 'daily',
             'path' => storage_path('logs/laravel.log'),

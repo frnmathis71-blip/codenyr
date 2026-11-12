@@ -29,7 +29,7 @@ test('https enforcement preserves paths queries and request methods', function (
 test('link flooding is rejected without storing or sending a request', function () {
     Mail::fake();
     RateLimiter::clear('inquiry:127.0.0.1');
-    Livewire::test(InquiryForm::class)->set('description', str_repeat('https://spam.example ', 6))->call('submit')->assertHasErrors('description');
+    Livewire::test(InquiryForm::class)->set('description', str_repeat('https://spam.example ', 6))->call('submit')->assertHasErrors('submit');
     expect(Lead::count())->toBe(0);
     Mail::assertNothingQueued();
 });

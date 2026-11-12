@@ -1,0 +1,3 @@
+<x-site-layout title="Trop de tentatives" description="Trop de tentatives en peu de temps. Merci de patienter quelques minutes avant de réessayer." :noindex="true">
+<section class="container page-hero error-page"><p class="eyebrow">Erreur 429</p><h1>Un instant,<br><span class="muted-heading">s’il vous plaît.</span></h1><p>Trop de tentatives ont été effectuées en peu de temps. Merci de patienter quelques minutes avant de réessayer, ou écrivez-nous à <a class="text-link" href="mailto:{{ config('codenyr.email') }}">{{ config('codenyr.email') }}</a>.</p><a class="button button-secondary" href="{{ route('home') }}">Retour à l’accueil <x-ui-icon name="arrow-right" /></a></section>
+</x-site-layout>
