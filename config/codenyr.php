@@ -1,8 +1,6 @@
 <?php
 
 return [
-    'landing_demo_url' => env('CODENYR_LANDING_DEMO_URL', 'http://demo-vitrine.test/demo/landing-page'),
-    'vitrine_demo_url' => env('CODENYR_VITRINE_DEMO_URL', 'http://demo-vitrine.test/demo/site-vitrine'),
     'email' => env('CODENYR_EMAIL', 'contact@codenyr.fr'),
     // Anti-spam for public forms (see App\Support\SpamGuard).
     'spam' => [

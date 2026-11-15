@@ -83,27 +83,7 @@
         <div class="home-hero-bottom">
             <a class="home-hero-cta" href="{{ route('quote') }}"><span><small>Gratuit · Sans engagement</small>Demander un devis</span><x-ui-icon name="arrow-right" /></a>
             <a class="home-hero-offers" href="{{ route('services') }}">Découvrir les offres <x-ui-icon name="arrow-right" /></a>
-            <a class="home-scroll" href="#demos"><span>Découvrir</span><x-ui-icon name="arrow-down" /></a>
-        </div>
-    </section>
-
-    <section id="demos" class="container home-section" aria-labelledby="demos-title">
-        <div class="home-section-heading"><div><p class="home-kicker">Quatre démonstrations à explorer</p><h2 id="demos-title">Voyez par vous-même.<br><span>Testez, personnalisez.</span></h2></div><p>Un concept de marque fictive pour chaque offre, jusqu’au site sur mesure avec réservation en ligne. Ouvrez-les et changez les couleurs ou la mise en page en direct.</p></div>
-        <div class="home-demos">
-            @foreach([
-                ['demo.vitrine', 'atelier/interieur', 'Site vitrine', 'Atelier Rive', 'Intérieur lumineux du site de démonstration Atelier Rive'],
-                ['demo.landing', 'sillage/coffee-moment', 'Landing page', 'Sillage', 'Préparation d’un café filtre, site de démonstration Sillage'],
-                ['demo.pro', 'canopee/jardin', 'Site Pro', 'Canopée', 'Outils de jardinage, site de démonstration Canopée'],
-                ['demo.custom', 'atelier/maison', 'Sur mesure', 'Seuil Immobilier', 'Pièce de vie lumineuse, site de démonstration Seuil Immobilier'],
-            ] as [$route, $image, $type, $name, $alt])
-                {{-- Skipped if the server still runs an older route cache, instead of failing the whole page. --}}
-                @continue(! Route::has($route))
-                <a class="hero-tile" href="{{ route($route) }}">
-                    <img src="{{ asset('images/'.$image.'-800.webp') }}" srcset="{{ asset('images/'.$image.'-800.webp') }} 800w, {{ asset('images/'.$image.'.webp') }} 1400w" sizes="(max-width: 800px) 100vw, (max-width: 1100px) 50vw, 25vw" width="800" height="533" alt="{{ $alt }}" loading="lazy" decoding="async">
-                    @if($loop->first)<span class="hero-tile-tag">Concepts Codenyr · marques fictives</span>@endif
-                    <span class="hero-tile-label"><span><small>{{ $type }}</small><strong>{{ $name }}</strong></span><span class="hero-tile-arrow" aria-hidden="true"><x-ui-icon name="arrow-up-right" /></span></span>
-                </a>
-            @endforeach
+            <a class="home-scroll" href="#expertise"><span>Découvrir</span><x-ui-icon name="arrow-down" /></a>
         </div>
     </section>
 

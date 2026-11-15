@@ -12,10 +12,6 @@ export default defineConfig({
                 'resources/css/site.css',
                 'resources/js/site.js',
                 'resources/js/passkeys.js',
-                'resources/js/demo-landing.js',
-                'resources/js/demo-atelier.js',
-                'resources/js/demo-pro.js',
-                'resources/js/demo-immo.js',
             ],
             refresh: true,
             fonts: [

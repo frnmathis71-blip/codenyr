@@ -753,15 +753,6 @@ summary:focus-visible {
     margin-top: 3px;
     color: var(--cn-accent);
 }
-.price-demo {
-    display: inline-flex;
-    align-items: center;
-    gap: 8px;
-    padding-top: 18px;
-    border-top: 1px solid var(--cn-border);
-    font-size: 14px;
-    color: var(--cn-accent);
-}
 .price-reassurance {
     display: flex;
     flex-wrap: wrap;

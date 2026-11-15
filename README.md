@@ -98,10 +98,6 @@ Pest couvre notamment les pages publiques, l’accès administrateur et les comp
 
 La maintenance proposée reste facultative et distincte des modifications et nouvelles fonctionnalités. Aucun tracker publicitaire ou analytique tiers n’est installé. Les cookies sont techniques. Le sitemap contient les pages publiques et uniquement les réalisations publiées.
 
-## Démonstration professionnelle Canopée
-
-La démonstration `/demonstrations/canopee/gestion` propose une administration interactive à six modules : tableau de bord, contenus, demandes et devis (statuts et notes), clients, rendez-vous et réglages publics du studio. La page `/demonstrations/canopee/connexion` préremplit `admin@canopee.demo` et `Canopee2026!`. Il s’agit exclusivement d’une simulation côté navigateur, sans authentification Laravel ni accès à l’administration Codenyr. La session est conservée dans l’onglet ; les contenus et données fictives sont sauvegardés localement. Aucun e-mail n’est envoyé et aucun devis réel n’est émis.
-
 ## Sécurité, consentement et référencement
 
 HTTPS est obligatoire par défaut (`FORCE_HTTPS=true`), y compris en local avec `herd secure codenyr`. Renseigner `APP_URL` en HTTPS. Les requêtes HTTP sont redirigées en 308 par Laravel (Herd applique aussi sa redirection), les sessions utilisent des cookies sécurisés et les réponses HTTPS portent HSTS. Derrière un proxy terminant TLS, configurer dans Laravel uniquement les adresses des proxies de confiance pour reconnaître le protocole transmis et éviter une boucle de redirection. Le certificat de production reste à configurer sur l’hébergeur. Les tests désactivent la redirection sauf ceux dédiés à HTTPS.

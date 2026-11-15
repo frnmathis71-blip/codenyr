@@ -16,7 +16,7 @@
     from { opacity: 0; transform: translateY(10px); }
 }
 .site-header, .header, .sl-header { view-transition-name: page-header; }
-.mobile-cta, .demo-tabbar { view-transition-name: page-tabbar; }
+.mobile-cta { view-transition-name: page-tabbar; }
 .cz-toggle { view-transition-name: page-studio-toggle; }
 @media (prefers-reduced-motion: reduce) {
     ::view-transition-group(*),

@@ -3,17 +3,6 @@
     "file": "assets/cookie-preferences-NuLKEisn.js",
     "name": "cookie-preferences"
   },
-  "_demo-header-DYJi5DBK.css": {
-    "file": "assets/demo-header-DYJi5DBK.css",
-    "src": "_demo-header-DYJi5DBK.css"
-  },
-  "_demo-header-DicdLKDp.js": {
-    "file": "assets/demo-header-DicdLKDp.js",
-    "name": "demo-header",
-    "css": [
-      "assets/demo-header-DYJi5DBK.css"
-    ]
-  },
   "_fonts-DhA1vfI8.css": {
     "file": "assets/fonts-DhA1vfI8.css",
     "src": "_fonts-DhA1vfI8.css"
@@ -65,56 +54,6 @@
     "isEntry": true,
     "imports": [
       "_cookie-preferences-NuLKEisn.js"
-    ]
-  },
-  "resources/js/demo-atelier.js": {
-    "file": "assets/demo-atelier-BIBihsIj.js",
-    "name": "demo-atelier",
-    "src": "resources/js/demo-atelier.js",
-    "isEntry": true,
-    "imports": [
-      "_demo-header-DicdLKDp.js"
-    ],
-    "css": [
-      "assets/demo-atelier-BPqdq99M.css"
-    ]
-  },
-  "resources/js/demo-immo.js": {
-    "file": "assets/demo-immo-Donrz__0.js",
-    "name": "demo-immo",
-    "src": "resources/js/demo-immo.js",
-    "isEntry": true,
-    "imports": [
-      "resources/js/demo-atelier.js",
-      "resources/js/demo-atelier.js"
-    ],
-    "css": [
-      "assets/demo-immo-DQuW8BFW.css"
-    ]
-  },
-  "resources/js/demo-landing.js": {
-    "file": "assets/demo-landing-CCnsxeLp.js",
-    "name": "demo-landing",
-    "src": "resources/js/demo-landing.js",
-    "isEntry": true,
-    "imports": [
-      "_demo-header-DicdLKDp.js"
-    ],
-    "css": [
-      "assets/demo-landing-DWgCzCVm.css"
-    ]
-  },
-  "resources/js/demo-pro.js": {
-    "file": "assets/demo-pro-CiYNSde7.js",
-    "name": "demo-pro",
-    "src": "resources/js/demo-pro.js",
-    "isEntry": true,
-    "imports": [
-      "resources/js/demo-atelier.js",
-      "resources/js/demo-atelier.js"
-    ],
-    "css": [
-      "assets/demo-pro-BfSx2bNL.css"
     ]
   },
   "resources/js/passkeys.js": {

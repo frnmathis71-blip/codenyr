@@ -1,18 +1,6 @@
-/* Homepage layout: demo tiles, bento grid, asymmetric work grid, sticky method timeline. */
+/* Homepage layout: bento grid, asymmetric work grid, sticky method timeline. */
 
 /* Demo tiles: the four concept sites, one per offer. */
-.home-demos { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
-.home-demos .hero-tile { aspect-ratio: 4 / 5; }
-.hero-tile { position: relative; display: block; min-height: 0; overflow: hidden; border-radius: 14px; background: var(--cn-surface); }
-.hero-tile img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; transition: transform .7s var(--cn-ease); }
-.hero-tile:hover img { transform: scale(1.04); }
-.hero-tile::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, #0d111700 40%, #0d1117e0); }
-.hero-tile-tag { position: absolute; z-index: 1; top: 16px; left: 16px; padding: 4px 11px; border-radius: 999px; font-size: 12px; color: white; background: #0d1117b3; border: 1px solid #ffffff33; backdrop-filter: blur(6px); }
-.hero-tile-label { position: absolute; z-index: 1; left: 22px; right: 22px; bottom: 20px; display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; color: white; }
-.hero-tile-label small { display: block; margin-bottom: 4px; font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: #dbe4ff; }
-.hero-tile-label strong { display: block; font-size: 22px; font-weight: 500; letter-spacing: -.02em; }
-.hero-tile-arrow { display: grid; place-items: center; flex-shrink: 0; width: 42px; height: 42px; border-radius: 50%; font-size: 18px; color: var(--cn-bg); background: var(--cn-white); transition: transform .3s var(--cn-ease); }
-.hero-tile:hover .hero-tile-arrow { transform: rotate(45deg); }
 
 /* Bento grid. */
 .home-bento { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); grid-auto-rows: minmax(230px, auto); gap: 16px; }
@@ -94,7 +82,6 @@
 .home-page .home-timeline p { font-size: 15px; line-height: 1.7; }
 
 @media (max-width: 1100px) {
-    .home-demos { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 1000px) {
     .bento-design { grid-column: span 6; grid-row: auto; }
@@ -103,8 +90,6 @@
     .home-method-intro { position: static; }
 }
 @media (max-width: 800px) {
-    .home-demos { grid-template-columns: 1fr; }
-    .home-demos .hero-tile { aspect-ratio: 16 / 10; }
     .bento-code, .bento-local { grid-column: span 6; }
     .home-work-section { padding-block: 65px; }
     .home-work-grid { grid-template-columns: 1fr; }
@@ -112,9 +97,6 @@
     .home-work-card:first-child:nth-last-child(3) .home-work-image { aspect-ratio: 1.6; min-height: 0; }
 }
 @media (max-width: 560px) {
-    .hero-tile-label { left: 16px; right: 16px; bottom: 14px; }
-    .hero-tile-label strong, .hero-tile:first-child .hero-tile-label strong { font-size: 20px; }
-    .hero-tile-arrow { width: 34px; height: 34px; }
     .bento-devices, .bento-admin { grid-column: span 6; }
     .bento-tile { padding: 24px; }
     .bento-specimen { grid-template-columns: 1fr; }

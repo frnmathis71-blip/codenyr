@@ -19,7 +19,6 @@
 
     <h2>Propriété intellectuelle</h2>
     <p>Les textes, logos, éléments graphiques et développements du site sont la propriété de leur auteur ou de leurs titulaires respectifs. Toute reproduction ou réutilisation nécessite une autorisation préalable, sauf exception prévue par la loi.</p>
-    <p>Les marques, projets et clients présentés dans les démonstrations sont fictifs. Les photographies d’ambiance utilisées dans ces démonstrations proviennent de banques d’images sous licence permettant cet usage ; leurs droits restent ceux de leurs auteurs.</p>
 
     <h2>Données personnelles</h2>
     <p>Consultez la <a href="{{ route('privacy') }}">politique de confidentialité</a> pour connaître les traitements de données, leurs durées de conservation et vos droits.</p>
